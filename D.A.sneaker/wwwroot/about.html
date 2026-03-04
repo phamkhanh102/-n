@@ -1,0 +1,140 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Về SneakerShop</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <style>
+
+        body {
+            margin: 0;
+            font-family: Arial;
+            color: white;
+            background: linear-gradient(120deg,#020617,#0f172a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .box {
+            max-width: 700px;
+        }
+
+        strong {
+            font-size: 48px;
+            margin-bottom: 10px
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 18px
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-row">
+            <
+            <div class="logo" onclick="location.href='shop.html'" style="cursor:pointer">
+                SneakerShop
+            </div>
+
+            <div class="search-box">
+                <div class="search">
+                    <input id="q" placeholder="Tìm Nike, Adidas, Air Force...">
+                    <button type="button" onclick="doSearch()">Tìm</button>
+                </div>
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+
+        </div>
+    </header>
+
+    <div class="box">
+        <strong>SneakerShop</strong>
+        <p>Nơi bạn tìm thấy đôi giày phù hợp với phong cách của mình.</p>
+        <p>Thiết kế bởi bạn </p>
+        <a href="shop.html" style="color:#3b82f6">Vào cửa hàng →</a>
+    </div>
+
+    <script>
+        let allProducts = [];
+
+        async function loadHeaderProducts() {
+            try {
+                const r = await fetch('/api/products');
+                allProducts = await r.json();
+            } catch {
+                allProducts = [
+                    { Name: "Nike Air Force 1", Brand: "Nike" },
+                    { Name: "Adidas Ultraboost 22", Brand: "Adidas" },
+                    { Name: "Converse Chuck 70", Brand: "Converse" },
+                    { Name: "Nike ZoomX Vaporfly", Brand: "Nike" }
+                ];
+            }
+        }
+        loadHeaderProducts();
+
+        const input = document.getElementById("q");
+        const box = document.getElementById("suggestions");
+
+        /* GỢI Ý */
+        input.addEventListener("input", () => {
+            const text = input.value.toLowerCase().trim();
+
+            if (!text) {
+                box.style.display = "none";
+                return;
+            }
+
+            const matches = allProducts
+                .filter(p => p.Name.toLowerCase().includes(text) ||
+                    (p.Brand || "").toLowerCase().includes(text))
+                .slice(0, 6);
+
+            if (!matches.length) {
+                box.style.display = "none";
+                return;
+            }
+
+            box.innerHTML = matches.map(p =>
+                `<div onclick="selectSearch('${p.Name}')">
+                ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
+            </div>`
+            ).join("");
+
+            box.style.display = "block";
+        });
+
+        function selectSearch(name) {
+            input.value = name;
+            box.style.display = "none";
+            goSearchPage();
+        }
+
+        function doSearch() { goSearchPage(); }
+
+        function goSearchPage() {
+            const q = encodeURIComponent(input.value);
+            location.href = `shop.html?q=${q}`;
+        }
+
+        /* ENTER */
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") goSearchPage();
+        });
+
+        /* CLICK OUTSIDE */
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".search-box"))
+                box.style.display = "none";
+        });
+    </script>
+
+</body>
+
+</html>

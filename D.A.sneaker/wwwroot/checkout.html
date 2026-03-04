@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <style>
+        :root {
+            --bg: #0b1220;
+            --panel: #0f172a;
+            --card: #0b1326;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --accent: #3b82f6;
+            --danger: #ef4444
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,Arial;
+            background: linear-gradient(180deg,#070d1a,#0b1220);
+            color: var(--text)
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px
+        }
+
+        h1 {
+            margin: 10px 0 20px
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.3fr .7fr;
+            gap: 20px
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid #1f2a44;
+            border-radius: 16px;
+            padding: 18px
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--muted)
+        }
+
+        input, select {
+            width: 100%;
+            margin-top: 6px;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #020617;
+            color: white
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px
+        }
+
+        .pay-method {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px
+        }
+
+        .method {
+            flex: 1;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: .2s
+        }
+
+            .method.active {
+                border-color: var(--accent);
+                box-shadow: 0 0 0 2px #3b82f633
+            }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            color: #cbd5e1
+        }
+
+        .total {
+            font-size: 20px;
+            font-weight: 700;
+            margin-top: 14px
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            background: var(--accent);
+            color: white;
+            font-size: 16px;
+            cursor: pointer
+        }
+
+            .btn:hover {
+                opacity: .9
+            }
+
+        .qr {
+            display: none;
+            text-align: center;
+            margin-top: 15px
+        }
+
+            .qr img {
+                width: 180px;
+                border-radius: 12px;
+                border: 1px solid #334155
+            }
+
+        .success {
+            display: none;
+            text-align: center;
+            padding: 40px
+        }
+
+        @media(max-width:900px) {
+            .layout {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-row">
+
+            <div class="logo" onclick="location.href='shop.html'" style="cursor:pointer">
+                SneakerShop
+            </div>
+
+            <div class="search-box">
+                <div class="search">
+                    <input id="q" placeholder="Tìm Nike, Adidas, Air Force...">
+                    <button type="button" onclick="doSearch()">Tìm</button>
+                </div>
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Thanh toán đơn hàng</h1>
+        <div class="layout" id="checkout">
+
+            <div class="card">
+                <h2>Thông tin khách hàng</h2>
+                <label>Họ tên</label><input id="name">
+                <label>Số điện thoại</label><input id="phone">
+                <label>Email</label><input id="email">
+                <label>Địa chỉ</label><input id="address">
+                <div class="row">
+                    <div><label>Tỉnh/Thành</label><input id="city"></div>
+                    <div><label>Quận/Huyện</label><input id="district"></div>
+                </div>
+
+                <h2 style="margin-top:25px">Phương thức thanh toán</h2>
+                <div class="pay-method">
+                    <div class="method active" onclick="selectMethod(this,'cod')">Thanh toán khi nhận</div>
+                    <div class="method" onclick="selectMethod(this,'bank')">Chuyển khoản</div>
+                    <div class="method" onclick="selectMethod(this,'card')">Thẻ ngân hàng</div>
+                </div>
+
+                <div class="qr" id="bankQR">
+                    <p>Quét QR để thanh toán</p>
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=PAYMENT-DEMO">
+                </div>
+
+                <div class="row" id="cardBox" style="display:none;margin-top:10px">
+                    <div><label>Số thẻ</label><input placeholder="1111 2222 3333 4444"></div>
+                    <div><label>Tên trên thẻ</label><input></div>
+                    <div><label>MM/YY</label><input></div>
+                    <div><label>CVV</label><input></div>
+                </div>
+
+            </div>
+
+            <div class="card">
+                <h2>Đơn hàng</h2>
+                <div id="items"></div>
+                <hr style="border-color:#1f2a44">
+                <div class="summary-item"><span>Tạm tính</span><span id="subtotal"></span></div>
+                <div class="summary-item"><span>Phí ship</span><span>30,000đ</span></div>
+                <div class="summary-item total"><span>Tổng</span><span id="total"></span></div>
+                <button class="btn" onclick="pay()">Hoàn tất thanh toán</button>
+            </div>
+
+        </div>
+
+        <div class="success card" id="success">
+            <h2> Thanh toán thành công!</h2>
+            <p>Cảm ơn bạn đã mua hàng.</p>
+        </div>
+    </div>
+    <script>
+        let allProducts = [];
+
+        async function loadHeaderProducts() {
+            try {
+                const r = await fetch('/api/products');
+                allProducts = await r.json();
+            } catch {
+                allProducts = [
+                    { Name: "Nike Air Force 1", Brand: "Nike" },
+                    { Name: "Adidas Ultraboost 22", Brand: "Adidas" },
+                    { Name: "Converse Chuck 70", Brand: "Converse" },
+                    { Name: "Nike ZoomX Vaporfly", Brand: "Nike" }
+                ];
+            }
+        }
+        loadHeaderProducts();
+
+        const input = document.getElementById("q");
+        const box = document.getElementById("suggestions");
+
+        /* GỢI Ý */
+        input.addEventListener("input", () => {
+            const text = input.value.toLowerCase().trim();
+
+            if (!text) {
+                box.style.display = "none";
+                return;
+            }
+
+            const matches = allProducts
+                .filter(p => p.Name.toLowerCase().includes(text) ||
+                    (p.Brand || "").toLowerCase().includes(text))
+                .slice(0, 6);
+
+            if (!matches.length) {
+                box.style.display = "none";
+                return;
+            }
+
+            box.innerHTML = matches.map(p =>
+                `<div onclick="selectSearch('${p.Name}')">
+                ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
+            </div>`
+            ).join("");
+
+            box.style.display = "block";
+        });
+
+        function selectSearch(name) {
+            input.value = name;
+            box.style.display = "none";
+            goSearchPage();
+        }
+
+        function doSearch() { goSearchPage(); }
+
+        function goSearchPage() {
+            const q = encodeURIComponent(input.value);
+            location.href = `shop.html?q=${q}`;
+        }
+
+        /* ENTER */
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") goSearchPage();
+        });
+
+        /* CLICK OUTSIDE */
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".search-box"))
+                box.style.display = "none";
+        });
+    </script>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+        function loadCart() {
+
+            const list = document.getElementById("order-items");
+            const totalEl = document.getElementById("total");
+
+            if (!cart.length) {
+                list.innerHTML = "<p>Giỏ hàng trống</p>";
+                totalEl.innerText = "0 đ";
+                return;
+            }
+
+            let total = 0;
+
+            list.innerHTML = cart.map(p => {
+                total += p.price * p.qty;
+
+                return `
+            <div class="item">
+                <img src="${p.image}" width="60">
+                <div>
+                    <b>${p.name}</b><br>
+                    ${p.qty} x ${p.price.toLocaleString()}đ
+                </div>
+            </div>`;
+            }).join("");
+
+            totalEl.innerText = total.toLocaleString() + " đ";
+        }
+        function paymentSuccess() {
+            localStorage.removeItem("cart");
+            window.location.href = "shop.html";
+        }
+
+        loadCart();
+
+    </script>
+</body>
+
+</html>

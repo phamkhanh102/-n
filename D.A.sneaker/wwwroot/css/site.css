@@ -1,0 +1,123 @@
+﻿/* ===== HEADER ===== */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: rgba(2,6,23,.85);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #1f2a44;
+}
+
+.header-row {
+    max-width: 1200px;
+    margin: auto;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+/* HEADER GLOBAL FIX */
+header.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+/* tránh nội dung chui xuống dưới header */
+body {
+    padding-top: 72px;
+}
+
+/* LOGO */
+.logo {
+    font-weight: 900;
+    font-size: 24px;
+    color: #fff;
+    white-space: nowrap;
+}
+
+/* SEARCH */
+.search-box {
+    flex: 1;
+    position: relative;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    background: #020617;
+    border: 1px solid #1f2a44;
+    border-radius: 999px;
+    padding: 4px;
+    transition: .25s;
+}
+
+    .search:focus-within {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+    }
+
+    .search input {
+        flex: 1;
+        border: none;
+        outline: none;
+        background: transparent;
+        color: #e5e7eb;
+        padding: 12px 14px;
+        font-size: 14px;
+    }
+
+    .search button {
+        background: #3b82f6;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 999px;
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+        .search button:hover {
+            background: #2563eb
+        }
+
+/* SUGGESTION BOX */
+.suggestions {
+    position: absolute;
+    top: 115%;
+    left: 0;
+    right: 0;
+    background: #020617;
+    border: 1px solid #1f2a44;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0,0,0,.55);
+    overflow: hidden;
+    display: none;
+    z-index: 999;
+}
+
+    .suggestions div {
+        padding: 12px 14px;
+        cursor: pointer;
+        color: #cbd5e1;
+    }
+
+        .suggestions div:hover {
+            background: #0f172a;
+            color: #3b82f6;
+        }
+
+/* CHECKOUT */
+.checkout-btn {
+    background: linear-gradient(135deg,#3b82f6,#2563eb);
+    padding: 11px 18px;
+    border-radius: 999px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+    .checkout-btn:hover {
+        box-shadow: 0 6px 18px rgba(59,130,246,.35);
+    }

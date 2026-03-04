@@ -1,0 +1,553 @@
+﻿<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SneakerShop - Chi tiết sản phẩm</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <style>
+        :root {
+            --bg: #070d1a;
+            --panel: #0b1326;
+            --card: #0f172a;
+            --border: #1f2a44;
+            --text: #e5e7eb;
+            --muted: #94a3b8;
+            --accent: #2563eb;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter,Arial,Helvetica,sans-serif;
+            background: linear-gradient(180deg,#070d1a,#020617);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 0 16px
+        }
+
+        /* HEADER */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(2,6,23,.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-row {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            padding: 14px 0
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 22px
+        }
+
+        .search {
+            flex: 1;
+            display: flex;
+            gap: 8px
+        }
+
+            .search input {
+                flex: 1;
+                padding: 11px;
+                border-radius: 10px;
+                border: 1px solid var(--border);
+                background: #020617;
+                color: white
+            }
+
+        .btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 10px;
+            cursor: pointer
+        }
+
+        /* LAYOUT */
+        .product-layout {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 32px;
+            margin-top: 24px
+        }
+
+        /* GALLERY */
+        .gallery {
+            background: var(--panel);
+            padding: 18px;
+            border-radius: 18px;
+            border: 1px solid var(--border)
+        }
+
+        .main-image {
+            width: 100%;
+            height: 420px;
+            object-fit: contain;
+            background: #020617;
+            border-radius: 12px
+        }
+
+        .thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px
+        }
+
+        .thumb {
+            width: 80px;
+            height: 70px;
+            background: #020617;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            object-fit: contain;
+            cursor: pointer;
+            transition: .15s
+        }
+
+            .thumb:hover {
+                border-color: var(--accent)
+            }
+
+            .thumb.active {
+                border-color: var(--accent)
+            }
+
+        /* INFO */
+        .info {
+            background: var(--panel);
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid var(--border)
+        }
+
+        .breadcrumb {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 6px
+        }
+
+        .title {
+            font-size: 30px;
+            font-weight: 700;
+            margin: 6px 0 12px
+        }
+
+        .price-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px
+        }
+
+        .old-price {
+            text-decoration: line-through;
+            color: #9ca3af
+        }
+
+        .price {
+            color: var(--danger);
+            font-size: 26px;
+            font-weight: 800
+        }
+
+        .badge {
+            background: var(--danger);
+            padding: 5px 8px;
+            border-radius: 6px;
+            font-size: 12px
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2,1fr);
+            gap: 12px;
+            margin: 14px 0
+        }
+
+        .feature {
+            background: #020617;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px;
+            font-size: 13px
+        }
+
+        .section-title {
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-weight: 600
+        }
+
+        /* SIZE */
+        .sizes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap
+        }
+
+        .size {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: #020617
+        }
+
+            .size.active {
+                border-color: var(--accent);
+                background: #0a1b44
+            }
+
+        /* QTY */
+        .qty {
+            display: flex;
+            align-items: center;
+            margin-top: 10px
+        }
+
+            .qty button {
+                width: 34px;
+                height: 34px;
+                border: none;
+                background: #020617;
+                color: white;
+                cursor: pointer
+            }
+
+            .qty input {
+                width: 50px;
+                text-align: center;
+                background: #020617;
+                border: 1px solid var(--border);
+                color: white;
+                height: 34px
+            }
+
+        /* BUTTONS */
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px
+        }
+
+        .buy {
+            background: var(--danger)
+        }
+
+        .add {
+            background: var(--accent)
+        }
+
+        .actions button {
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            cursor: pointer
+        }
+
+        /* DESCRIPTION */
+        .desc {
+            margin-top: 30px;
+            background: var(--panel);
+            padding: 20px;
+            border-radius: 18px;
+            border: 1px solid var(--border)
+        }
+
+            .desc h3 {
+                margin-top: 0
+            }
+
+        @media(max-width:900px) {
+            .product-layout {
+                grid-template-columns: 1fr
+            }
+        }
+    </style>
+
+</head>
+<body>
+
+    <header class="header">
+        <div class="header-row">
+
+            <div class="logo" onclick="location.href='shop.html'" style="cursor:pointer">
+                SneakerShop
+            </div>
+
+            <div class="search-box">
+                <div class="search">
+                    <input id="q" placeholder="Tìm Nike, Adidas, Air Force...">
+                    <button type="button" onclick="doSearch()">Tìm</button>
+                </div>
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+
+        </div>
+    </header>
+
+
+    <div class="container">
+
+        <div class="product-layout">
+
+            <!-- GALLERY -->
+
+            <div class="gallery">
+                <img id="mainImg" class="main-image" src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/0e4e8f96-6b1d-4a7c-9f7f-9b8a40b1c6b5/air-force-1-07-shoes-WrLlWX.png">
+                <div class="thumbs">
+                    <img class="thumb active" src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/0e4e8f96-6b1d-4a7c-9f7f-9b8a40b1c6b5/air-force-1-07-shoes-WrLlWX.png">
+                    <img class="thumb" src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/2c14e5e1-9917-4b9c-91c7-b93d28c1a32b/air-force-1-07-shoes-WrLlWX.png">
+                    <img class="thumb" src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/dc87f3c1-60d4-42fa-b0b5-4b2efb1c0a74/air-force-1-07-shoes-WrLlWX.png">
+                    <img class="thumb" src="https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/8a37f131-56e6-4e5e-84cb-0fcbfe8e94cf/air-force-1-07-shoes-WrLlWX.png">
+                </div>
+            </div>
+
+            <!-- INFO -->
+
+            <div class="info">
+                <div class="breadcrumb" id="breadcrumb"></div>
+                <div class="title" id="pName"></div>
+
+                <div class="price-row">
+                    <div class="old-price" id="oldPrice"></div>
+                    <div class="price" id="price"></div>
+                    <div class="badge" id="discount"></div>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature">✔ Cam kết chính hãng 100%</div>
+                <div class="feature">✔ Giao nhanh 1-2 ngày</div>
+                <div class="feature">✔ Đổi size trong 7 ngày</div>
+                <div class="feature">✔ Thanh toán khi nhận hàng</div>
+            </div>
+
+            <div class="section-title">Chọn size</div>
+            <div class="sizes" id="sizes"></div>
+
+            <div class="section-title">Số lượng</div>
+            <div class="qty">
+                <button onclick="changeQty(-1)">-</button>
+                <input id="qty" value="1">
+                <button onclick="changeQty(1)">+</button>
+            </div>
+
+            <div class="actions">
+                <button class="buy">MUA NGAY</button>
+                <button class="add">THÊM VÀO GIỎ HÀNG</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="desc">
+        <h3>Mô tả sản phẩm</h3>
+        <p>Air Force 1 là mẫu giày huyền thoại của Nike. Phiên bản Panda 2025 mang phối màu trắng đen tối giản phù hợp mọi outfit streetwear.</p>
+    </div>
+    <script src="product.js"></script>
+    <script>
+        const id = new URLSearchParams(window.location.search).get("id");
+
+        async function loadProduct() {
+
+            const res = await fetch(`/api/products/${id}`);
+            const data = await res.json();
+
+            console.log(data);
+
+            renderProduct(data);
+        }
+
+        function renderProduct(data) {
+
+            const p = data.product;
+
+            document.getElementById("name").innerText = p.name;
+            document.getElementById("brand").innerText = p.brand;
+            document.getElementById("price").innerText = p.price.toLocaleString() + " đ";
+
+            // ảnh chính
+            document.getElementById("mainImg").src = p.mainImageUrl;
+
+            // gallery
+            document.getElementById("images").innerHTML =
+                data.images.map(img =>
+                    `<img src="${img.imageUrl}" class="thumb">`
+                ).join("");
+
+            // màu
+            document.getElementById("colors").innerHTML =
+                data.colors.map(c =>
+                    `<button class="color" data-id="${c.colorId}">${c.colorName}</button>`
+                ).join("");
+
+            // size
+            document.getElementById("sizes").innerHTML =
+                data.variants.map(v =>
+                    `<button class="size" data-id="${v.variantId}">${v.sizeNumber}</button>`
+                ).join("");
+        }
+
+        loadProduct();
+    </script>
+
+    <script>
+        let allProducts = [];
+
+        async function loadHeaderProducts() {
+            try {
+                const r = await fetch('/api/products');
+                allProducts = await r.json();
+            } catch {
+                allProducts = [
+                    { Name: "Nike Air Force 1", Brand: "Nike" },
+                    { Name: "Adidas Ultraboost 22", Brand: "Adidas" },
+                    { Name: "Converse Chuck 70", Brand: "Converse" },
+                    { Name: "Nike ZoomX Vaporfly", Brand: "Nike" }
+                ];
+            }
+        }
+        loadHeaderProducts();
+
+        const input = document.getElementById("q");
+        const box = document.getElementById("suggestions");
+
+        /* GỢI Ý */
+        input.addEventListener("input", () => {
+            const text = input.value.toLowerCase().trim();
+
+            if (!text) {
+                box.style.display = "none";
+                return;
+            }
+
+            const matches = allProducts
+                .filter(p => p.Name.toLowerCase().includes(text) ||
+                    (p.Brand || "").toLowerCase().includes(text))
+                .slice(0, 6);
+
+            if (!matches.length) {
+                box.style.display = "none";
+                return;
+            }
+
+            box.innerHTML = matches.map(p =>
+                `<div onclick="selectSearch('${p.Name}')">
+                        ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
+                    </div>`
+            ).join("");
+
+            box.style.display = "block";
+        });
+
+        function selectSearch(name) {
+            input.value = name;
+            box.style.display = "none";
+            goSearchPage();
+        }
+
+        function doSearch() { goSearchPage(); }
+
+        function goSearchPage() {
+            const q = encodeURIComponent(input.value);
+            location.href = `shop.html?q=${q}`;
+        }
+
+        /* ENTER */
+        input.addEventListener("keydown", e => {
+            if (e.key === "Enter") goSearchPage();
+        });
+
+        /* CLICK OUTSIDE */
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".search-box"))
+                box.style.display = "none";
+        });
+    </script>
+    <script>
+
+        let product = null;
+
+        /* LẤY ID TỪ URL */
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get("id");
+
+        /* LOAD PRODUCT */
+        async function loadProduct() {
+
+            if (!id) {
+                document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px'>Không có sản phẩm</h2>";
+                return;
+            }
+
+            const r = await fetch("/api/products");
+            const data = await r.json();
+
+            product = data.find(p => String(p.Id) === String(id));
+
+            if (!product) {
+                document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px'>Sản phẩm không tồn tại</h2>";
+                return;
+            }
+
+            renderProduct();
+        }
+
+        /* RENDER */
+        function renderProduct() {
+
+            document.getElementById("pName").innerText = product.Name;
+            document.getElementById("breadcrumb").innerText = `Trang chủ / ${product.Brand || ""} / ${product.Name}`;
+            document.getElementById("price").innerText = (product.Price || 0).toLocaleString() + "đ";
+
+            const img = product.ImageUrl?.startsWith("http")
+                ? product.ImageUrl
+                : "/images/" + product.ImageUrl;
+
+            document.getElementById("mainImg").src = img;
+
+            const thumbs = document.getElementById("thumbs");
+            thumbs.innerHTML = `
+            <img class="thumb active" src="${img}">
+            <img class="thumb" src="${img}">
+            <img class="thumb" src="${img}">
+            <img class="thumb" src="${img}">
+        `;
+
+            document.querySelectorAll('.thumb').forEach(t => {
+                t.onclick = () => {
+                    document.querySelectorAll('.thumb').forEach(x => x.classList.remove('active'));
+                    t.classList.add('active');
+                    document.getElementById("mainImg").src = t.src;
+                };
+            });
+        }
+
+        loadProduct();
+
+    </script>
+</body>
+</html>

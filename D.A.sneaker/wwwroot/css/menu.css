@@ -1,0 +1,40 @@
+﻿/* ===== NAVBAR ===== */
+.menu {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 40px;
+    background: #020617;
+    border-bottom: 1px solid #1f2a44;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 6px 18px rgba(0,0,0,.4);
+}
+
+.menu-logo {
+    font-size: 24px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: .5px;
+}
+
+.menu-links {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+    .menu-links a {
+        color: #cbd5e1;
+        text-decoration: none;
+        font-weight: 500;
+        transition: .2s;
+        padding: 8px 14px;
+        border-radius: 8px;
+    }
+
+        .menu-links a:hover {
+            background: #0f172a;
+            color: #3b82f6;
+        }

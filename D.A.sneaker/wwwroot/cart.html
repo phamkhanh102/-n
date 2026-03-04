@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng</title>
+    <link rel="stylesheet" href="/css/site.css">
+    <style>
+        body {
+            background: #0b1220;
+            color: white;
+            font-family: Arial
+        }
+
+        .cart-item {
+            display: flex;
+            gap: 20px;
+            background: #020617;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 12px;
+            align-items: center
+        }
+
+            .cart-item img {
+                width: 90px
+            }
+
+        .total {
+            font-size: 22px;
+            margin: 20px
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-row">
+
+            <div class="logo" onclick="location.href='shop.html'" style="cursor:pointer">
+                SneakerShop
+            </div>
+
+            <div class="search-box">
+                <div class="search">
+                    <input id="q" placeholder="Tìm Nike, Adidas, Air Force...">
+                    <button type="button" onclick="doSearch()">Tìm</button>
+                </div>
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+
+        </div>
+    </header>
+
+
+    <h1 style="padding:20px">Giỏ hàng</h1>
+    <div id="cart"></div>
+    <div class="total" id="total"></div>
+
+    <script>
+        const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+        let total = 0;
+
+        document.getElementById("cart").innerHTML = cart.map(p => {
+            total += p.price * p.qty;
+            return `
+<div class="cart-item">
+<img src="${p.image || 'https://via.placeholder.com/100'}">
+<div>
+<div>${p.name}</div>
+<div>${p.price.toLocaleString()} đ x ${p.qty}</div>
+</div>
+</div>`
+        }).join("");
+
+        document.getElementById("total").innerText = "Tổng: " + total.toLocaleString() + " đ";
+    </script>
+
+</body>
+<script>
+    let allProducts = [];
+
+    async function loadHeaderProducts() {
+        try {
+            const r = await fetch('/api/products');
+            allProducts = await r.json();
+        } catch {
+            allProducts = [
+                { Name: "Nike Air Force 1", Brand: "Nike" },
+                { Name: "Adidas Ultraboost 22", Brand: "Adidas" },
+                { Name: "Converse Chuck 70", Brand: "Converse" },
+                { Name: "Nike ZoomX Vaporfly", Brand: "Nike" }
+            ];
+        }
+    }
+    loadHeaderProducts();
+
+    const input = document.getElementById("q");
+    const box = document.getElementById("suggestions");
+
+    /* GỢI Ý */
+    input.addEventListener("input", () => {
+        const text = input.value.toLowerCase().trim();
+
+        if (!text) {
+            box.style.display = "none";
+            return;
+        }
+
+        const matches = allProducts
+            .filter(p => p.Name.toLowerCase().includes(text) ||
+                (p.Brand || "").toLowerCase().includes(text))
+            .slice(0, 6);
+
+        if (!matches.length) {
+            box.style.display = "none";
+            return;
+        }
+
+        box.innerHTML = matches.map(p =>
+            `<div onclick="selectSearch('${p.Name}')">
+            ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
+        </div>`
+        ).join("");
+
+        box.style.display = "block";
+    });
+
+    function selectSearch(name) {
+        input.value = name;
+        box.style.display = "none";
+        goSearchPage();
+    }
+
+    function doSearch() { goSearchPage(); }
+
+    function goSearchPage() {
+        const q = encodeURIComponent(input.value);
+        location.href = `shop.html?q=${q}`;
+    }
+
+    /* ENTER */
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") goSearchPage();
+    });
+
+    /* CLICK OUTSIDE */
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".search-box"))
+            box.style.display = "none";
+    });
+</script>
+
+</html>

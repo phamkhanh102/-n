@@ -1,0 +1,854 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sneaker Shop</title>
+
+<style>
+:root{
+--bg:#0b1220;
+--panel:#0f172a;
+--card:#0b1326;
+--text:#e5e7eb;
+--muted:#94a3b8;
+--accent:#3b82f6;
+}
+
+body{
+margin:0;
+font-family:Inter,Arial;
+background:linear-gradient(180deg,#070d1a,#0b1220);
+color:var(--text);
+}
+
+.container{max-width:1200px;margin:auto;padding:0 16px}
+
+/* HEADER */
+    /* ===== HEADER MODERN ===== */
+    .header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        background: rgba(2,6,23,.85);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid #1f2a44;
+    }
+
+    .header-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 5px 0;
+    }
+
+    /* LOGO */
+    .logo {
+        font-weight: 900;
+        font-size: 24px;
+        letter-spacing: .5px;
+        color: #fff;
+    }
+
+    /* SEARCH BAR */
+    .search-box {
+        flex: 1;
+        position: relative;
+    }
+
+    .search {
+        display: flex;
+        align-items: center;
+        background: #020617;
+        border: 1px solid #1f2a44;
+        border-radius: 999px;
+        padding: 4px;
+        transition: .25s;
+    }
+
+        .search:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,.25);
+        }
+
+        /* INPUT */
+        .search input {
+            flex: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #e5e7eb;
+            padding: 12px 14px;
+            font-size: 14px;
+        }
+
+        /* BUTTON TRONG SEARCH */
+        .search button {
+            background: #3b82f6;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+            .search button:hover {
+                background: #2563eb;
+            }
+
+    /* CHECKOUT */
+    .checkout-btn {
+        background: linear-gradient(135deg,#3b82f6,#2563eb);
+        padding: 11px 18px;
+        border-radius: 999px;
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+        .checkout-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(59,130,246,.35);
+        }
+
+
+    /* HERO BANNER */
+    .hero {
+        height: 420px;
+        background: url("https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1600") center/cover no-repeat;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        position: relative;
+        margin-bottom: 30px;
+    }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.8));
+        }
+
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero h1 {
+        font-size: 48px;
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 10px;
+    }
+
+    .hero p {
+        color: #cbd5e1;
+        margin-bottom: 20px;
+    }
+
+    .hero-btn {
+        background: #3b82f6;
+        padding: 12px 26px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: white;
+        font-weight: 600;
+        transition: .2s;
+    }
+
+        .hero-btn:hover {
+            background: #2563eb;
+        }
+
+    /* search suggestion */
+    .search-box {
+        position: relative;
+        flex: 1;
+    }
+
+    .suggestions {
+        position: absolute;
+        top: 110%;
+        left: 0;
+        right: 0;
+        background: #020617;
+        border: 1px solid #334155;
+        border-radius: 10px;
+        max-height: 260px;
+        overflow-y: auto;
+        display: none;
+        z-index: 999;
+    }
+
+        .suggestions div {
+            padding: 10px 12px;
+            cursor: pointer;
+            color: #cbd5e1;
+        }
+
+            .suggestions div:hover {
+                background: #0f172a;
+                color: #3b82f6;
+            }
+
+    /* ===== HAMBURGER BUTTON ===== */
+    .hamburger {
+        position: fixed;
+        top: 18px;
+        left: 20px;
+        z-index: 1001;
+        cursor: pointer;
+        width: 28px;
+    }
+
+        .hamburger span {
+            display: block;
+            height: 3px;
+            background: white;
+            margin: 6px 0;
+            border-radius: 3px;
+            transition: .3s;
+        }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        width: 260px;
+        height: 100%;
+        background: #020617;
+        box-shadow: 6px 0 20px rgba(0,0,0,.5);
+        padding-top: 80px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        transition: .35s;
+        z-index: 1002;
+    }
+
+        .sidebar a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 14px 26px;
+            font-size: 16px;
+            transition: .2s;
+        }
+
+            .sidebar a:hover {
+                background: #0f172a;
+                color: #3b82f6;
+            }
+    /* ===== CUSTOM SELECT ===== */
+    .sort select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background: #020617;
+        color: #e5e7eb;
+        border: 1px solid #334155;
+        padding: 10px 36px 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: .2s;
+        background-image: url("data:image/svg+xml;utf8,<svg fill='%23cbd5e1' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5 7l5 5 5-5z'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+
+        .sort select:hover {
+            border-color: #3b82f6;
+        }
+
+        .sort select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,.3);
+        }
+
+        /* dropdown options */
+        .sort select option {
+            background: #020617;
+            color: #e5e7eb;
+        }
+
+    /* overlay nền mờ */
+    .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,.5);
+        opacity: 0;
+        pointer-events: none;
+        transition: .3s;
+        z-index: 1000;
+    }
+
+        .overlay.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+    .sidebar.show {
+        left: 0;
+    }
+
+    /* animation nút */
+    .hamburger.active span:nth-child(1) {
+        transform: rotate(45deg) translate(6px,6px);
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: rotate(-45deg) translate(7px,-7px);
+    }
+
+/* FILTER BAR */
+.top-filters{
+display:flex;gap:14px;align-items:center;
+padding:14px 0;border-bottom:1px solid #1f2a44;margin-bottom:18px;
+}
+
+.filter{
+position:relative;background:#020617;border:1px solid #334155;
+padding:8px 14px;border-radius:10px;cursor:pointer;
+transition:.15s;
+}
+.filter:hover{border-color:#3b82f6}
+
+.dropdown{
+opacity:0;transform:translateY(6px);
+pointer-events:none;
+position:absolute;top:110%;left:0;
+background:#020617;border:1px solid #334155;
+border-radius:12px;padding:12px;min-width:200px;z-index:50;
+transition:.18s ease;
+}
+.dropdown.show{opacity:1;transform:translateY(0);pointer-events:auto}
+
+.dropdown label{
+display:flex;align-items:center;gap:10px;
+padding:8px 10px;border-radius:8px;cursor:pointer;
+}
+.dropdown label:hover{background:#0f172a}
+
+/* radio đẹp */
+.dropdown input[type="radio"]{
+appearance:none;width:16px;height:16px;border-radius:50%;
+border:2px solid #64748b;position:relative;cursor:pointer;
+}
+.dropdown input[type="radio"]:checked{border-color:#3b82f6}
+.dropdown input[type="radio"]:checked::after{
+content:"";position:absolute;inset:3px;border-radius:50%;background:#3b82f6;
+}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+
+.card{
+background:#0b1326;border:1px solid #1f2a44;
+border-radius:16px;overflow:hidden;padding:12px
+}
+
+.product-img{width:100%;height:170px;object-fit:contain;background:#020617}
+
+.title{font-weight:600;margin:8px 0}
+.price{font-weight:700;margin:6px 0}
+
+.sort{margin-left:auto}
+    /* FIX DROPDOWN BỊ CHE */
+    .header {
+        position: relative;
+        z-index: 1000;
+    }
+
+    .search-box {
+        position: relative;
+        z-index: 1001;
+    }
+
+    .suggestions {
+        z-index: 9999;
+    }
+
+</style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="container header-row">
+            <div class="logo">SneakerShop</div>
+
+            <div class="search search-box">
+                <input id="q" placeholder="Tìm giày, hãng, màu...">
+                <button type="button" onclick="applyFilters()">Tìm</button>
+
+                <div id="suggestions" class="suggestions"></div>
+            </div>
+
+
+            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+        </div>
+    </header>
+
+    <!-- HAMBURGER -->
+    <div class="hamburger" onclick="toggleMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <!-- SIDEBAR MENU -->
+    <div id="sidebar" class="sidebar">
+        <a href="login.html"> Đăng Nhập</a>
+        <a href="shop.html"> Cửa hàng</a>
+        <a href="cart.html"> Giỏ hàng</a>
+        <a href="checkout.html"> Thanh toán</a>
+        <a href="about.html"> Về chúng tôi</a>
+        <a href="Ai.html">AI tư vấn</a>
+    </div>
+
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>NEW SNEAKER COLLECTION</h1>
+            <p>Phong cách bắt đầu từ đôi giày</p>
+            <a href="#grid" class="hero-btn">Mua ngay</a>
+        </div>
+    </section>
+
+
+    <div class="container">
+
+        <div class="top-filters">
+
+            <div class="filter" onclick="toggleDrop(this)">
+                Giá
+                <div class="dropdown">
+                    <label><input type="radio" name="price" value="0-500000"> Dưới 500K</label>
+                    <label><input type="radio" name="price" value="500000-1500000"> 500K - 1tr5</label>
+                    <label><input type="radio" name="price" value="1500000-3000000"> 1tr5 - 3tr</label>
+                    <label><input type="radio" name="price" value="3000000-999999999"> Trên 3tr</label>
+                </div>
+            </div>
+
+            <div class="sort">
+                <select id="sort" onchange="applyFilters()">
+                    <option value="relevance">Sắp xếp</option>
+                    <option value="priceAsc">Giá thấp → cao</option>
+                    <option value="priceDesc">Giá cao → thấp</option>
+                </select>
+            </div>
+
+        </div>
+
+        <div id="count"></div>
+        <div id="grid" class="grid"></div>
+
+    </div>
+    <button class="chat-open" onclick="toggleBox()">AI</button>
+
+    <div id="chatOverlay" onclick="toggleBox()"></div>
+    <link rel="stylesheet" href="css/AI.css" />
+    <div id="box" class="chat-popup">
+
+        <div class="chat-box">
+
+            <div class="chat-header">
+                AI Sneaker Assistant
+                <span class="close" onclick="toggleBox()">✕</span>
+            </div>
+
+            <div class="messages" id="messages"></div>
+
+            <div class="row">
+                <input id="msg" placeholder="Hỏi về giày Nike, Adidas..." />
+                <button onclick="send()">Gửi</button>
+            </div>
+
+        </div>
+    </div>
+
+
+    <script>
+        let all = [];
+        let filters = { priceMin: 0, priceMax: Infinity };
+        const qInput = document.getElementById("q");
+        const sugBox = document.getElementById("suggestions");
+
+        /* ===== GỢI Ý TÌM KIẾM ===== */
+        qInput.addEventListener("input", () => {
+
+            const text = qInput.value.trim().toLowerCase();
+
+            if (!text) {
+                sugBox.style.display = "none";
+                return;
+            }
+
+            const matches = all
+                .filter(p =>
+                    p.name.toLowerCase().includes(text) ||
+                    (p.brand && p.brand.toLowerCase().includes(text))
+                )
+                .slice(0, 6);
+
+            if (!matches.length) {
+                sugBox.style.display = "none";
+                return;
+            }
+
+            sugBox.innerHTML = matches.map(p =>
+                `<div onclick="selectSuggestion('${p.name.replace(/'/g, "")}')">
+                            ${p.name} <span style="color:#64748b">- ${p.brand || ""}</span>
+                        </div>`
+            ).join("");
+
+            sugBox.style.display = "block";
+        });
+
+        /* chọn gợi ý */
+        function selectSuggestion(name) {
+            qInput.value = name;
+            sugBox.style.display = "none";
+            applyFilters();
+        }
+
+        /* click ra ngoài đóng */
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".search-box"))
+                sugBox.style.display = "none";
+        });
+
+        /* dropdown open */
+        function toggleDrop(el) {
+            const d = el.querySelector(".dropdown");
+            document.querySelectorAll(".dropdown").forEach(x => { if (x !== d) x.classList.remove("show") });
+            d.classList.toggle("show");
+        }
+
+        document.addEventListener("click", e => {
+            if (!e.target.closest(".filter"))
+                document.querySelectorAll(".dropdown").forEach(d => d.classList.remove("show"));
+        });
+
+        /* RADIO TOGGLE FIX */
+        let lastPrice = null;
+        document.querySelectorAll("input[name=price]").forEach(radio => {
+
+            radio.addEventListener("mousedown", function (e) {
+
+                if (this.checked) {
+                    this.dataset.waschecked = "true";
+                } else {
+                    this.dataset.waschecked = "false";
+                }
+
+            });
+
+            radio.addEventListener("click", function (e) {
+
+                if (this.dataset.waschecked === "true") {
+                    this.checked = false;
+                    filters.priceMin = 0;
+                    filters.priceMax = Infinity;
+                }
+                else {
+                    const [min, max] = this.value.split("-");
+                    filters.priceMin = +min;
+                    filters.priceMax = +max;
+                }
+
+                applyFilters();
+            });
+
+        });
+
+
+        /* LOAD DATA */
+        async function load() {
+
+            try {
+                const r = await fetch('/api/products');
+
+                if (!r.ok) throw new Error("API lỗi");
+
+                const data = await r.json();
+
+                all = data.map(p => ({
+                    id: p.Id,
+                    name: p.Name,
+                    brand: p.Brand,
+                    price: p.Price,
+                    imageUrl: p.ImageUrl
+                }));
+
+            } catch (e) {
+
+                console.warn("API chết → dùng dữ liệu giả");
+
+                // DATA FALLBACK (để web luôn hiển thị)
+                all = [
+                    { id: 1, name: "Nike Air Force 1", brand: "Nike", price: 3200000, imageUrl: "" },
+                    { id: 2, name: "Adidas Ultraboost 22", brand: "Adidas", price: 4500000, imageUrl: "" },
+                    { id: 3, name: "Converse Chuck 70", brand: "Converse", price: 2100000, imageUrl: "" },
+                    { id: 4, name: "Nike ZoomX Vaporfly", brand: "Nike", price: 6500000, imageUrl: "" }
+                ];
+            }
+
+            applyFilters();
+        }
+
+
+        /* FILTER */
+        function applyFilters() {
+
+            const q = qInput.value.trim().toLowerCase();
+
+            let data = [...all];
+
+            if (q) {
+                data = data.filter(p =>
+                    p.name.toLowerCase().includes(q) ||
+                    (p.brand && p.brand.toLowerCase().includes(q))
+                );
+            }
+
+            data = data.filter(p =>
+                p.price >= filters.priceMin && p.price <= filters.priceMax
+            );
+
+            const sort = document.getElementById("sort").value;
+            if (sort === "priceAsc") data.sort((a, b) => a.price - b.price);
+            if (sort === "priceDesc") data.sort((a, b) => b.price - a.price);
+
+            render(data);
+        }
+
+
+        function addToCart(product) {
+
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            const exist = cart.find(x => x.id === product.id);
+
+            if (exist) exist.qty++;
+            else cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.imageUrl,
+                qty: 1
+            });
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            alert("Đã thêm vào giỏ ");
+        }
+
+        /* RENDER */
+        function render(list) {
+            document.getElementById("count").innerText = list.length + " sản phẩm";
+
+            document.getElementById("grid").innerHTML = list.map(p => `
+<a class="card" href="product-detail.html?id=${p.id}">
+                    <img class="product-img"
+                    src="${p.imageUrl && p.imageUrl.startsWith('http') ? p.imageUrl : '/images/' + (p.imageUrl || '')}"
+                    onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'">
+
+                    <div class="title">${p.name}</div>
+                    <div>${p.brand || ''}</div>
+                    <div class="price">${(p.price || 0).toLocaleString()} đ</div>
+</a>
+`).join("");
+        }
+
+        function addToCartById(id) {
+
+            id = Number(id);
+
+            const product = all.find(x => Number(x.id) === id);
+
+            if (!product) {
+                console.error("Không tìm thấy sản phẩm", id, all);
+                return;
+            }
+
+            let cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            const exist = cart.find(x => Number(x.id) === id);
+
+            if (exist) exist.qty++;
+            else cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.imageUrl,
+                qty: 1
+            });
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+
+            alert("Đã thêm vào giỏ ");
+        }
+
+
+        load();
+        function toggleMenu() {
+            document.getElementById("sidebar").classList.toggle("show");
+            document.getElementById("overlay").classList.toggle("show");
+            document.querySelector(".hamburger").classList.toggle("active");
+        }
+        qInput.addEventListener("keydown", e => {
+
+            if (e.key === "Enter") {
+                e.preventDefault();
+
+                const first = sugBox.querySelector("div");
+                if (first) first.click();
+                else applyFilters();
+            }
+        });
+
+        document.getElementById("msg")
+            .addEventListener("keypress", function (e) {
+                if (e.key === "Enter") send();
+            });
+
+        async function send() {
+
+            const input = document.getElementById("msg");
+            const text = input.value;
+
+            if (!text) return;
+
+            const messages = document.getElementById("messages");
+
+            // USER
+            const user = document.createElement("div");
+            user.className = "user";
+            user.innerText = text;
+            messages.appendChild(user);
+
+            input.value = "";
+
+            // TYPING
+            const typing = document.createElement("div");
+            typing.className = "bot";
+            typing.innerText = "AI đang suy nghĩ...";
+            messages.appendChild(typing);
+
+            messages.scrollTop = messages.scrollHeight;
+
+            //--------------------------------
+            // CALL API
+            //--------------------------------
+
+            const res = await fetch("/api/chat", {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(text)
+            });
+
+            const data = await res.json();
+
+            typing.remove();
+
+            const bot = document.createElement("div");
+            bot.className = "bot";
+
+            //--------------------------------
+            // TEXT
+            //--------------------------------
+
+            if (data.type === "text") {
+                bot.innerText = data.message;
+            }
+
+            //--------------------------------
+            // PRODUCT
+            //--------------------------------
+
+            if (data.type === "products") {
+
+                bot.innerHTML = data.data.map(p => `
+
+                            <div class="card">
+                                <b>${p.name}</b>
+                                <p>${p.brand}</p>
+
+                                <p class="price">
+                                     ${p.price.toLocaleString()} VND
+                                </p>
+
+                                <p> Còn ${p.stock}</p>
+                            </div>
+
+                        `).join("");
+            }
+
+            messages.appendChild(bot);
+            messages.scrollTop = messages.scrollHeight;
+        }
+
+        function toggleBox() {
+            document.getElementById("box").classList.toggle("show");
+            document.getElementById("chatOverlay").classList.toggle("show");
+        }
+        // ================= AUTH UI =================
+
+        function parseJwt(token) {
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(base64));
+        }
+
+        function checkLogin() {
+
+            const token = localStorage.getItem("token");
+            const sidebar = document.getElementById("sidebar");
+
+            if (!token) return;
+
+            const user = parseJwt(token);
+
+            let adminMenu = "";
+
+            // ⭐ PHÂN QUYỀN Ở ĐÂY
+            if (user.role === "Admin") {
+                adminMenu = `
+            <a href="admin.html">⚙️ Quản trị</a>
+        `;
+            }
+
+            sidebar.innerHTML = `
+        <a href="account.html"> ${user.unique_name}</a>
+        ${adminMenu}
+        <a href="#" onclick="logout()"> Đăng xuất</a>
+        <a href="shop.html"> Cửa hàng</a>
+        <a href="cart.html"> Giỏ hàng</a>
+        <a href="checkout.html"> Thanh toán</a>
+        <a href="about.html"> Về chúng tôi</a>
+        <a href="Ai.html">AI tư vấn</a>
+    `;
+        }
+
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "shop.html";
+        }
+
+        checkLogin();
+    </script>
+</body>
+</html>

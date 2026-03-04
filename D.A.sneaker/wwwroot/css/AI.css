@@ -1,0 +1,119 @@
+﻿/* Nút mở chat */
+.chat-open {
+    position: fixed;
+    right: 25px;
+    bottom: 25px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 14px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2000;
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+}
+
+/* nền mờ */
+#chatOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: none;
+    z-index: 1998;
+}
+
+/* popup giữa màn hình */
+.chat-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%) scale(.9);
+    width: 420px;
+    height: 520px;
+    background: #020617;
+    border-radius: 18px;
+    box-shadow: 0 40px 100px rgba(0,0,0,.7);
+    display: none;
+    z-index: 1999;
+    transition: .25s;
+}
+
+    /* khi mở */
+    .chat-popup.show {
+        display: block;
+        transform: translate(-50%,-50%) scale(1);
+    }
+
+#chatOverlay.show {
+    display: block;
+}
+
+/* header */
+.chat-header {
+    background: #0f172a;
+    padding: 14px 16px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1f2a44;
+    border-radius: 40px;
+}
+
+/* close */
+.close {
+    cursor: pointer;
+    opacity: .7;
+}
+
+    .close:hover {
+        opacity: 1
+    }
+
+/* messages */
+.messages {
+    height: 380px;
+    overflow-y: auto;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.user {
+    background: #3b82f6;
+    padding: 10px 14px;
+    border-radius: 14px 14px 4px 14px;
+    align-self: flex-end;
+    max-width: 80%;
+}
+
+.bot {
+    background: #0f172a;
+    padding: 10px 14px;
+    border-radius: 14px 14px 14px 4px;
+    max-width: 80%;
+}
+
+/* input */
+.row {
+    display: flex;
+    border-top: 1px solid #1f2a44;
+}
+
+    .row input {
+        flex: 1;
+        background: #020617;
+        border: none;
+        color: white;
+        padding: 12px;
+    }
+
+    .row button {
+        background: #3b82f6;
+        border: none;
+        padding: 12px 18px;
+        color: white;
+        cursor: pointer;
+    }
