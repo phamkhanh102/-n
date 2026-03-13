@@ -6,16 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SneakerShop - Chi tiết sản phẩm</title>
     <link rel="stylesheet" href="/css/site.css">
+    <link rel="stylesheet" href="/css/SanPham.css" />
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/IconLogin.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/menu.css">
+    <link rel="stylesheet" href="/css/AI.css" />
+    <link rel="stylesheet" href="/css/footer.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg: #070d1a;
-            --panel: #0b1326;
-            --card: #0f172a;
-            --border: #1f2a44;
-            --text: #e5e7eb;
-            --muted: #94a3b8;
-            --accent: #2563eb;
-            --danger: #ef4444;
+        .main-image {
+            background: var(--input);
         }
 
         * {
@@ -25,52 +26,23 @@
         body {
             margin: 0;
             font-family: Inter,Arial,Helvetica,sans-serif;
-            background: linear-gradient(180deg,#070d1a,#020617);
+            background: var(--bg);
             color: var(--text);
         }
 
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 0 16px
+        .gallery {
+            overflow: hidden;
         }
+
+        .main-image {
+            transition: transform .3s;
+        }
+
+            .main-image:hover {
+                transform: scale(1.15);
+            }
 
         /* HEADER */
-        .header {
-            position: sticky;
-            top: 0;
-            z-index: 50;
-            background: rgba(2,6,23,.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--border);
-        }
-
-        .header-row {
-            display: flex;
-            gap: 16px;
-            align-items: center;
-            padding: 14px 0
-        }
-
-        .logo {
-            font-weight: 800;
-            font-size: 22px
-        }
-
-        .search {
-            flex: 1;
-            display: flex;
-            gap: 8px
-        }
-
-            .search input {
-                flex: 1;
-                padding: 11px;
-                border-radius: 10px;
-                border: 1px solid var(--border);
-                background: #020617;
-                color: white
-            }
 
         .btn {
             background: var(--accent);
@@ -101,7 +73,7 @@
             width: 100%;
             height: 420px;
             object-fit: contain;
-            background: #020617;
+            background: var(--input);
             border-radius: 12px
         }
 
@@ -114,7 +86,7 @@
         .thumb {
             width: 80px;
             height: 70px;
-            background: #020617;
+            background: var(--input);
             border-radius: 8px;
             border: 2px solid transparent;
             object-fit: contain;
@@ -183,11 +155,11 @@
         }
 
         .feature {
-            background: #020617;
+            background: var(--card);
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 10px;
-            font-size: 13px
+            font-size: 13px;
         }
 
         .section-title {
@@ -208,13 +180,14 @@
             border-radius: 8px;
             border: 1px solid var(--border);
             cursor: pointer;
-            background: #020617
+            background: var(--card)
         }
 
             .size.active {
                 border-color: var(--accent);
-                background: #0a1b44
+                background: var(--card)
             }
+
         .options {
             display: flex;
             gap: 8px;
@@ -231,7 +204,7 @@
 
             .opt.active {
                 border: 2px solid #3b82f6;
-                background: #0b1326;
+                background: var(--card)
             }
 
             .opt.disabled {
@@ -249,20 +222,61 @@
                 width: 34px;
                 height: 34px;
                 border: none;
-                background: #020617;
-                color: white;
+                background: var(--input);
+                color: var(--accent);
                 cursor: pointer
             }
 
             .qty input {
                 width: 50px;
                 text-align: center;
-                background: #020617;
+                background: var(--input);
                 border: 1px solid var(--border);
-                color: white;
+                color: var(--text);
                 height: 34px
             }
 
+        .color-grid {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .color-card {
+            width: 110px;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 10px;
+            cursor: pointer;
+            background: var(--panel);
+            transition: .2s;
+        }
+
+            .color-card:hover {
+                border-color: #3b82f6;
+            }
+
+            .color-card.active {
+                border: 2px solid #3b82f6;
+            }
+
+            .color-card img {
+                width: 100%;
+                height: 70px;
+                object-fit: contain;
+            }
+
+        .color-price {
+            font-weight: 700;
+            margin-top: 4px;
+        }
+
+        .color-old {
+            text-decoration: line-through;
+            font-size: 12px;
+            color: #aaa;
+        }
         /* BUTTONS */
         .actions {
             display: flex;
@@ -272,11 +286,11 @@
         }
 
         .buy {
-            background: var(--danger)
+            background: #ff0000
         }
 
         .add {
-            background: var(--accent)
+            background: var(--accent);
         }
 
         .actions button {
@@ -288,6 +302,42 @@
             cursor: pointer
         }
 
+        .color-card img:hover {
+            transform: scale(1.05);
+        }
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 260px;
+            height: 100%;
+            background: var(--panel);
+            box-shadow: 6px 0 20px rgba(0,0,0,.5);
+            padding-top: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: .35s;
+            z-index: 1002;
+        }
+
+            .sidebar a {
+                color: var(--text);
+                text-decoration: none;
+                padding: 14px 26px;
+                font-size: 16px;
+                transition: .2s;
+            }
+
+                .sidebar a:hover {
+                    background: #0f172a;
+                    color: #3b82f6;
+                }
+
+            .sidebar.show {
+                left: 0;
+            }
         /* DESCRIPTION */
         .desc {
             margin-top: 30px;
@@ -306,32 +356,105 @@
                 grid-template-columns: 1fr
             }
         }
+
+        .thumbs {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .thumb {
+            width: 80px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: 0.2s;
+        }
+
+            .thumb:hover {
+                border-color: #3b82f6;
+            }
+
+            .thumb.active {
+                border-color: #3b82f6;
+            }
     </style>
 
 </head>
 <body>
 
     <header class="header">
-        <div class="header-row">
 
-            <div class="logo" onclick="location.href='shop.html'" style="cursor:pointer">
-                SneakerShop
-            </div>
+        <div class="container header-row">
 
-            <div class="search-box">
-                <div class="search">
-                    <input id="" placeholder="">
-                    <button type="button" onclick="doSearch()">Tìm</button>
+            <div class="header-left">
+
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
                 </div>
-                <div id="suggestions" class="suggestions"></div>
+
+                <a href="shop.html" class="logo">
+                    SneakerShop
+                </a>
+
             </div>
 
-            <a href="checkout.html" class="checkout-btn">Thanh toán</a>
+            <div class="search search-box">
+
+                <input id="q" placeholder="Tìm Nike, Adidas, Converse...">
+
+                <button onclick="applyFilters()">Tìm Kiếm</button>
+
+                <div id="suggestions" class="suggestions"></div>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button class="theme-btn" onclick="toggleTheme()">
+                    🌙
+                </button>
+
+                <a href="cart.html" class="cart-btn">
+                    🛒 <span id="cartCount">0</span>
+                </a>
+
+                <div class="account">
+
+                    <div class="account-btn" onclick="toggleAccount()">
+                        👤
+                    </div>
+
+                    <div class="account-menu" id="accountMenu">
+
+                        <a href="account.html">Tài khoản</a>
+                        <a href="orders.html">Đơn hàng</a>
+                        <a href="wishlist.html">Yêu thích</a>
+                        <a href="#" onclick="logout()">Đăng xuất</a>
+
+                    </div>
+
+                </div>
+
+            </div>
 
         </div>
+
     </header>
-
-
+    <!-- SIDEBAR MENU -->
+    <div id="sidebar" class="sidebar">
+        <a href="login.html"> Đăng Nhập</a>
+        <a href="shop.html"> Cửa hàng</a>
+        <a href="cart.html"> Giỏ hàng</a>
+        <a href="checkout.html"> Thanh toán</a>
+        <a href="about.html"> Về chúng tôi</a>
+        <a href="Ai.html">AI tư vấn</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
     <div class="container">
 
         <div class="product-layout">
@@ -365,7 +488,7 @@
                 <div class="choose">
                     <div>
                         <h3>Màu</h3>
-                        <div id="colors" class="options"></div>
+                        <div id="colors" class="color-grid"></div>
                     </div>
 
                     <div>
@@ -373,7 +496,6 @@
                         <div id="sizes" class="options"></div>
                     </div>
 
-                    <button id="addCart">Thêm vào giỏ</button>
                 </div>
 
                 <div class="section-title">Số lượng</div>
@@ -384,7 +506,7 @@
                 </div>
 
                 <div class="actions">
-                    <button class="buy">MUA NGAY</button>
+                    <button class="buy" onclick="buyNow()">MUA NGAY</button>
                     <button class="add" onclick="addToCart()">THÊM VÀO GIỎ HÀNG</button>
                 </div>
             </div>
@@ -396,6 +518,66 @@
         </div>
 
     </div>
+    <footer class="footer">
+
+        <div class="container footer-grid">
+
+            <div class="footer-brand">
+
+                <h2 class="footer-logo">SneakerShop</h2>
+
+                <p>
+                    Nơi bạn tìm thấy đôi giày phù hợp với phong cách của mình.
+                </p>
+
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Cửa hàng</h4>
+
+                <a href="shop.html">Sneaker</a>
+                <a href="cart.html">Giỏ hàng</a>
+                <a href="orders.html">Đơn hàng</a>
+                <a href="about.html">Về chúng tôi</a>
+
+            </div>
+
+            <div class="footer-links">
+
+                <h4>Tài khoản</h4>
+
+                <a href="login.html">Đăng nhập</a>
+                <a href="register.html">Đăng ký</a>
+                <a href="account.html">Tài khoản</a>
+
+            </div>
+
+            <div class="footer-news">
+
+                <h4>Nhận ưu đãi</h4>
+
+                <p>Đăng ký email để nhận giảm giá và sản phẩm mới.</p>
+
+                <div class="newsletter">
+
+                    <input type="email" placeholder="Email của bạn">
+
+                    <button>Đăng ký</button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+
+            <p>© 2026 SneakerShop. All rights reserved.</p>
+
+        </div>
+
+    </footer>
     <script>
         let product = null;
         let selectedColor = null;
@@ -408,60 +590,138 @@
 
         async function loadProduct() {
 
-            const res = await fetch(`/api/products/products/${id}`);
+            const res = await fetch(`/api/products/${id}`);
             const data = await res.json();
 
-            product = data.product;
+            product = data.product ?? data;
 
-            // ===== TEXT =====
-            document.getElementById("pName").innerText = product.name;
+            document.getElementById("pName").innerText =
+                product.name || product.Name;
+
             document.getElementById("price").innerText =
-                product.price.toLocaleString() + "đ";
-            document.querySelector(".desc p").innerText = product.description;
+                (product.price || product.Price).toLocaleString() + "đ";
 
-            // ===== MAIN IMAGE =====
+            document.querySelector(".desc p").innerText =
+                product.description || product.Description || "";
+
+            document.getElementById("breadcrumb").innerText =
+                "Trang chủ / " + (product.Brand || product.brand || "") +
+                " / " + (product.Name || product.name || "");
+
+            const imgUrl =
+                product.MainImage ||
+                product.mainImage ||
+                product.imageUrl;
+
             document.getElementById("mainImg").src =
-                "/images/" + product.mainImage;
+                imgUrl?.startsWith("/images")
+                    ? imgUrl
+                    : "/images/" + imgUrl;
 
-            // ===== GALLERY =====
             const thumbs = document.getElementById("thumbs");
             thumbs.innerHTML = "";
 
-            data.images.forEach(img => {
+
+            // lấy danh sách ảnh
+            const images = data.Images || data.images || [];
+
+            images.forEach(img => {
+
                 const el = document.createElement("img");
-                el.src = "/images/" + img.imageUrl;
+
+                el.src = img.startsWith("/images")
+                    ? img
+                    : "/images/" + img;
+
                 el.className = "thumb";
-                el.onclick = () => document.getElementById("mainImg").src = el.src;
+
+                el.onclick = () => {
+
+                    document.getElementById("mainImg").src = el.src;
+
+                    document.querySelectorAll(".thumb")
+                        .forEach(t => t.classList.remove("active"));
+
+                    el.classList.add("active");
+
+                };
+
                 thumbs.appendChild(el);
+
             });
 
-            renderOptions(data.variants);
+            // active ảnh đầu
+            if (thumbs.firstChild) {
+                thumbs.firstChild.classList.add("active");
+            }
+
+            const variants = data.Variants || data.variants;
+
+            if (variants) {
+                renderOptions(variants);
+            }
+            console.log(data);
         }
 
         function renderOptions(variants) {
 
-            // COLORS
-            const colors = [...new Set(variants.map(v => v.colorName))];
+            const colors = [...new Set(variants.map(v => v.Color))];
 
             document.getElementById("colors").innerHTML =
-                colors.map(c => `<div class="opt" onclick="chooseColor('${c}',this)">${c}</div>`).join("");
+                colors.map(color => {
 
-            // SIZES
-            const sizes = [...new Set(variants.map(v => v.sizeValue))];
+                    const v = variants.find(x => x.Color === color);
+
+                    const img = v.Image || v.image || product.MainImage;
+
+                    const price = product.Price || product.price;
+
+                    return `
+<div class="color-card"
+onclick="chooseColor('${color}',this,'${img}')">
+
+<img src="/images/${img}">
+
+<div class="color-price">
+${price.toLocaleString()}đ
+</div>
+
+</div>
+`;
+
+                }).join("");
+
+            /* SIZE */
+            const sizes = [...new Set(variants.map(v => v.Size))];
 
             document.getElementById("sizes").innerHTML =
-                sizes.map(s => `<div class="opt" onclick="chooseSize(${s},this)">${s}</div>`).join("");
+                sizes.map(s => `
+<div class="opt"
+onclick="chooseSize(${s},this)">
+${s}
+</div>
+`).join("");
 
             window.variants = variants;
+
         }
 
-        function chooseColor(color, el) {
+        function chooseColor(color, el, img) {
+
             selectedColor = color;
-            document.querySelectorAll("#colors .opt").forEach(x => x.classList.remove("active"));
-            el.classList.add("active");
-            findVariant();
-        }
 
+            document.querySelectorAll(".color-card")
+                .forEach(x => x.classList.remove("active"));
+
+            el.classList.add("active");
+
+            /* đổi ảnh sản phẩm */
+
+            document.getElementById("mainImg").src = "/images/" + img;
+
+            findVariant();
+
+        }
         function chooseSize(size, el) {
             selectedSize = size;
             document.querySelectorAll("#sizes .opt").forEach(x => x.classList.remove("active"));
@@ -470,34 +730,71 @@
         }
 
         function findVariant() {
-            const v = variants.find(x => x.colorName === selectedColor && x.sizeValue === selectedSize);
-            selectedVariantId = v?.variantId ?? null;
+
+            const v = window.variants.find(x =>
+                x.Color === selectedColor &&
+                x.Size === selectedSize
+            );
+
+            selectedVariantId = v?.VariantId;
+
         }
 
-        document.getElementById("addCart").onclick = () => {
+        function addToCart() {
+
             if (!selectedVariantId) {
                 alert("Chọn size & màu!");
                 return;
             }
 
+            const qty = parseInt(document.getElementById("qty").value) || 1;
+
             let cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
             const exist = cart.find(x => x.variantId === selectedVariantId);
-            if (exist) exist.qty++;
-            else cart.push({
-                variantId: selectedVariantId,
-                productId: product.id,
-                name: product.name,
-                image: product.mainImage,
-                price: product.price,
-                color: selectedColor,
-                size: selectedSize,
-                qty: 1
-            });
+
+            if (exist) {
+                exist.qty += qty;
+            } else {
+
+                cart.push({
+                    variantId: selectedVariantId,
+                    productId: product.Id || product.id,
+                    name: product.Name || product.name,
+                    image: product.MainImage || product.mainImage || product.imageUrl,
+                    price: product.Price || product.price,
+                    color: selectedColor,
+                    size: selectedSize,
+                    qty: qty
+                });
+
+            }
 
             localStorage.setItem("cart", JSON.stringify(cart));
+
             alert("Đã thêm vào giỏ 🛒");
+
         }
+        function updateCartCount() {
+
+            const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+
+            let total = 0;
+
+            cart.forEach(i => total += i.qty);
+
+            const el = document.getElementById("cartCount");
+
+            if (el) el.innerText = total;
+        }
+        function buyNow() {
+
+            addToCart();
+
+            window.location = "checkout.html";
+
+        }
+        updateCartCount();
     </script>
     <script>
         let allProducts = [];
@@ -541,13 +838,25 @@
 
             box.innerHTML = matches.map(p =>
                 `<div onclick="selectSearch('${p.Name}')">
-                        ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
-                    </div>`
+                                        ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
+                                    </div>`
             ).join("");
 
             box.style.display = "block";
         });
+        function changeQty(v) {
 
+            const input = document.getElementById("qty");
+
+            let value = parseInt(input.value) || 1;
+
+            value += v;
+
+            if (value < 1) value = 1;
+
+            input.value = value;
+
+        }
         function selectSearch(name) {
             input.value = name;
             box.style.display = "none";
@@ -571,7 +880,10 @@
             if (!e.target.closest(".search-box"))
                 box.style.display = "none";
         });
-    
+
     </script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/Header.js"></script>
+    <script src="/js/Account.js"></script>
 </body>
 </html>

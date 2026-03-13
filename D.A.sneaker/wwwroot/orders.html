@@ -2,65 +2,116 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Về SneakerShop</title>
+    <title>Đơn hàng của tôi</title>
     <link rel="stylesheet" href="/css/site.css">
+    <link rel="stylesheet" href="/css/SanPham.css" />
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/IconLogin.css">
-    <link rel="stylesheet" href="/css/Header.css?">
+    <link rel="stylesheet" href="/css/Header.css">
     <link rel="stylesheet" href="/css/menu.css">
-    <link rel="stylesheet" href="/css/footer.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
 
         body {
+            background: var(--bg);
+            color: var(--text);
             margin: 0;
-            font-family: Arial;
-            color: white;
-            background: linear-gradient(120deg,#020617,#0f172a);
+            font-family: 'Barlow Condensed',sans-serif;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .order {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .order-header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .status {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .processing {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .shipping {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .done {
+            background: #22c55e;
+            color: white;
+        }
+
+        .order-item {
+            display: flex;
+            gap: 15px;
             align-items: center;
-            height: 100vh;
-            text-align: center;
+            border-top: 1px solid var(--border);
+            padding: 10px 0;
         }
 
-        .box {
-            max-width: 700px;
+            .order-item img {
+                width: 80px;
+                border-radius: 6px;
+            }
+
+        .item-info {
+            flex: 1;
         }
 
-        strong {
-            font-size: 48px;
-            margin-bottom: 10px
-        }
-
-        p {
-            color: #94a3b8;
-            font-size: 18px
+        .price {
+            font-weight: bold;
         }
     </style>
 </head>
+
 <body>
     <header class="header">
 
         <div class="container header-row">
 
+            <!-- HAMBURGER -->
             <div class="hamburger" onclick="toggleMenu()">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
 
+            <!-- LOGO -->
             <a href="shop.html" class="logo">
                 SneakerShop
             </a>
 
+            <!-- SEARCH -->
             <div class="search search-box">
-                <input id="q" placeholder="Tìm giày...">
+
+                <input id="q" placeholder="Tìm giày, hãng, màu...">
+
                 <button onclick="applyFilters()">Tìm</button>
+
                 <div id="suggestions" class="suggestions"></div>
+
             </div>
 
+            <!-- ACTIONS -->
             <div class="header-actions">
-
                 <div class="account">
 
                     <div class="account-btn" onclick="toggleAccount()">
@@ -70,14 +121,16 @@
                     <div class="account-menu" id="accountMenu">
 
                         <a href="account.html">Tài khoản</a>
+
                         <a href="orders.html">Đơn hàng</a>
+
                         <a href="wishlist.html">Yêu thích</a>
+
                         <a href="#" onclick="logout()">Đăng xuất</a>
 
                     </div>
 
                 </div>
-
                 <button class="theme-btn" onclick="toggleTheme()">
                     🌙
                 </button>
@@ -95,12 +148,23 @@
         </div>
 
     </header>
+    <!-- SIDEBAR MENU -->
+    <div id="sidebar" class="sidebar">
+        <a href="login.html"> Đăng Nhập</a>
+        <a href="shop.html"> Cửa hàng</a>
+        <a href="cart.html"> Giỏ hàng</a>
+        <a href="checkout.html"> Thanh toán</a>
+        <a href="about.html"> Về chúng tôi</a>
+        <a href="Ai.html">AI tư vấn</a>
+    </div>
+    <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
 
-    <div class="box">
-        <strong>SneakerShop</strong>
-        <p>Nơi bạn tìm thấy đôi giày phù hợp với phong cách của mình.</p>
-        <p>Thiết kế bởi bạn </p>
-        <a href="shop.html" style="color:#3b82f6">Vào cửa hàng →</a>
+    <div class="container">
+
+        <h2>Đơn hàng của tôi</h2>
+
+        <div id="orders"></div>
+
     </div>
     <footer class="footer">
 
@@ -163,82 +227,70 @@
 
     </footer>
     <script>
-        let allProducts = [];
 
-        async function loadHeaderProducts() {
-            try {
-                const r = await fetch('/api/products');
-                allProducts = await r.json();
-            } catch {
-                allProducts = [
-                    { Name: "Nike Air Force 1", Brand: "Nike" },
-                    { Name: "Adidas Ultraboost 22", Brand: "Adidas" },
-                    { Name: "Converse Chuck 70", Brand: "Converse" },
-                    { Name: "Nike ZoomX Vaporfly", Brand: "Nike" }
-                ];
-            }
-        }
-        loadHeaderProducts();
+        let orders = JSON.parse(localStorage.getItem("orders") || "[]");
 
-        const input = document.getElementById("q");
-        const box = document.getElementById("suggestions");
+        function renderOrders() {
 
-        /* GỢI Ý */
-        input.addEventListener("input", () => {
-            const text = input.value.toLowerCase().trim();
+            let html = "";
 
-            if (!text) {
-                box.style.display = "none";
-                return;
+            if (orders.length === 0) {
+                html = "<p>Bạn chưa có đơn hàng nào</p>";
             }
 
-            const matches = allProducts
-                .filter(p => p.Name.toLowerCase().includes(text) ||
-                    (p.Brand || "").toLowerCase().includes(text))
-                .slice(0, 6);
+            orders.forEach(order => {
 
-            if (!matches.length) {
-                box.style.display = "none";
-                return;
-            }
+                html += `
+<div class="order">
 
-            box.innerHTML = matches.map(p =>
-                `<div onclick="selectSearch('${p.Name}')">
-                        ${p.Name} <span style="color:#64748b">- ${p.Brand || ""}</span>
-                    </div>`
-            ).join("");
+<div class="order-header">
 
-            box.style.display = "block";
-        });
+<span>Đơn #${order.id}</span>
 
-        function selectSearch(name) {
-            input.value = name;
-            box.style.display = "none";
-            goSearchPage();
+<span class="status ${order.status}">
+${order.statusText}
+</span>
+
+</div>
+`;
+
+                order.items.forEach(p => {
+
+                    html += `
+
+<div class="order-item">
+
+<img src="/images/${p.image}">
+
+<div class="item-info">
+
+<div>${p.name}</div>
+
+<div class="price">${p.price.toLocaleString()} đ</div>
+
+</div>
+
+<div>x${p.qty}</div>
+
+</div>
+
+`;
+
+                });
+
+                html += `</div>`;
+
+            });
+
+            document.getElementById("orders").innerHTML = html;
+
         }
 
-        function doSearch() { goSearchPage(); }
+        renderOrders();
 
-        function goSearchPage() {
-            const q = encodeURIComponent(input.value);
-            location.href = `shop.html?q=${q}`;
-        }
-
-        /* ENTER */
-        input.addEventListener("keydown", e => {
-            if (e.key === "Enter") goSearchPage();
-        });
-
-        /* CLICK OUTSIDE */
-        document.addEventListener("click", e => {
-            if (!e.target.closest(".search-box"))
-                box.style.display = "none";
-        });
     </script>
-    <script src="js/Header.js"></script>
-    <script src="js/theme.js"></script>
-    <script src="js/Account.js"></script>
-    <script src="js/AI.js"></script>
+    <script src="/js/theme.js"></script>
+    <script src="/js/Header.js"></script>
+    <script src="/js/Account.js"></script>
 </body>
-
 </html>

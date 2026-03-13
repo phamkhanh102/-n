@@ -1,0 +1,226 @@
+﻿/* ================= THEME VARIABLES ================= */
+
+:root {
+    --bg: #f8fafc;
+    --text: #111827;
+    --card: #ffffff;
+    --panel: #ffffff;
+    --border: #e5e7eb;
+    --input: #f9fafb;
+    --accent: #2563eb;
+}
+.dark {
+    --bg: #0a0a0a;
+    --panel: #111111;
+    --card: #18181b;
+    --text: #f5f5f5;
+    --muted: #9ca3af;
+    --border: #27272a;
+    --input: #09090b;
+    --accent: #2563eb;
+}
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    transition: background-color .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
+}
+html {
+    transition: background-color .4s ease, color .4s ease;
+}
+/* ================= GLOBAL ================= */
+
+body {
+    margin: 0;
+    font-family: 'Barlow Condensed',sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    transition: .25s;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+button {
+    cursor: pointer;
+}
+
+/* ================= HEADER ================= */
+
+.header {
+    background: var(--panel);
+    border-bottom: 1px solid var(--border);
+}
+
+/* ================= CARD ================= */
+
+.card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    transition: .25s;
+}
+
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+/* ================= IMAGE ================= */
+
+.product-img {
+    background: var(--input);
+}
+
+/* ================= FILTER ================= */
+
+.filter {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+/* ================= DROPDOWN ================= */
+
+.dropdown {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--text);
+}
+
+/* ================= SEARCH ================= */
+
+.search {
+    background: var(--input);
+    border: 1px solid var(--border);
+}
+
+    .search input {
+        color: var(--text);
+    }
+
+/* ================= SIDEBAR ================= */
+
+.sidebar {
+    background: var(--panel);
+}
+
+    .sidebar a {
+        color: var(--text);
+    }
+
+/* ================= ACCOUNT ================= */
+
+.account-menu {
+    background: var(--panel);
+    border: 1px solid var(--border);
+}
+
+    .account-menu a {
+        color: var(--text);
+    }
+
+        .account-menu a:hover {
+            background: var(--bg);
+        }
+
+/* ================= BUTTON ================= */
+
+.checkout-btn {
+    background: var(--accent);
+    color: white;
+}
+
+.load-more {
+    background: var(--accent);
+}
+
+/* ================= TRANSITION ================= */
+
+* {
+    transition: background .2s,color .2s,border .2s;
+}
+.product-img {
+    transition: .3s;
+}
+
+.card:hover .product-img {
+    transform: scale(1.05);
+}
+.card {
+    box-shadow: 0 8px 30px rgba(0,0,0,.2);
+}
+.dark .hero::after {
+    background: linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.9));
+}
+
+.dark .card {
+    box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.dark body{
+    background:#0b0b0b;
+}
+
+/* header */
+.dark .header{
+    background:#111111;
+}
+
+/* sidebar */
+.dark .sidebar{
+    background:#111111;
+}
+
+/* card */
+.dark .card{
+    background:#18181b;
+    border:1px solid #27272a;
+}
+
+/* dropdown */
+.dark .dropdown{
+    background:#111111;
+}
+
+/* search */
+.dark .search{
+    background:#09090b;
+}
+
+/* hover card */
+.dark .card:hover {
+    box-shadow: 0 20px 40px rgba(0,0,0,.6);
+    transform: translateY(-6px);
+}
+.theme-btn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.dark .skeleton {
+    background: linear-gradient( 90deg, #222 25%, #333 37%, #222 63% );
+}
+    .theme-btn:hover {
+        background: var(--card);
+    }
+.btn,
+.checkout-btn,
+.load-more {
+    background: var(--accent);
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 4px 14px rgba(37,99,235,.4);
+}
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(37,99,235,.5);
+    }

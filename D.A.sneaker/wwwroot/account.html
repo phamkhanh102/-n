@@ -4,40 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Dashboard</title>
-
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/IconLogin.css">
+    <link rel="stylesheet" href="/css/Header.css?">
+    <link rel="stylesheet" href="/css/footer.css" />
     <style>
-        :root {
-            --bg: #0b1220;
-            --panel: #0f172a;
-            --text: #e5e7eb;
-            --muted: #94a3b8;
-            --accent: #22c55e;
-        }
-
+    
+     
+      
         * {
             box-sizing: border-box
         }
-
         body {
-            margin: 0;
-            font-family: Inter,Arial;
-            background: linear-gradient(180deg,#070d1a,#0b1220);
-            color: var(--text);
             display: flex;
+            flex-direction: column;
             min-height: 100vh;
         }
-
+        .layout {
+            flex: 1;
+            display: flex;
+        }
         /* SIDEBAR */
         .sidebar {
+            position: fixed;
+            left: 0;
+            top: 80px;
             width: 260px;
-            background: #020617;
-            padding: 30px 20px;
+            height: calc(100vh - 80px);
+            background: var(--bg);
             border-right: 1px solid #1f2a44;
+            padding: 20px;
         }
 
-            .sidebar h3 {
-                margin-bottom: 25px;
-            }
 
         .menu-item {
             display: block;
@@ -45,28 +43,29 @@
             margin-bottom: 8px;
             border-radius: 8px;
             cursor: pointer;
-            color: var(--muted);
+            color: var(--text);
             transition: .2s;
         }
 
             .menu-item:hover {
-                background: #0f172a;
-                color: white;
+                background: var(--bg);
+                color: var(--text);
             }
 
             .menu-item.active {
-                background: #0f172a;
+                background: var(--bg);
                 color: var(--accent);
             }
 
         /* CONTENT */
         .content {
+            margin-left: 260px;
+            padding: 50px;
             flex: 1;
-            padding: 60px;
         }
 
         .card {
-            background: #0f172a;
+            background: var(--bg);
             padding: 30px;
             border-radius: 16px;
             max-width: 700px;
@@ -113,10 +112,71 @@
             .logout:hover {
                 background: #dc2626;
             }
+
     </style>
 </head>
 
-<body>
+<body class="account-layout">
+    <header class="header">
+
+        <div class="container header-row">
+
+            <div class="header-left">
+
+                <div class="hamburger" onclick="toggleMenu()">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+
+                <a href="shop.html" class="logo">
+                    SneakerShop
+                </a>
+
+            </div>
+
+            <div class="search search-box">
+
+                <input id="q" placeholder="Tìm Nike, Adidas, Converse...">
+
+                <button onclick="applyFilters()">Tìm Kiếm</button>
+
+                <div id="suggestions" class="suggestions"></div>
+
+            </div>
+
+            <div class="header-actions">
+
+                <button class="theme-btn" onclick="toggleTheme()">
+                    🌙
+                </button>
+
+                <a href="cart.html" class="cart-btn">
+                    🛒 <span id="cartCount">0</span>
+                </a>
+
+                <div class="account">
+
+                    <div class="account-btn" onclick="toggleAccount()">
+                        👤
+                    </div>
+
+                    <div class="account-menu" id="accountMenu">
+
+                        <a href="account.html">Tài khoản</a>
+                        <a href="orders.html">Đơn hàng</a>
+                        <a href="wishlist.html">Yêu thích</a>
+                        <a href="#" onclick="logout()">Đăng xuất</a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </header>
 
     <div class="sidebar">
         <h3>Manage Account</h3>
@@ -128,128 +188,188 @@
         <div id="adminMenu" class="menu-item" style="display:none" onclick="switchTab('admin',this)">Admin Panel</div>
 
     </div>
+    <div class="layout">
+        <div class="content">
 
-    <div class="content">
+            <!-- INFO -->
+            <div id="info" class="card active">
+                <h2>Account Info</h2>
 
-        <!-- INFO -->
-        <div id="info" class="card active">
-            <h2>Account Info</h2>
+                <div class="info-row">
+                    <div class="label">Họ tên</div>
+                    <div class="value" id="name"></div>
+                </div>
 
-            <div class="info-row">
-                <div class="label">Họ tên</div>
-                <div class="value" id="name"></div>
+                <div class="info-row">
+                    <div class="label">Email</div>
+                    <div class="value" id="email"></div>
+                </div>
+
+                <button class="logout" onclick="logout()">Đăng xuất</button>
             </div>
 
-            <div class="info-row">
-                <div class="label">Email</div>
-                <div class="value" id="email"></div>
+            <!-- SECURITY -->
+            <div id="security" class="card">
+                <h2>Security Settings</h2>
+                <p>Đổi mật khẩu, quản lý bảo mật sau này bạn thêm API vào đây.</p>
             </div>
 
-            <button class="logout" onclick="logout()">Đăng xuất</button>
-        </div>
+            <!-- LINKED -->
+            <div id="linked" class="card">
+                <h2>Linked Accounts</h2>
+                <p>Facebook, Google, Apple...</p>
+            </div>
 
-        <!-- SECURITY -->
-        <div id="security" class="card">
-            <h2>Security Settings</h2>
-            <p>Đổi mật khẩu, quản lý bảo mật sau này bạn thêm API vào đây.</p>
-        </div>
+            <!-- SUB -->
+            <div id="sub" class="card">
+                <h2>Subscriptions</h2>
+                <p>Quản lý gói đăng ký.</p>
+            </div>
 
-        <!-- LINKED -->
-        <div id="linked" class="card">
-            <h2>Linked Accounts</h2>
-            <p>Facebook, Google, Apple...</p>
+            <!-- ADMIN -->
+            <div id="admin" class="card">
+                <h2>Admin Panel</h2>
+                <p>Chỉ Admin mới thấy mục này.</p>
+            </div>
         </div>
-
-        <!-- SUB -->
-        <div id="sub" class="card">
-            <h2>Subscriptions</h2>
-            <p>Quản lý gói đăng ký.</p>
-        </div>
-
-        <!-- ADMIN -->
-        <div id="admin" class="card">
-            <h2>Admin Panel</h2>
-            <p>Chỉ Admin mới thấy mục này.</p>
-        </div>
-
     </div>
+        <footer class="footer">
 
-    <script>
+            <div class="container footer-grid">
 
-        // ===================
-        // AUTH CHECK
-        // ===================
+                <div class="footer-brand">
 
-        const token = localStorage.getItem("token");
+                    <h2 class="footer-logo">SneakerShop</h2>
 
-        if (!token) {
-            alert("Vui lòng đăng nhập");
-            window.location.href = "login.html";
-        }
+                    <p>
+                        Nơi bạn tìm thấy đôi giày phù hợp với phong cách của mình.
+                    </p>
 
-        function parseJwt(token) {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            return JSON.parse(atob(base64));
-        }
+                </div>
 
-        const user = parseJwt(token);
+                <div class="footer-links">
 
-        // CHECK EXP
-        if (Date.now() > user.exp * 1000) {
-            localStorage.removeItem("token");
-            alert("Phiên đăng nhập hết hạn");
-            window.location.href = "login.html";
-        }
+                    <h4>Cửa hàng</h4>
 
-        // ===================
-        // LOAD USER INFO
-        // ===================
+                    <a href="shop.html">Sneaker</a>
+                    <a href="cart.html">Giỏ hàng</a>
+                    <a href="orders.html">Đơn hàng</a>
+                    <a href="about.html">Về chúng tôi</a>
 
-        document.getElementById("name").innerText =
-            user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+                </div>
 
-        document.getElementById("email").innerText =
-            user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+                <div class="footer-links">
 
-        // ===================
-        // ROLE ADMIN
-        // ===================
+                    <h4>Tài khoản</h4>
 
-        const role =
-            user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+                    <a href="login.html">Đăng nhập</a>
+                    <a href="register.html">Đăng ký</a>
+                    <a href="account.html">Tài khoản</a>
 
-        if (role === "Admin") {
-            document.getElementById("adminMenu").style.display = "block";
-        }
+                </div>
 
-        // ===================
-        // TAB SWITCH
-        // ===================
+                <div class="footer-news">
 
-        function switchTab(id, el) {
+                    <h4>Nhận ưu đãi</h4>
 
-            document.querySelectorAll(".menu-item")
-                .forEach(x => x.classList.remove("active"));
+                    <p>Đăng ký email để nhận giảm giá và sản phẩm mới.</p>
 
-            el.classList.add("active");
+                    <div class="newsletter">
 
-            document.querySelectorAll(".card")
-                .forEach(x => x.classList.remove("active"));
+                        <input type="email" placeholder="Email của bạn">
 
-            document.getElementById(id).classList.add("active");
-        }
+                        <button>Đăng ký</button>
 
-        // ===================
-        // LOGOUT
-        // ===================
+                    </div>
 
-        function logout() {
-            localStorage.removeItem("token");
-            window.location.href = "login.html";
-        }
+                </div>
 
-    </script>
+            </div>
 
+            <div class="footer-bottom">
+
+                <p>© 2026 SneakerShop. All rights reserved.</p>
+
+            </div>
+        </footer>
+        <script>
+
+            // ===================
+            // AUTH CHECK
+            // ===================
+
+            const token = localStorage.getItem("token");
+
+            if (!token) {
+                alert("Vui lòng đăng nhập");
+                window.location.href = "login.html";
+            }
+
+            function parseJwt(token) {
+                const base64Url = token.split('.')[1];
+                const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                return JSON.parse(atob(base64));
+            }
+
+            const user = parseJwt(token);
+
+            // CHECK EXP
+            if (Date.now() > user.exp * 1000) {
+                localStorage.removeItem("token");
+                alert("Phiên đăng nhập hết hạn");
+                window.location.href = "login.html";
+            }
+
+            // ===================
+            // LOAD USER INFO
+            // ===================
+
+            document.getElementById("name").innerText =
+                user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+
+            document.getElementById("email").innerText =
+                user["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
+
+            // ===================
+            // ROLE ADMIN
+            // ===================
+
+            const role =
+                user["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+
+            if (role === "Admin") {
+                document.getElementById("adminMenu").style.display = "block";
+            }
+
+            // ===================
+            // TAB SWITCH
+            // ===================
+
+            function switchTab(id, el) {
+
+                document.querySelectorAll(".menu-item")
+                    .forEach(x => x.classList.remove("active"));
+
+                el.classList.add("active");
+
+                document.querySelectorAll(".card")
+                    .forEach(x => x.classList.remove("active"));
+
+                document.getElementById(id).classList.add("active");
+            }
+
+            // ===================
+            // LOGOUT
+            // ===================
+
+            function logout() {
+                localStorage.removeItem("token");
+                window.location.href = "login.html";
+            }
+
+        </script>
+        <script src="js/Header.js"></script>
+        <script src="js/theme.js"></script>
+        <script src="js/Account.js"></script>
 </body>
 </html>

@@ -13,5 +13,6 @@
         public Product Product { get; set; }
         public Size Size { get; set; }
         public Color Color { get; set; }
+        public string ImageUrl { get; set; }
     }
 }

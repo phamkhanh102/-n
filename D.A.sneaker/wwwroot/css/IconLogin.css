@@ -1,0 +1,46 @@
+﻿.account {
+    position: relative;
+}
+
+.account-btn {
+    background: var(--panel);
+    padding: 10px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 1px solid var(--border);
+}
+
+/* dropdown */
+.account-menu {
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    width: 170px;
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+    /* items */
+    .account-menu a {
+        padding: 12px 14px;
+        text-decoration: none;
+        color: var(--text); /* chữ đen */
+        border-bottom: 1px solid var(--border);
+        font-size: 15px;
+    }
+
+        /* hover */
+        .account-menu a:hover {
+            background: var(--card);
+        }
+
+    /* show menu */
+    .account-menu.show {
+        display: flex;
+    }
+ 

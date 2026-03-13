@@ -1,8 +1,8 @@
 ﻿/* Nút mở chat */
 .chat-open {
     position: fixed;
-    right: 25px;
-    bottom: 25px;
+    right: 24px;
+    bottom: 24px;
     background: #3b82f6;
     color: white;
     border: none;
@@ -12,9 +12,13 @@
     cursor: pointer;
     z-index: 2000;
     box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    transition: .25s;
 }
 
-/* nền mờ */
+    .chat-open:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(0,0,0,.6);
+    }
 #chatOverlay {
     position: fixed;
     inset: 0;
@@ -116,4 +120,59 @@
         padding: 12px 18px;
         color: white;
         cursor: pointer;
+    }
+.chat-open {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 14px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 2000;
+    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    transition: .25s;
+}
+
+    .chat-open:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 40px rgba(0,0,0,.6);
+    }
+/* ===== FIX AI POPUP ===== */
+
+.ai-button {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 999;
+}
+
+.ai-popup {
+    position: fixed;
+    bottom: 90px;
+    right: 25px;
+    width: 340px;
+    height: 420px;
+    z-index: 999;
+    display: none;
+}
+
+    .ai-popup.show {
+        display: block;
+    }
+
+/* overlay fix */
+#chatOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+    display: none;
+    z-index: 998;
+}
+
+    #chatOverlay.show {
+        display: block;
     }
