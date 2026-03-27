@@ -11,7 +11,6 @@ namespace D.A.sneaker.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Customer> Customers { get; set; }
-
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductImage> ProductImages { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
@@ -22,9 +21,96 @@ namespace D.A.sneaker.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<ChatHistory> ChatHistories { get; set; }
-
+        public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<User>().HasData(
+    new User
+    {
+        Id = 999,
+        Name = "Admin",
+        Email = "admin@gmail.com",
+        Password = BCrypt.Net.BCrypt.HashPassword("123456"),
+        Role = "Admin"
+    }
+);
+            modelBuilder.Entity<Size>().HasData(
+
+    new Size { Id = 1, Number = 40 },
+    new Size { Id = 2, Number = 41 },
+    new Size { Id = 3, Number = 42 },
+    new Size { Id = 4, Number = 43 }
+
+);
+            modelBuilder.Entity<Color>().HasData(
+
+    new Color { Id = 1, Name = "White" },
+    new Color { Id = 2, Name = "Black" },
+    new Color { Id = 3, Name = "Grey" }
+
+);
+            modelBuilder.Entity<Category>().HasData(
+
+    new Category
+    {
+        Id = 1,
+        Name = "Running",
+        Description = "Running shoes"
+    },
+
+    new Category
+    {
+        Id = 2,
+        Name = "Casual",
+        Description = "Casual sneakers"
+    }
+
+);
+            modelBuilder.Entity<Product>().HasData(
+
+ new Product
+ {
+     Id = 1,
+     Name = "Nike Air Force 1",
+     Brand = "Nike",
+     CategoryId = 2,
+     Price = 3200000,
+     Description = "Classic Nike sneaker",
+     MainImage = "Nike/nike-af1.jpg"
+ },
+
+ new Product
+ {
+     Id = 2,
+     Name = "Adidas Run Falcon 5",
+     Brand = "Adidas",
+     CategoryId = 1,
+     Price = 2100000,
+     Description = "Lightweight running shoes",
+     MainImage = "Adidas/AdidasMensRunFalcon5.jpg"
+ }
+
+ );
+            modelBuilder.Entity<ProductImage>().HasData(
+
+new ProductImage
+{
+    Id = 1,
+    ProductId = 1,
+    ImageUrl = "Nike/af1-1.jpg"
+},
+
+new ProductImage
+{
+    Id = 2,
+    ProductId = 2,
+    ImageUrl = "Adidas/AdidasMensRunFalcon5.jpg"
+}
+
+);
+
             // ===== TABLE NAME MAP =====
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<Customer>().ToTable("Customers");
@@ -37,7 +123,11 @@ namespace D.A.sneaker.Data
             modelBuilder.Entity<OrderItem>().ToTable("OrderItems");
             modelBuilder.Entity<Payment>().ToTable("Payments");
             modelBuilder.Entity<ChatHistory>().ToTable("ChatHistories");
+            modelBuilder.Entity<CartItem>().ToTable("CartItems");
 
+            modelBuilder.Entity<Wishlist>().ToTable("Wishlists");
+
+            modelBuilder.Entity<Review>().ToTable("Reviews");
             // ===== DECIMAL FIX =====
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
@@ -59,6 +149,7 @@ namespace D.A.sneaker.Data
                 .Property(p => p.Amount)
                 .HasColumnType("decimal(12,2)");
         }
+        public DbSet<D.A.sneaker.Models.Category> Category { get; set; } = default!;
     }
 
 }

@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đơn hàng của tôi – SPARK</title>
+    <meta name="description" content="Xem và theo dõi tất cả đơn hàng sneaker của bạn tại SPARK.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-top: 120px;
+        }
+
+        /* ─── PAGE HERO ──────────────────────────────────────────── */
+        .orders-hero {
+            background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+            color: #fff;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .orders-hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .orders-hero p {
+            color: rgba(255,255,255,.6);
+            font-size: 15px;
+        }
+
+        /* ─── STATS BAR ──────────────────────────────────────────── */
+        .orders-stats {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .orders-stat {
+            flex: 1;
+            max-width: 200px;
+            padding: 20px 16px;
+            text-align: center;
+            border-right: 1px solid var(--border);
+        }
+
+        .orders-stat:last-child { border-right: none; }
+
+        .orders-stat .s-num {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .orders-stat .s-label {
+            font-size: 12px;
+            color: var(--muted);
+            margin-top: 4px;
+            font-weight: 500;
+        }
+
+        /* ─── FILTERS ────────────────────────────────────────────── */
+        .orders-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 32px 20px;
+            flex: 1;
+            width: 100%;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            color: var(--muted);
+            transition: all .2s;
+        }
+
+        .filter-tab:hover { border-color: var(--text); color: var(--text); }
+
+        .filter-tab.active {
+            background: #111827;
+            border-color: #111827;
+            color: #fff;
+        }
+
+        body.dark .filter-tab.active {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        /* ─── EMPTY STATE ────────────────────────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            display: none;
+        }
+
+        .empty-state.show { display: block; }
+
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .empty-state p { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+        /* ─── ORDER CARD ─────────────────────────────────────────── */
+        .order-card {
+            background: var(--card);
+            border: 1.5px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: box-shadow .2s, transform .2s;
+            animation: fadeUp .3s ease both;
+        }
+
+        .order-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,.08);
+            transform: translateY(-2px);
+        }
+
+        body.dark .order-card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,.4);
+        }
+
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(16px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* Header */
+        .order-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .order-id {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+
+        .order-date { font-size: 13px; color: var(--muted); }
+
+        .order-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: .3px;
+        }
+
+        .order-status::before {
+            content: '';
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-processing { background: #fef9c3; color: #854d0e; }
+        .status-processing::before { background: #f59e0b; }
+
+        .status-shipping { background: #dbeafe; color: #1e40af; }
+        .status-shipping::before { background: #3b82f6; }
+
+        .status-done { background: #dcfce7; color: #166534; }
+        .status-done::before { background: #22c55e; }
+
+        .status-cancelled { background: #fee2e2; color: #991b1b; }
+        .status-cancelled::before { background: #ef4444; }
+
+        body.dark .status-processing { background: rgba(245,158,11,.15); color: #fbbf24; }
+        body.dark .status-shipping   { background: rgba(59,130,246,.15);  color: #60a5fa; }
+        body.dark .status-done       { background: rgba(34,197,94,.15);   color: #4ade80; }
+        body.dark .status-cancelled  { background: rgba(239,68,68,.15);   color: #f87171; }
+
+        /* Items */
+        .order-items { padding: 0 20px; }
+
+        .order-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-item:last-child { border-bottom: none; }
+
+        .order-item-img {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: var(--bg);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+
+        .order-item-img-placeholder {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            background: var(--bg);
+            flex-shrink: 0;
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .order-item-info { flex: 1; min-width: 0; }
+
+        .order-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .order-item-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+        .order-item-price {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text);
+            text-align: right;
+            flex-shrink: 0;
+        }
+
+        /* Footer */
+        .order-foot {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            background: var(--bg);
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .order-total {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .order-total strong {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+            margin-left: 8px;
+        }
+
+        .order-foot-actions { display: flex; gap: 8px; }
+
+        .btn-sm {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: background .2s, color .2s;
+        }
+
+        .btn-sm-ghost {
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-sm-ghost:hover { background: var(--card); }
+
+        .btn-sm-primary {
+            background: #111827;
+            color: #fff;
+        }
+
+        .btn-sm-primary:hover { background: #374151; }
+
+        body.dark .btn-sm-primary { background: #3b82f6; }
+        body.dark .btn-sm-primary:hover { background: #2563eb; }
+
+        /* ─── TIMELINE ───────────────────────────────────────────── */
+        .order-timeline {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            gap: 0;
+            border-bottom: 1px solid var(--border);
+            overflow-x: auto;
+        }
+
+        .tl-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .tl-step::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: calc(-50% + 12px);
+            right: calc(50% + 12px);
+            height: 2px;
+            background: var(--border);
+        }
+
+        .tl-step:first-child::before { display: none; }
+
+        .tl-step.done::before { background: #22c55e; }
+
+        .tl-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .tl-step.done .tl-dot    { background: #22c55e; border-color: #22c55e; color: #fff; }
+        .tl-step.current .tl-dot { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+
+        .tl-label { font-size: 10px; color: var(--muted); margin-top: 6px; text-align: center; font-weight: 500; white-space: nowrap; }
+        .tl-step.done .tl-label    { color: #22c55e; }
+        .tl-step.current .tl-label { color: #3b82f6; }
+
+        /* ─── RESPONSIVE ─────────────────────────────────────────── */
+        @media (max-width: 600px) {
+            .orders-stats { flex-wrap: wrap; }
+            .orders-stat { min-width: 100px; }
+            .order-item-img, .order-item-img-placeholder { width: 55px; height: 55px; }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <!-- HERO -->
+    <div class="orders-hero">
+        <h1>📦 Đơn hàng của tôi</h1>
+        <p>Theo dõi trạng thái và lịch sử mua sắm của bạn</p>
+    </div>
+
+    <!-- STATS -->
+    <div class="orders-stats">
+        <div class="orders-stat">
+            <div class="s-num" id="statAll">0</div>
+            <div class="s-label">Tất cả đơn</div>
+        </div>
+        <div class="orders-stat">
+            <div class="s-num" id="statProcessing">0</div>
+            <div class="s-label">Đang xử lý</div>
+        </div>
+        <div class="orders-stat">
+            <div class="s-num" id="statShipping">0</div>
+            <div class="s-label">Đang giao</div>
+        </div>
+        <div class="orders-stat">
+            <div class="s-num" id="statDone">0</div>
+            <div class="s-label">Hoàn thành</div>
+        </div>
+    </div>
+
+    <div class="orders-container">
+
+        <!-- FILTER TABS -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" data-filter="all" onclick="applyFilter('all', this)">Tất cả</button>
+            <button class="filter-tab" data-filter="processing" onclick="applyFilter('processing', this)">Đang xử lý</button>
+            <button class="filter-tab" data-filter="shipping" onclick="applyFilter('shipping', this)">Đang giao</button>
+            <button class="filter-tab" data-filter="done" onclick="applyFilter('done', this)">Hoàn thành</button>
+            <button class="filter-tab" data-filter="cancelled" onclick="applyFilter('cancelled', this)">Đã huỷ</button>
+        </div>
+
+        <!-- ORDER LIST -->
+        <div id="orderList"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🛍️</div>
+            <h3>Chưa có đơn hàng nào</h3>
+            <p>Bạn chưa đặt đơn hàng nào. Hãy khám phá cửa hàng và chọn đôi giày yêu thích!</p>
+            <a href="/page/shop.html" style="display:inline-block;padding:12px 28px;background:#111827;color:#fff;border-radius:10px;font-weight:700;font-size:14px;text-decoration:none">Mua sắm ngay</a>
+        </div>
+
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        /* ─── SAMPLE / REAL ORDERS ───────────────────────────────── */
+        let allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+
+        // If no orders → add demo orders so the page isn't totally empty
+        if (allOrders.length === 0) {
+            allOrders = [
+                {
+                    id: 'SP20260001',
+                    date: '27/03/2026',
+                    status: 'shipping',
+                    statusText: 'Đang giao hàng',
+                    items: [
+                        { name: 'Nike Air Force 1 Panda',   price: 2490000, qty: 1, image: '' },
+                        { name: 'Adidas Ultraboost 22',      price: 3190000, qty: 1, image: '' },
+                    ]
+                },
+                {
+                    id: 'SP20260002',
+                    date: '20/03/2026',
+                    status: 'done',
+                    statusText: 'Đã giao thành công',
+                    items: [
+                        { name: 'New Balance 550 White',      price: 2890000, qty: 2, image: '' },
+                    ]
+                },
+                {
+                    id: 'SP20260003',
+                    date: '15/03/2026',
+                    status: 'processing',
+                    statusText: 'Đang xử lý',
+                    items: [
+                        { name: 'Puma RS-X Efekt',            price: 1990000, qty: 1, image: '' },
+                    ]
+                }
+            ];
+        }
+
+        /* ─── UPDATE STATS ───────────────────────────────────────── */
+        function updateStats(orders) {
+            document.getElementById('statAll').textContent        = orders.length;
+            document.getElementById('statProcessing').textContent = orders.filter(o => o.status === 'processing').length;
+            document.getElementById('statShipping').textContent   = orders.filter(o => o.status === 'shipping').length;
+            document.getElementById('statDone').textContent       = orders.filter(o => o.status === 'done').length;
+        }
+
+        /* ─── TIMELINE STEPS ─────────────────────────────────────── */
+        const STEPS = ['processing','shipping','done'];
+        const STEP_LABELS = { processing: 'Xử lý', shipping: 'Đang giao', done: 'Hoàn thành' };
+
+        function buildTimeline(status) {
+            const curIdx = STEPS.indexOf(status);
+            if (curIdx === -1 || status === 'cancelled') return '';
+
+            return `<div class="order-timeline">` +
+                STEPS.map((s, i) => {
+                    let cls = '';
+                    if (i < curIdx)  cls = 'done';
+                    if (i === curIdx) cls = 'current';
+                    const icon = i < curIdx ? '✓' : (i === curIdx ? '•' : '');
+                    return `<div class="tl-step ${cls}">
+                        <div class="tl-dot">${icon}</div>
+                        <div class="tl-label">${STEP_LABELS[s]}</div>
+                    </div>`;
+                }).join('') +
+                `</div>`;
+        }
+
+        /* ─── STATUS LABEL ───────────────────────────────────────── */
+        function statusLabel(status, text) {
+            const map = {
+                processing: ['status-processing', text || 'Đang xử lý'],
+                shipping:   ['status-shipping',   text || 'Đang giao'],
+                done:       ['status-done',        text || 'Hoàn thành'],
+                cancelled:  ['status-cancelled',   text || 'Đã huỷ'],
+            };
+            const [cls, lbl] = map[status] || ['status-processing', text || status];
+            return `<span class="order-status ${cls}">${lbl}</span>`;
+        }
+
+        /* ─── RENDER ORDERS ──────────────────────────────────────── */
+        function renderOrders(orders) {
+            const list = document.getElementById('orderList');
+            const empty = document.getElementById('emptyState');
+
+            if (!orders.length) {
+                list.innerHTML = '';
+                empty.classList.add('show');
+                return;
+            }
+
+            empty.classList.remove('show');
+
+            list.innerHTML = orders.map((order, idx) => {
+                const total = (order.items || []).reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
+
+                const itemsHTML = (order.items || []).map(p => {
+                    const imgPart = p.image
+                        ? `<img class="order-item-img" src="/images/${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                        : '';
+                    const ph = `<div class="order-item-img-placeholder" style="${p.image ? 'display:none' : ''}">👟</div>`;
+                    return `
+                        <div class="order-item">
+                            ${imgPart}${ph}
+                            <div class="order-item-info">
+                                <div class="order-item-name">${p.name}</div>
+                                <div class="order-item-meta">Số lượng: ${p.qty || 1}</div>
+                            </div>
+                            <div class="order-item-price">${(p.price * (p.qty||1)).toLocaleString('vi-VN')}đ</div>
+                        </div>`;
+                }).join('');
+
+                return `
+                <div class="order-card" style="animation-delay:${idx * 0.06}s">
+                    <div class="order-head">
+                        <div>
+                            <div class="order-id">Đơn #${order.id}</div>
+                            <div class="order-date">Ngày đặt: ${order.date || '–'}</div>
+                        </div>
+                        ${statusLabel(order.status, order.statusText)}
+                    </div>
+                    ${buildTimeline(order.status)}
+                    <div class="order-items">${itemsHTML}</div>
+                    <div class="order-foot">
+                        <div class="order-total">Tổng tiền <strong>${total.toLocaleString('vi-VN')}đ</strong></div>
+                        <div class="order-foot-actions">
+                            <button class="btn-sm btn-sm-ghost" onclick="alert('Tính năng liên hệ sẽ sớm có!')">Hỗ trợ</button>
+                            ${order.status === 'done' ? `<button class="btn-sm btn-sm-primary" onclick="alert('Tính năng mua lại sẽ sớm có!')">Mua lại</button>` : ''}
+                            ${order.status === 'processing' ? `<button class="btn-sm btn-sm-ghost" onclick="alert('Bạn có thể huỷ đơn này sớm thôi~')">Huỷ đơn</button>` : ''}
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        /* ─── FILTER ─────────────────────────────────────────────── */
+        function applyFilter(filter, btn) {
+            document.querySelectorAll('.filter-tab').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            const filtered = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+            renderOrders(filtered);
+        }
+
+        /* ─── INIT ───────────────────────────────────────────────── */
+        updateStats(allOrders);
+        renderOrders(allOrders);
+    </script>
+</body>
+</html>

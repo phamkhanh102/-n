@@ -1,12 +1,13 @@
-﻿namespace D.A.sneaker.Models
+﻿using D.A.sneaker.Models;
+
+public class UserChatState
 {
-    public class UserChatState
-    {
-        public int Id { get; set; }
-        public int? UserId { get; set; }
+    public int Id { get; set; }
 
-        public int? CurrentProductId { get; set; }
+    public int UserId { get; set; }
+    public User User { get; set; }
 
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
-    }
+    public int? CurrentProductId { get; set; }
+
+    public DateTime UpdatedAt { get; set; } = DateTime.Now;
 }

@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace D.A.sneaker.Controllers
 {
@@ -31,7 +32,11 @@ namespace D.A.sneaker.Controllers
             {
                 return BadRequest("Email already exists");
             }
-
+            if (!Regex.IsMatch(user.Password,
+@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$"))
+            {
+                return BadRequest("Password yếu");
+            }
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
             // đảm bảo không bị null Role
@@ -92,7 +97,9 @@ namespace D.A.sneaker.Controllers
 
             return Ok(new
             {
-                token = jwt
+                token = jwt,
+                role = user.Role,
+                name = user.Name
             });
 
         }

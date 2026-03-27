@@ -1,95 +1,63 @@
-﻿/* ===== NAVBAR ===== */
-.menu {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 14px 40px;
+﻿.navbar {
     background: #020617;
-    border-bottom: 1px solid #1f2a44;
-    position: sticky;
-    top: 0;
-    z-index: 999;
-    box-shadow: 0 6px 18px rgba(0,0,0,.4);
-}
-.container{
-max-width:1200px;
-margin:auto;
-width:100%;
-}
-body {
-    margin: 0;
-}
-.menu-logo {
-    font-size: 24px;
-    font-weight: 800;
-    color: white;
-    letter-spacing: .5px;
 }
 
-.menu-links {
+.nav-container {
+    max-width: 1200px;
+    margin: auto;
     display: flex;
-    align-items: center;
-    gap: 22px;
+    gap: 40px;
+    padding: 14px 20px;
 }
 
-    .menu-links a {
-        color: #3b82f6;
+    .nav-container a {
+        color: white;
+        font-weight: 600;
         text-decoration: none;
-        font-weight: 500;
-        transition: .2s;
-        padding: 8px 14px;
-        border-radius: 8px;
     }
 
-        .menu-links a:hover {
-            background: #0f172a;
-            color: #3b82f6;
-        }
-/* ===== SIDEBAR ===== */
-.sidebar{
-position:fixed;
-top:0;
-left:-260px;
-width:260px;
-height:100vh;
-background:var(--panel);
-box-shadow:6px 0 20px rgba(0,0,0,.5);
-padding-top:80px;
-display:flex;
-flex-direction:column;
-gap:10px;
-transition:.35s cubic-bezier(.25,.8,.25,1);
-z-index:1002;
+/* ITEM */
+.nav-item {
+    position: relative;
 }
 
-    .sidebar a {
-        color: var(--text);
-        text-decoration: none;
-        padding: 14px 26px;
-        font-size: 16px;
-        transition: .2s;
-    }
-
-        .sidebar a:hover {
-            background: #0f172a;
-            color: #3b82f6;
-        }
-    .sidebar.show {
-        left: 0;
-    }
-  
-
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: .3s;
-    z-index: 1000;
+/* MEGA MENU */
+.mega {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 12px;
+    width: 500px;
+    display: none;
+    gap: 40px;
 }
 
-    .overlay.show {
-        opacity: 1;
-        pointer-events: auto;
+@media (max-width: 900px) {
+    .nav-container { display: none; }
+}
+
+/* SHOW */
+.nav-item:hover .mega {
+    display: flex;
+}
+
+/* COLUMN */
+.mega-col {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+    .mega-col h4 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .mega-col a {
+        color: #333;
+        font-size: 14px;
     }

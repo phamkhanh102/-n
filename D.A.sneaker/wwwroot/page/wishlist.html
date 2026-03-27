@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách yêu thích – SPARK</title>
+    <meta name="description" content="Xem và quản lý danh sách sản phẩm yêu thích của bạn tại SPARK Sneaker.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        body {
+            padding-top: 120px;
+            min-height: 100vh;
+        }
+
+        /* ─── PAGE HERO ──────────────────────────────────── */
+        .page-hero {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 28px 20px;
+        }
+
+        .page-hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--text);
+        }
+
+        .breadcrumb {
+            font-size: 13px;
+            color: var(--muted);
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .breadcrumb a { color: var(--muted); transition: color .2s; }
+        .breadcrumb a:hover { color: var(--text); }
+
+        /* ─── STATS BAR ──────────────────────────────────── */
+        .wl-stats {
+            display: flex;
+            gap: 0;
+            align-items: center;
+        }
+
+        .wl-stat {
+            padding: 6px 18px;
+            border-right: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .wl-stat:last-child { border-right: none; padding-right: 0; }
+
+        .wl-stat .n {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .wl-stat .l { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+        /* ─── MAIN LAYOUT ────────────────────────────────── */
+        .wl-container {
+            max-width: 1200px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+
+        /* ─── TOOLBAR ────────────────────────────────────── */
+        .wl-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .wl-toolbar-title {
+            flex: 1;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 18px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: background .2s, color .2s, transform .1s;
+            font-family: inherit;
+        }
+
+        .btn:active { transform: scale(.96); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text);
+            border: 1.5px solid var(--border);
+        }
+
+        .btn-outline:hover { background: var(--bg); }
+
+        .btn-danger-outline {
+            background: transparent;
+            color: #ef4444;
+            border: 1.5px solid #fee2e2;
+        }
+
+        .btn-danger-outline:hover { background: #fef2f2; }
+        body.dark .btn-danger-outline:hover { background: rgba(239,68,68,.1); }
+
+        /* ─── PRODUCT GRID ───────────────────────────────── */
+        .wl-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        .wl-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            transition: transform .3s, box-shadow .3s;
+            animation: fadeUp .3s ease both;
+        }
+
+        .wl-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 14px 36px rgba(0,0,0,.1);
+        }
+
+        body.dark .wl-card:hover {
+            box-shadow: 0 14px 36px rgba(0,0,0,.5);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .wl-card-img {
+            position: relative;
+            height: 180px;
+            background: var(--bg);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wl-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s;
+        }
+
+        .wl-card:hover .wl-card-img img { transform: scale(1.08); }
+
+        .wl-card-img-placeholder {
+            font-size: 48px;
+        }
+
+        /* Remove button */
+        .wl-remove {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(239,68,68,.9);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            transition: background .2s, transform .2s;
+            backdrop-filter: blur(4px);
+            z-index: 2;
+        }
+
+        .wl-remove:hover {
+            background: #dc2626;
+            transform: scale(1.15);
+        }
+
+        /* Badge */
+        .wl-badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            color: #fff;
+            z-index: 2;
+        }
+
+        /* Heart indicator */
+        .wl-heart {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            font-size: 14px;
+            opacity: .6;
+        }
+
+        /* Card body */
+        .wl-card-body {
+            padding: 12px 14px 14px;
+        }
+
+        .wl-card-brand {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: var(--muted);
+            margin-bottom: 4px;
+        }
+
+        .wl-card-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .wl-card-prices {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+
+        .wl-card-price {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .wl-card-old {
+            font-size: 12px;
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+
+        .wl-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-cart {
+            flex: 1;
+            padding: 9px 0;
+            background: #111827;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .btn-cart:hover { background: #374151; }
+        body.dark .btn-cart { background: #3b82f6; }
+        body.dark .btn-cart:hover { background: #2563eb; }
+
+        .btn-view {
+            padding: 9px 10px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1.5px solid var(--border);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .btn-view:hover { background: var(--border); }
+
+        /* ─── EMPTY STATE ────────────────────────────────── */
+        .wl-empty {
+            text-align: center;
+            padding: 80px 20px;
+            display: none;
+        }
+
+        .wl-empty.show { display: block; }
+
+        .wl-empty-heart {
+            font-size: 70px;
+            animation: pulse 2s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes pulse {
+            0%,100% { transform: scale(1); }
+            50%      { transform: scale(1.1); }
+        }
+
+        .wl-empty h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 8px;
+        }
+
+        .wl-empty p { color: var(--muted); font-size: 14px; margin-bottom: 28px; line-height: 1.6; }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 28px;
+            background: #111827;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s;
+        }
+
+        .btn-primary:hover { background: #374151; }
+        body.dark .btn-primary { background: #3b82f6; }
+
+        /* ─── RECENTLY VIEWED ────────────────────────────── */
+        .suggest-section {
+            margin-top: 48px;
+            padding-top: 40px;
+            border-top: 1px solid var(--border);
+        }
+
+        .suggest-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .suggest-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+
+        /* ─── TOAST ──────────────────────────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 90px;
+            right: 24px;
+            background: #111827;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 9999;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity .3s, transform .3s;
+            pointer-events: none;
+        }
+
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        /* ─── RESPONSIVE ─────────────────────────────────── */
+        @media (max-width: 1100px) { .wl-grid, .suggest-grid { grid-template-columns: repeat(4,1fr); } }
+        @media (max-width: 900px)  { .wl-grid, .suggest-grid { grid-template-columns: repeat(3,1fr); } }
+        @media (max-width: 600px)  { .wl-grid, .suggest-grid { grid-template-columns: repeat(2,1fr); } }
+        @media (max-width: 400px)  { .wl-grid, .suggest-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+
+<body>
+    <div id="site-header"></div>
+
+    <!-- PAGE HERO -->
+    <div class="page-hero">
+        <div class="page-hero-inner">
+            <div>
+                <h1>❤️ Yêu thích</h1>
+                <div class="breadcrumb">
+                    <a href="/page/shop.html">Home</a> ›
+                    <span>Danh sách yêu thích</span>
+                </div>
+            </div>
+            <div class="wl-stats">
+                <div class="wl-stat">
+                    <div class="n" id="statTotal">0</div>
+                    <div class="l">Sản phẩm</div>
+                </div>
+                <div class="wl-stat">
+                    <div class="n" id="statValue">0đ</div>
+                    <div class="l">Tổng giá trị</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wl-container">
+
+        <!-- TOOLBAR -->
+        <div class="wl-toolbar">
+            <div class="wl-toolbar-title" id="toolbarTitle">Đang tải...</div>
+            <button class="btn btn-outline" onclick="addAllToCart()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Thêm tất cả vào giỏ
+            </button>
+            <button class="btn btn-danger-outline" onclick="clearWishlist()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+                Xóa tất cả
+            </button>
+        </div>
+
+        <!-- GRID -->
+        <div class="wl-grid" id="wishlistGrid"></div>
+
+        <!-- EMPTY STATE -->
+        <div class="wl-empty" id="emptyState">
+            <div class="wl-empty-heart">🤍</div>
+            <h3>Chưa có sản phẩm yêu thích</h3>
+            <p>Bấm vào biểu tượng ❤️ trên sản phẩm bất kỳ<br>để lưu vào danh sách yêu thích của bạn.</p>
+            <a href="/page/products.html" class="btn-primary">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+                Khám phá sản phẩm
+            </a>
+        </div>
+
+        <!-- SUGGEST IF EMPTY -->
+        <div class="suggest-section" id="suggestSection" style="display:none">
+            <div class="suggest-title">Gợi ý cho bạn 👟</div>
+            <div class="suggest-grid" id="suggestGrid"></div>
+        </div>
+
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        /* ─── SAMPLE PRODUCTS (fallback / suggest) ──────── */
+        const SAMPLE = [
+            { id:1,  name:'Nike Air Force 1 Panda', brand:'Nike',    price:2490000, oldPrice:3200000, image:'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80', badge:'SALE', badgeColor:'#ef4444' },
+            { id:2,  name:'Adidas Ultraboost 22',    brand:'Adidas',  price:3190000, oldPrice:null,    image:'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&q=80', badge:'HOT',  badgeColor:'#f97316' },
+            { id:3,  name:'New Balance 550',          brand:'NB',      price:2890000, oldPrice:null,    image:'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&q=80', badge:'NEW',  badgeColor:'#3b82f6' },
+            { id:4,  name:'Air Max Terra',            brand:'Nike',    price:3890000, oldPrice:4500000, image:'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=80', badge:'SALE', badgeColor:'#ef4444' },
+            { id:5,  name:'Puma RS-X Efekt',          brand:'Puma',    price:1990000, oldPrice:null,    image:'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80', badge:'',    badgeColor:'' },
+            { id:6,  name:'Jordan Leather',           brand:'Jordan',  price:2750000, oldPrice:null,    image:'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80', badge:'HOT',  badgeColor:'#f97316' },
+            { id:7,  name:'Urban Classic Retro',      brand:'Nike',    price:2100000, oldPrice:2800000, image:'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&q=80', badge:'SALE', badgeColor:'#ef4444' },
+            { id:8,  name:'Stan Smith Deluxe',        brand:'Adidas',  price:1890000, oldPrice:null,    image:'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&q=80', badge:'NEW',  badgeColor:'#3b82f6' },
+            { id:9,  name:'Terrain Pro Runner',       brand:'Puma',    price:2850000, oldPrice:3500000, image:'https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=400&q=80', badge:'SALE', badgeColor:'#ef4444' },
+            { id:10, name:'Foam Rider Wave',          brand:'Reebok',  price:1750000, oldPrice:null,    image:'https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&q=80', badge:'',    badgeColor:'' },
+        ];
+
+        /* ─── WISHLIST STORAGE ──────────────────────────── */
+        function getWishlist() {
+            return JSON.parse(localStorage.getItem('wishlist') || '[]');
+        }
+
+        function saveWishlist(list) {
+            localStorage.setItem('wishlist', JSON.stringify(list));
+        }
+
+        /* ─── CART STORAGE ──────────────────────────────── */
+        function addToCart(product) {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const exist = cart.find(i => i.id === product.id);
+            if (exist) exist.qty = (exist.qty || 1) + 1;
+            else cart.push({ ...product, qty: 1 });
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Update header cart count
+            const el = document.getElementById('cartCount');
+            if (el) {
+                const total = cart.reduce((s, i) => s + (i.qty || 1), 0);
+                el.textContent = total;
+                el.style.display = total > 0 ? 'flex' : 'none';
+            }
+        }
+
+        /* ─── TOAST ─────────────────────────────────────── */
+        let toastTimer;
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        /* ─── RENDER CARD ───────────────────────────────── */
+        function renderCard(p, idx) {
+            const pct = p.oldPrice ? Math.round((1 - p.price / p.oldPrice) * 100) : 0;
+            const old = p.oldPrice ? `<span class="wl-card-old">${p.oldPrice.toLocaleString('vi-VN')}đ</span>` : '';
+            const badge = p.badge ? `<span class="wl-badge" style="background:${p.badgeColor}">${p.badge}</span>` : '';
+            const imgTag = p.image
+                ? `<img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                : '';
+            const ph = `<div class="wl-card-img-placeholder" style="${p.image ? 'display:none' : ''}">👟</div>`;
+
+            return `
+                <div class="wl-card" style="animation-delay:${idx * 0.05}s">
+                    <div class="wl-card-img">
+                        ${badge}
+                        ${imgTag}${ph}
+                        <button class="wl-remove" onclick="removeItem(${p.id})" title="Bỏ yêu thích">×</button>
+                        <span class="wl-heart">❤️</span>
+                    </div>
+                    <div class="wl-card-body">
+                        <div class="wl-card-brand">${p.brand || ''}</div>
+                        <div class="wl-card-name" title="${p.name}">${p.name}</div>
+                        <div class="wl-card-prices">
+                            <span class="wl-card-price">${p.price.toLocaleString('vi-VN')}đ</span>
+                            ${old}
+                            ${pct > 0 ? `<span style="font-size:11px;color:#ef4444;font-weight:700">-${pct}%</span>` : ''}
+                        </div>
+                        <div class="wl-card-actions">
+                            <button class="btn-cart" onclick="buyItem(${p.id})">Thêm vào giỏ 🛒</button>
+                            <button class="btn-view" onclick="viewItem(${p.id})" title="Xem chi tiết">👁</button>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        /* ─── RENDER SUGGEST CARD ───────────────────────── */
+        function renderSuggestCard(p) {
+            return `
+                <div class="wl-card" style="cursor:pointer" onclick="location.href='/page/product-detail.html?id=${p.id}'">
+                    <div class="wl-card-img">
+                        ${p.badge ? `<span class="wl-badge" style="background:${p.badgeColor}">${p.badge}</span>` : ''}
+                        <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
+                        <button class="wl-remove" style="background:rgba(100,100,100,.8)" onclick="event.stopPropagation();toggleWishlist(${p.id},this)" title="Thêm yêu thích">♡</button>
+                    </div>
+                    <div class="wl-card-body">
+                        <div class="wl-card-brand">${p.brand || ''}</div>
+                        <div class="wl-card-name">${p.name}</div>
+                        <div class="wl-card-prices">
+                            <span class="wl-card-price">${p.price.toLocaleString('vi-VN')}đ</span>
+                        </div>
+                    </div>
+                </div>`;
+        }
+
+        /* ─── RENDER PAGE ───────────────────────────────── */
+        function renderPage() {
+            const list = getWishlist();
+            const grid = document.getElementById('wishlistGrid');
+            const empty = document.getElementById('emptyState');
+            const suggest = document.getElementById('suggestSection');
+
+            // Stats
+            const total = list.reduce((s, p) => s + p.price, 0);
+            document.getElementById('statTotal').textContent = list.length;
+            document.getElementById('statValue').textContent = total.toLocaleString('vi-VN') + 'đ';
+
+            if (list.length === 0) {
+                grid.innerHTML = '';
+                empty.classList.add('show');
+                suggest.style.display = 'block';
+                document.getElementById('toolbarTitle').textContent = 'Danh sách trống';
+
+                // Show suggestions
+                const wl = getWishlist().map(i => i.id);
+                const notInWl = SAMPLE.filter(p => !wl.includes(p.id)).slice(0, 5);
+                document.getElementById('suggestGrid').innerHTML = notInWl.map(renderSuggestCard).join('');
+            } else {
+                empty.classList.remove('show');
+                suggest.style.display = 'none';
+                document.getElementById('toolbarTitle').textContent = `${list.length} sản phẩm đã lưu`;
+                grid.innerHTML = list.map((p, i) => renderCard(p, i)).join('');
+            }
+        }
+
+        /* ─── ACTIONS ───────────────────────────────────── */
+        function removeItem(id) {
+            let list = getWishlist().filter(p => p.id !== id);
+            saveWishlist(list);
+            showToast('❌ Đã bỏ khỏi yêu thích');
+            renderPage();
+        }
+
+        function buyItem(id) {
+            const item = getWishlist().find(p => p.id === id);
+            if (!item) return;
+            addToCart(item);
+            showToast('✅ Đã thêm vào giỏ hàng!');
+        }
+
+        function viewItem(id) {
+            location.href = `/page/product-detail.html?id=${id}`;
+        }
+
+        function addAllToCart() {
+            const list = getWishlist();
+            if (!list.length) { showToast('⚠️ Danh sách yêu thích trống'); return; }
+            list.forEach(p => addToCart(p));
+            showToast(`✅ Đã thêm ${list.length} sản phẩm vào giỏ!`);
+        }
+
+        function clearWishlist() {
+            if (!getWishlist().length) { showToast('⚠️ Danh sách đã trống'); return; }
+            if (!confirm('Bạn muốn xóa tất cả sản phẩm yêu thích?')) return;
+            saveWishlist([]);
+            showToast('🗑 Đã xóa toàn bộ danh sách yêu thích');
+            renderPage();
+        }
+
+        function toggleWishlist(id, btn) {
+            const product = SAMPLE.find(p => p.id === id);
+            if (!product) return;
+            let list = getWishlist();
+            const idx = list.findIndex(p => p.id === id);
+            if (idx >= 0) {
+                list.splice(idx, 1);
+                if (btn) btn.textContent = '♡';
+                showToast('❌ Đã bỏ khỏi yêu thích');
+            } else {
+                list.push(product);
+                if (btn) btn.textContent = '❤️';
+                showToast('❤️ Đã thêm vào yêu thích!');
+            }
+            saveWishlist(list);
+            renderPage();
+        }
+
+        /* ─── DEMO: add sample items if wishlist empty ── */
+        (function initDemo() {
+            const list = getWishlist();
+            if (list.length === 0) {
+                // Thêm 3 sản phẩm mẫu để demo
+                saveWishlist(SAMPLE.slice(0, 3));
+            }
+        })();
+
+        /* ─── INIT ──────────────────────────────────────── */
+        renderPage();
+    </script>
+</body>
+</html>

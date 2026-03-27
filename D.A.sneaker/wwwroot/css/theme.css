@@ -1,15 +1,39 @@
-﻿/* ================= THEME VARIABLES ================= */
-
+/* =====================================================
+   THEME VARIABLES — Light (default)
+   ===================================================== */
 :root {
-    --bg: #f8fafc;
+    --bg: #f5f5f5;
     --text: #111827;
     --card: #ffffff;
     --panel: #ffffff;
     --border: #e5e7eb;
     --input: #f9fafb;
-    --accent: #2563eb;
+    --muted: #9ca3af;
+    --accent: #111827;
+    --danger: #ef4444;
+
+    --hero-feat-bg: #ffffff;
+    --trust-bg: #ffffff;
+    --trust-border: #ebebeb;
+    --blog-card-bg: #ffffff;
+    --blog-card-meta: #f3f4f6;
+    --skeleton-start: #eeeeee;
+    --skeleton-end: #f5f5f5;
+    --feature-bar-bg: #ffffff;
+    --cart-box-bg: #ffffff;
+    --summary-bg: #ffffff;
+    --page-hero-bg: #ffffff;
+    --coupon-bg: #f9fafb;
+    --section-title: #111;
+    --view-all: #666;
+    --product-name: #111;
+    --price-now: #111;
 }
-.dark {
+
+/* =====================================================
+   THEME VARIABLES — Dark
+   ===================================================== */
+html.dark {
     --bg: #0a0a0a;
     --panel: #111111;
     --card: #18181b;
@@ -17,210 +41,1120 @@
     --muted: #9ca3af;
     --border: #27272a;
     --input: #09090b;
-    --accent: #2563eb;
+    --accent: #6ea5fd;
+    --danger: #ef4444;
+
+    --hero-feat-bg: #18181b;
+    --trust-bg: #111111;
+    --trust-border: #27272a;
+    --blog-card-bg: #18181b;
+    --blog-card-meta: #27272a;
+    --skeleton-start: #1a1a1a;
+    --skeleton-end: #222222;
+    --feature-bar-bg: #18181b;
+    --cart-box-bg: #18181b;
+    --summary-bg: #18181b;
+    --page-hero-bg: #111111;
+    --coupon-bg: #0e0e0e;
+    --section-title: #f5f5f5;
+    --view-all: #9ca3af;
+    --product-name: #f5f5f5;
+    --price-now: #f5f5f5;
 }
-* {
+
+/*
+ * CRITICAL BUG FIX:
+ * Every page has  body { background:#f5f5f5; color:#111; }  inline.
+ * Using html.dark body with !important beats those inline <style> rules.
+ */
+html.dark body {
+    background: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+/* =====================================================
+   BASE RESET
+   ===================================================== */
+*,
+*::before,
+*::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    transition: background-color .35s ease, color .35s ease, border-color .35s ease, box-shadow .35s ease;
 }
+
 html {
-    transition: background-color .4s ease, color .4s ease;
+    scroll-behavior: smooth;
 }
-/* ================= GLOBAL ================= */
 
 body {
-    margin: 0;
-    font-family: 'Barlow Condensed',sans-serif;
+    font-family: 'Barlow', 'Barlow Condensed', sans-serif;
     background: var(--bg);
     color: var(--text);
-    transition: .25s;
+    line-height: 1.6;
+    transition: background .3s, color .3s;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+}
+
+img {
+    max-width: 100%;
+    display: block;
 }
 
 .container {
     max-width: 1200px;
-    margin: auto;
-    padding: 20px;
-}
-button {
-    cursor: pointer;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* ================= HEADER ================= */
-
-.header {
-    background: var(--panel);
-    border-bottom: 1px solid var(--border);
+/* =====================================================
+   SCROLLBAR
+   ===================================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
 }
 
-/* ================= CARD ================= */
-
-.card {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    transition: .25s;
+::-webkit-scrollbar-track {
+    background: transparent;
 }
 
-    .card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-    }
-
-/* ================= IMAGE ================= */
-
-.product-img {
-    background: var(--input);
+::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
 }
 
-/* ================= FILTER ================= */
+::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
 
-.filter {
-    background: var(--panel);
-    border: 1px solid var(--border);
+html.dark ::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+}
+
+/* =====================================================
+   DARK — HEADER & SIDEBAR
+   ===================================================== */
+html.dark .header {
+    background: #0e0e0e !important;
+    border-color: #201521 !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, .5);
+}
+
+html.dark .topbar {
+    background: #2e1861 !important;
+    color: #ff0000 !important;
+}
+
+html.dark .logo {
+    color: #f1f5f9 !important;
+}
+
+html.dark .search {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+html.dark .search select {
+    color: #cbd5e1;
+}
+
+html.dark .search input {
+    color: #f1f5f9;
+}
+
+html.dark .search input::placeholder {
+    color: #475569;
+}
+
+html.dark .nav {
+    border-color: #1e293b;
+}
+
+html.dark .nav a {
+    color: #e2e8f0;
+}
+
+html.dark .nav a:hover {
+    background: #1e293b;
+    color: #fff;
+}
+
+html.dark .hdr-icon-label {
+    color: #94a3b8 !important;
+}
+
+html.dark .header-main svg {
+    stroke: #e2e8f0;
+}
+
+html.dark .cart-link svg {
+    stroke: #e2e8f0;
+}
+
+html.dark .hamburger-btn {
+    color: #e2e8f0;
+}
+
+html.dark .hamburger-btn:hover {
+    background: #1e293b;
+}
+
+html.dark .sidebar {
+    background: #0f172a;
+}
+
+html.dark .sidebar a {
+    color: #e2e8f0;
+}
+
+html.dark .sidebar a:hover {
+    background: #1e293b;
+}
+
+html.dark .close-sidebar {
+    color: #94a3b8;
+}
+
+html.dark .close-sidebar:hover {
+    background: #1e293b;
+}
+
+/* =====================================================
+   DARK — SHOP PAGE
+   ===================================================== */
+html.dark .feature-bar {
+    background: var(--feature-bar-bg);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+}
+
+html.dark .feature-item {
     color: var(--text);
 }
 
-/* ================= DROPDOWN ================= */
+html.dark .feature-item svg {
+    color: #9ca3af;
+}
 
-.dropdown {
-    background: var(--panel);
-    border: 1px solid var(--border);
+html.dark .feature-sep {
+    background: #27272a;
+}
+
+html.dark .feature-item .feat-text small {
+    color: var(--muted);
+}
+
+html.dark .section-title {
+    color: var(--section-title);
+}
+
+html.dark .view-all {
+    color: var(--view-all);
+}
+
+html.dark .product-card {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .product-card-img {
+    background: #0f0f0f !important;
+}
+
+html.dark .product-card-name {
+    color: var(--product-name) !important;
+}
+
+html.dark .product-card-brand {
+    color: var(--muted) !important;
+}
+
+html.dark .price-now {
+    color: var(--price-now) !important;
+}
+
+html.dark .price-old {
+    color: #52525b;
+}
+
+html.dark .skeleton {
+    background: linear-gradient(90deg, var(--skeleton-start) 25%, var(--skeleton-end) 50%, var(--skeleton-start) 75%) !important;
+    background-size: 400% 100%;
+}
+
+html.dark .blog-card {
+    background: var(--card);
+    border-color: var(--border);
+}
+
+html.dark .blog-card h4 {
     color: var(--text);
 }
 
-/* ================= SEARCH ================= */
-
-.search {
-    background: var(--input);
-    border: 1px solid var(--border);
+html.dark .blog-card p {
+    color: var(--muted);
 }
 
-    .search input {
-        color: var(--text);
-    }
-
-/* ================= SIDEBAR ================= */
-
-.sidebar {
-    background: var(--panel);
+html.dark .blog-card-meta span {
+    background: var(--blog-card-meta);
+    color: var(--muted);
 }
 
-    .sidebar a {
-        color: var(--text);
-    }
-
-/* ================= ACCOUNT ================= */
-
-.account-menu {
-    background: var(--panel);
-    border: 1px solid var(--border);
+html.dark .blog-read-more {
+    color: var(--accent);
+    border-color: var(--accent);
 }
 
-    .account-menu a {
-        color: var(--text);
-    }
-
-        .account-menu a:hover {
-            background: var(--bg);
-        }
-
-/* ================= BUTTON ================= */
-
-.checkout-btn {
-    background: var(--accent);
-    color: white;
+html.dark .trust-bar {
+    background: var(--trust-bg);
+    border-color: var(--trust-border);
 }
 
-.load-more {
-    background: var(--accent);
+html.dark .trust-item h5 {
+    color: var(--text);
 }
 
-/* ================= TRANSITION ================= */
-
-* {
-    transition: background .2s,color .2s,border .2s;
-}
-.product-img {
-    transition: .3s;
+html.dark .trust-item p {
+    color: var(--muted);
 }
 
-.card:hover .product-img {
-    transform: scale(1.05);
-}
-.card {
-    box-shadow: 0 8px 30px rgba(0,0,0,.2);
-}
-.dark .hero::after {
-    background: linear-gradient(180deg,rgba(0,0,0,.5),rgba(0,0,0,.9));
+html.dark .trust-item svg {
+    color: #94a3b8;
 }
 
-.dark .card {
-    box-shadow: 0 10px 30px rgba(0,0,0,.5);
-}
-.dark body{
-    background:#0b0b0b;
+html.dark .cta-section {
+    background: #ffcd04 !important;
 }
 
-/* header */
-.dark .header{
-    background:#111111;
+html.dark .cta-left h2 {
+    color: #000000;
 }
 
-/* sidebar */
-.dark .sidebar{
-    background:#111111;
+html.dark .cta-left p {
+    color: #000000;
 }
 
-/* card */
-.dark .card{
-    background:#18181b;
-    border:1px solid #27272a;
+/* =====================================================
+   DARK — PRODUCTS / FILTER PAGE
+   ===================================================== */
+html.dark .filter-panel {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
 }
 
-/* dropdown */
-.dark .dropdown{
-    background:#111111;
+html.dark .filter-panel h3 {
+    color: var(--muted);
+    border-color: var(--border);
 }
 
-/* search */
-.dark .search{
-    background:#09090b;
+html.dark .filter-group label {
+    color: var(--muted) !important;
 }
 
-/* hover card */
-.dark .card:hover {
-    box-shadow: 0 20px 40px rgba(0,0,0,.6);
-    transform: translateY(-6px);
+html.dark .chip {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
 }
-.theme-btn {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    padding: 10px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-size: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+html.dark .chip:hover,
+html.dark .chip.active {
+    background: #f5f5f5 !important;
+    color: #111 !important;
 }
-.dark .skeleton {
-    background: linear-gradient( 90deg, #222 25%, #333 37%, #222 63% );
+
+html.dark .sort-select {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
 }
-    .theme-btn:hover {
-        background: var(--card);
-    }
-.btn,
-.checkout-btn,
-.load-more {
-    background: var(--accent);
-    border-radius: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 14px rgba(37,99,235,.4);
+
+html.dark .view-btn {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
 }
-    .btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 24px rgba(37,99,235,.5);
-    }
+
+html.dark .view-btn.active {
+    background: var(--text) !important;
+    color: var(--bg) !important;
+}
+
+html.dark .filter-group select {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .clear-filter {
+    border-color: var(--border) !important;
+    color: var(--muted) !important;
+    background: transparent !important;
+}
+
+html.dark .page-btn {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .page-btn.active,
+html.dark .page-btn:hover {
+    background: var(--text) !important;
+    color: var(--bg) !important;
+}
+
+/* =====================================================
+   DARK — CART PAGE
+   ===================================================== */
+html.dark .page-hero {
+    background: var(--page-hero-bg) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .cart-box {
+    background: var(--cart-box-bg) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .cart-box-header {
+    border-color: var(--border);
+}
+
+html.dark .cart-box-header h2 {
+    color: var(--text);
+}
+
+html.dark .cart-item {
+    border-color: #1a1a1a;
+}
+
+html.dark .cart-item:hover {
+    background: #111;
+}
+
+html.dark .cart-img-wrap {
+    background: #0f0f0f;
+}
+
+html.dark .cart-item-name {
+    color: var(--text);
+}
+
+html.dark .cart-item-meta span {
+    background: #27272a;
+    color: var(--muted);
+}
+
+html.dark .qty-ctrl {
+    border-color: var(--border);
+}
+
+html.dark .qty-ctrl button {
+    background: #1a1a1a;
+    color: var(--text);
+}
+
+html.dark .qty-ctrl input {
+    background: #0f0f0f !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .cart-item-price {
+    color: var(--text);
+}
+
+html.dark .continue-link {
+    border-color: var(--border);
+    color: var(--muted);
+}
+
+html.dark .continue-link:hover {
+    color: var(--text);
+}
+
+html.dark .summary-box {
+    background: var(--summary-bg) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .summary-header {
+    color: var(--text);
+    border-color: var(--border);
+}
+
+html.dark .summary-divider {
+    background: var(--border);
+}
+
+html.dark .summary-total-label {
+    color: var(--text);
+}
+
+html.dark .summary-total-value {
+    color: var(--text);
+}
+
+html.dark .summary-row span:last-child {
+    color: var(--text);
+}
+
+html.dark .coupon-wrap input {
+    background: var(--coupon-bg) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .coupon-wrap button {
+    background: #1a1a1a;
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html.dark .coupon-wrap button:hover {
+    background: #3b82f6;
+    border-color: #3b82f6;
+    color: #fff;
+}
+
+html.dark .payment-icons span {
+    background: #1a1a1a;
+    border-color: var(--border);
+    color: var(--muted);
+}
+
+/* =====================================================
+   DARK — CHECKOUT PAGE
+   ===================================================== */
+html.dark .section-card {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .section-card-header {
+    border-color: var(--border);
+}
+
+html.dark .section-card-header h2 {
+    color: var(--text);
+}
+
+html.dark .form-group input,
+html.dark .form-group select,
+html.dark .form-group textarea {
+    background: var(--input) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .form-group input::placeholder,
+html.dark .form-group textarea::placeholder {
+    color: var(--muted);
+}
+
+html.dark .pay-method {
+    border-color: var(--border);
+    background: var(--card) !important;
+}
+
+html.dark .pay-method-name {
+    color: var(--text);
+}
+
+html.dark .pay-method-sub {
+    color: var(--muted);
+}
+
+html.dark .order-box {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .order-header {
+    border-color: var(--border);
+    color: var(--text);
+}
+
+html.dark .order-item {
+    border-color: var(--border);
+}
+
+html.dark .order-item-name {
+    color: var(--text);
+}
+
+html.dark .order-item-price {
+    color: var(--text);
+}
+
+html.dark .calc-row {
+    color: var(--muted);
+}
+
+html.dark .calc-row span:last-child {
+    color: var(--text);
+}
+
+html.dark .calc-divider {
+    background: var(--border);
+}
+
+html.dark .calc-total-label {
+    color: var(--text);
+}
+
+html.dark .calc-total-val {
+    color: var(--text);
+}
+
+html.dark .qr-panel {
+    background: var(--input) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .success-modal {
+    background: var(--card) !important;
+}
+
+html.dark .success-modal h2 {
+    color: var(--text) !important;
+}
+
+html.dark .success-order-id {
+    background: var(--input) !important;
+    color: var(--text) !important;
+}
+
+html.dark .btn-view-orders {
+    background: var(--input) !important;
+    color: var(--text) !important;
+    border-color: var(--border) !important;
+}
+
+/* =====================================================
+   DARK — ACCOUNT / ORDERS / ADMIN
+   ===================================================== */
+html.dark .acc-sidebar {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .acc-card {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .info-value {
+    background: var(--bg) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .stat-card {
+    background: var(--bg) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .linked-item {
+    border-color: var(--border);
+}
+
+html.dark .kpi-card {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .table-wrap {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark thead th {
+    background: #0f0f0f !important;
+    color: var(--muted) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark tbody td {
+    border-color: #1a1a1a;
+    color: var(--text);
+}
+
+html.dark tbody tr:hover td {
+    background: #111;
+}
+
+html.dark .admin-sidebar {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .form-row {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .form-input {
+    background: var(--bg) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .td-input {
+    background: var(--bg) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+/* =====================================================
+   DARK — LOGIN / REGISTER PAGE
+   ===================================================== */
+html.dark .auth-right {
+    background: var(--card) !important;
+}
+
+html.dark .auth-form-box h2 {
+    color: var(--text) !important;
+}
+
+html.dark .auth-form-box .sub {
+    color: var(--muted) !important;
+}
+
+html.dark .social-btn {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+    color: var(--text) !important;
+}
+
+html.dark .or-divider {
+    color: var(--muted);
+}
+
+html.dark .or-divider::before,
+html.dark .or-divider::after {
+    background: var(--border);
+}
+
+html.dark .auth-footer {
+    background: var(--input) !important;
+    border-color: var(--border) !important;
+    color: var(--muted) !important;
+}
+
+html.dark .mini-header {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .mini-logo {
+    color: var(--text) !important;
+}
+
+html.dark .mini-nav a {
+    color: var(--muted) !important;
+}
+
+html.dark .forgot-link {
+    color: var(--text) !important;
+}
+
+html.dark .auth-switch a {
+    color: var(--text) !important;
+}
+
+html.dark .remember {
+    color: var(--muted) !important;
+}
+
+/* =====================================================
+   DARK — FOOTER
+   ===================================================== */
+html.dark .footer {
+    background: #000 !important;
+}
+
+html.dark .dark-footer {
+    background: #000 !important;
+}
+
+html.dark .footer-wrap {
+    background: #000 !important;
+}
+
+/* =====================================================
+   TRANSITIONS
+   ===================================================== */
+body,
+.header,
+.feature-bar,
+.product-card,
+.blog-card,
+.trust-bar,
+.cart-box,
+.summary-box,
+.acc-card,
+.kpi-card,
+.admin-sidebar,
+.table-wrap,
+.form-row,
+.sidebar,
+.section-card,
+.order-box,
+.filter-panel,
+.auth-right,
+.mini-header,
+.auth-footer {
+    transition: background .3s ease, border-color .2s ease, color .2s ease;
+}
+
+/* =====================================================
+   DARK — PRODUCT DETAIL PAGE
+   ===================================================== */
+
+/* Breadcrumb */
+html.dark .bc-bar {
+    background: var(--card) !important;
+    border-color: var(--border) !important;
+}
+
+html.dark .bc-inner,
+html.dark .bc-inner a {
+    color: var(--muted) !important;
+}
+
+html.dark .bc-inner a:hover {
+    color: var(--text) !important;
+}
+
+/* Gallery area */
+html.dark .gallery {
+    background: transparent;
+}
+
+html.dark .thumb {
+    background: #18181b !important;
+    border-color: #27272a !important;
+}
+
+html.dark .thumb.active {
+    border-color: #f5f5f5 !important;
+}
+
+html.dark .thumb img {
+    opacity: .85;
+}
+
+/* Product info panel */
+html.dark .info-panel {
+    background: transparent;
+}
+
+html.dark .breadcrumb-nav a {
+    color: #71717a !important;
+}
+
+html.dark .breadcrumb-nav span {
+    color: #52525b !important;
+}
+
+html.dark .product-title {
+    color: var(--text) !important;
+}
+
+html.dark .product-brand {
+    color: var(--muted) !important;
+}
+
+html.dark .price-current {
+    color: var(--text) !important;
+}
+
+html.dark .price-original {
+    color: #52525b !important;
+}
+
+html.dark .discount-badge {
+    background: #7f1d1d !important;
+    color: #fca5a5 !important;
+}
+
+html.dark .rating-row {
+    color: var(--muted) !important;
+}
+
+html.dark .product-desc {
+    color: #a1a1aa !important;
+}
+
+/* Option labels */
+html.dark .option-label {
+    color: var(--text) !important;
+}
+
+html.dark #selectedColorLabel {
+    color: var(--muted) !important;
+}
+
+/* Color buttons */
+html.dark .color-btn {
+    background: #18181b !important;
+    border-color: #3f3f46 !important;
+    color: var(--text) !important;
+}
+
+html.dark .color-btn:hover {
+    border-color: #71717a !important;
+    background: #27272a !important;
+}
+
+html.dark .color-btn.active {
+    background: #f5f5f5 !important;
+    color: #111 !important;
+    border-color: #f5f5f5 !important;
+}
+
+/* Size buttons */
+html.dark .size-btn {
+    background: #18181b !important;
+    border-color: #3f3f46 !important;
+    color: var(--text) !important;
+}
+
+html.dark .size-btn:hover {
+    border-color: #71717a !important;
+    background: #27272a !important;
+}
+
+html.dark .size-btn.active {
+    background: #f5f5f5 !important;
+    color: #111 !important;
+    border-color: #f5f5f5 !important;
+}
+
+html.dark .size-btn.disabled {
+    color: #3f3f46 !important;
+    border-color: #27272a !important;
+    background: #0f0f0f !important;
+}
+
+/* Add to cart & wishlist buttons */
+html.dark .btn-add-cart {
+    background: #f5f5f5 !important;
+    color: #111 !important;
+}
+
+html.dark .btn-add-cart:hover {
+    background: #e4e4e7 !important;
+}
+
+html.dark .btn-wish {
+    border-color: #3f3f46 !important;
+    color: var(--text) !important;
+    background: transparent !important;
+}
+
+html.dark .btn-wish:hover {
+    background: #18181b !important;
+}
+
+/* Features strip */
+html.dark .features-grid {
+    border-color: #27272a !important;
+}
+
+html.dark .feat-item {
+    color: #a1a1aa !important;
+    border-color: #27272a !important;
+}
+
+html.dark .feat-icon {
+    background: #18181b !important;
+}
+
+/* Tabs */
+html.dark .tabs-section {
+    background: var(--card) !important;
+    border-color: #27272a !important;
+}
+
+html.dark .tabs-nav {
+    border-color: #27272a !important;
+}
+
+html.dark .tab-btn {
+    color: #71717a !important;
+    background: transparent !important;
+}
+
+html.dark .tab-btn:hover {
+    color: var(--text) !important;
+}
+
+html.dark .tab-btn.active {
+    color: var(--text) !important;
+    border-color: var(--text) !important;
+}
+
+/* Tab content */
+html.dark .tab-content {
+    color: var(--text) !important;
+}
+
+html.dark .desc-content {
+    color: #a1a1aa !important;
+}
+
+html.dark .desc-content h4 {
+    color: var(--text) !important;
+}
+
+html.dark .desc-content li {
+    color: #a1a1aa !important;
+}
+
+/* Review summary */
+html.dark .review-summary {
+    background: #18181b !important;
+    border-color: #27272a !important;
+}
+
+html.dark .review-big-num {
+    color: var(--text) !important;
+}
+
+html.dark .review-big-count {
+    color: var(--muted) !important;
+}
+
+html.dark .rating-bar {
+    background: #27272a !important;
+}
+
+/* Review cards */
+html.dark .review-card {
+    background: #18181b !important;
+    border-color: #27272a !important;
+}
+
+html.dark .reviewer-name {
+    color: var(--text) !important;
+}
+
+html.dark .review-date {
+    color: var(--muted) !important;
+}
+
+html.dark .review-text {
+    color: #a1a1aa !important;
+}
+
+html.dark .verified-badge {
+    background: #14532d !important;
+    color: #86efac !important;
+}
+
+html.dark .reviews-empty {
+    color: var(--muted) !important;
+}
+
+/* Review write form */
+html.dark .review-form-box {
+    background: #111111 !important;
+    border-color: #27272a !important;
+}
+
+html.dark .review-form-box h4 {
+    color: var(--text) !important;
+}
+
+html.dark .review-textarea {
+    background: #18181b !important;
+    border-color: #3f3f46 !important;
+    color: var(--text) !important;
+}
+
+html.dark .review-textarea::placeholder {
+    color: #52525b !important;
+}
+
+html.dark .review-textarea:focus {
+    border-color: #71717a !important;
+}
+
+html.dark .review-submit-btn {
+    background: #f5f5f5 !important;
+    color: #111 !important;
+}
+
+html.dark .review-submit-btn:hover {
+    background: #d4d4d8 !important;
+}
+
+html.dark .star-select span {
+    color: #3f3f46 !important;
+}
+
+html.dark .star-select span.lit {
+    color: #facc15 !important;
+}
+
+html.dark #starHint {
+    color: #52525b !important;
+}
+
+/* Review login note */
+html.dark .review-login-note {
+    background: #111111 !important;
+    border-color: #27272a !important;
+    color: var(--muted) !important;
+}
+
+html.dark .review-login-note a {
+    color: var(--text) !important;
+}
+
+/* Related products */
+html.dark .related-section .section-title {
+    color: var(--text) !important;
+}
+
+html.dark .rel-card {
+    background: #18181b !important;
+    border-color: #27272a !important;
+}
+
+html.dark .rel-card:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, .5) !important;
+}
+
+html.dark .rel-card-img {
+    background: #0f0f0f !important;
+}
+
+html.dark .rel-card-brand {
+    color: var(--muted) !important;
+}
+
+html.dark .rel-card-name {
+    color: var(--text) !important;
+}
+
+html.dark .rel-card-price {
+    color: var(--text) !important;
+}
+
+/* Stock info */
+html.dark .stock-info {
+    color: var(--muted) !important;
+}

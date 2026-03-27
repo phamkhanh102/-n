@@ -1,4 +1,5 @@
 ﻿using D.A.sneaker.Data;
+using D.A.sneaker.Middleware;
 using D.A.sneaker.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -51,7 +52,7 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-
+builder.Services.AddHttpClient();
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -87,13 +88,6 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 // MIDDLEWARE (thứ tự quan trọng)
 if (app.Environment.IsDevelopment())
 {
@@ -109,7 +103,7 @@ app.UseAuthorization();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
+app.UseMiddleware<ErrorMiddleware>();
 app.MapControllers();
 
 app.Run();

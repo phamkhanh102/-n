@@ -23,7 +23,10 @@ namespace D.A.sneaker.Controllers
         {
             var query = message.ToLower();
             // load state (demo: 1 user duy nhất)
-            var state = await _context.UserChatStates.FirstOrDefaultAsync();
+            var userId = 1; // demo
+
+            var state = await _context.UserChatStates
+                .FirstOrDefaultAsync(x => x.UserId == userId);
 
             if (state == null)
             {
@@ -36,7 +39,8 @@ namespace D.A.sneaker.Controllers
             //--------------------------------
 
             var products = await _context.Products
-    .ToListAsync();
+.Take(20)
+.ToListAsync();
 
             var histories = await _context.ChatHistories
                 .OrderByDescending(x => x.CreatedAt)
@@ -63,10 +67,10 @@ namespace D.A.sneaker.Controllers
 
             var chat = new ChatHistory
             {
+                UserId = userId,
                 Message = message,
                 CreatedAt = DateTime.Now
             };
-
             //--------------------------------
             // RETURN PRODUCTS
             //--------------------------------

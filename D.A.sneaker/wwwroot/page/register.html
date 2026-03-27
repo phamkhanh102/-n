@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK – Đăng ký tài khoản</title>
+    <meta name="description" content="Tạo tài khoản SPARK để nhận ưu đãi độc quyền và theo dõi đơn hàng của bạn.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            min-height: 100vh;
+            background: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* TOP STRIP */
+        .top-strip {
+            background: #111827;
+            color: rgba(255, 255, 255, .8);
+            text-align: center;
+            font-size: 12px;
+            padding: 7px;
+            letter-spacing: .3px;
+        }
+
+        /* MINI HEADER */
+        .mini-header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .mini-logo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            color: #111;
+            letter-spacing: -1px;
+            text-decoration: none;
+        }
+
+        .mini-nav {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+
+        .mini-nav a {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-decoration: none;
+            transition: color .2s;
+        }
+
+        .mini-nav a:hover {
+            color: #111;
+        }
+
+        .mini-nav .btn-login {
+            background: #111;
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: background .2s;
+        }
+
+        .mini-nav .btn-login:hover {
+            background: #374151;
+        }
+
+        /* AUTH WRAPPER */
+        .auth-wrapper {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: calc(100vh - 80px);
+        }
+
+        /* LEFT - FORM SIDE */
+        .auth-left {
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px 48px;
+            order: 1;
+        }
+
+        .auth-form-box {
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .auth-form-box h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: #111;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+        }
+
+        .auth-form-box .sub {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 28px;
+        }
+
+        /* SOCIAL */
+        .social-btns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            cursor: pointer;
+            transition: background .2s;
+        }
+
+        .social-btn:hover {
+            background: #f9fafb;
+        }
+
+        /* DIVIDER */
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        /* FORM GROUPS */
+        .form-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 5px;
+        }
+
+        .form-group .input-wrap {
+            position: relative;
+        }
+
+        .form-group .input-wrap svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 15px;
+            height: 15px;
+            color: #9ca3af;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            font-size: 13px;
+            color: #111;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+        }
+
+        .form-group input:focus {
+            border-color: #111;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(17, 24, 39, 0.08);
+        }
+
+        .form-group input.error {
+            border-color: #ef4444;
+            background: #fff;
+        }
+
+        .field-error {
+            font-size: 11px;
+            color: #ef4444;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .field-error.show {
+            display: block;
+        }
+
+        .toggle-pw {
+            position: absolute;
+            right: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            font-size: 14px;
+            padding: 0;
+        }
+
+        /* STRENGTH BAR */
+        .pw-strength {
+            margin-top: 6px;
+        }
+
+        .strength-bar {
+            height: 4px;
+            background: #e5e7eb;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 4px;
+        }
+
+        .strength-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 2px;
+            transition: width .3s, background .3s;
+        }
+
+        .strength-text {
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        /* TERMS */
+        .terms-check {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin: 16px 0;
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.5;
+        }
+
+        .terms-check input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            margin-top: 2px;
+            accent-color: #111;
+        }
+
+        .terms-check a {
+            color: #111;
+            font-weight: 600;
+        }
+
+        /* MESSAGES */
+        .error-msg {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: #dc2626;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 13px;
+            margin-bottom: 14px;
+            display: none;
+        }
+
+        .error-msg.show {
+            display: block;
+        }
+
+        .success-msg {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #16a34a;
+            border-radius: 8px;
+            padding: 12px 14px;
+            font-size: 14px;
+            margin-bottom: 14px;
+            display: none;
+            text-align: center;
+        }
+
+        .success-msg.show {
+            display: block;
+        }
+
+        /* SUBMIT */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .2s, transform .15s;
+            margin-bottom: 18px;
+            position: relative;
+        }
+
+        .btn-submit:hover {
+            background: #374151;
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit.loading::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, .4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: translateY(-50%) rotate(360deg);
+            }
+        }
+
+        .auth-switch {
+            text-align: center;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .auth-switch a {
+            font-weight: 700;
+            color: #111;
+            text-decoration: none;
+        }
+
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+
+        /* RIGHT PANEL */
+        .auth-right {
+            background: linear-gradient(145deg, #111827 0%, #1e3a5f 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 48px;
+            position: relative;
+            overflow: hidden;
+            order: 2;
+        }
+
+        .auth-right::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 400px;
+            height: 400px;
+            background: rgba(250, 204, 21, 0.08);
+            border-radius: 50%;
+        }
+
+        .auth-right-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            color: #fff;
+        }
+
+        .auth-right-logo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 14px;
+        }
+
+        .auth-right-logo span {
+            color: #facc15;
+        }
+
+        .auth-right-tagline {
+            font-size: 16px;
+            color: rgba(255, 255, 255, .75);
+            line-height: 1.6;
+            margin-bottom: 36px;
+            max-width: 300px;
+        }
+
+        .auth-right-shoe {
+            width: 100%;
+            max-width: 280px;
+            object-fit: contain;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.5));
+            animation: float 4s ease-in-out infinite;
+            margin-bottom: 36px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(-5deg);
+            }
+
+            50% {
+                transform: translateY(-16px) rotate(-5deg);
+            }
+        }
+
+        .perks {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .perk {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: rgba(255, 255, 255, .85);
+            font-size: 13px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .perk-icon {
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        /* FOOTER */
+        .auth-footer {
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+            padding: 18px;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .auth-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .auth-right {
+                display: none;
+            }
+
+            .auth-left {
+                padding: 40px 20px;
+            }
+
+            .form-row-2 {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+
+            .social-btns {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP STRIP -->
+    <div class="top-strip">🚚 Free ship toàn quốc &nbsp;|&nbsp; 🔥 Sale up to 50% &nbsp;|&nbsp; 💳 Thanh toán an toàn
+    </div>
+
+    <!-- MINI HEADER -->
+    <header class="mini-header">
+        <a href="/page/shop.html" class="mini-logo">SPARK</a>
+        <nav class="mini-nav">
+            <a href="/page/shop.html">Trang chủ</a>
+            <a href="/page/products.html">Sản phẩm</a>
+            <a href="/page/login.html" class="btn-login">Đăng nhập</a>
+        </nav>
+    </header>
+
+    <!-- AUTH WRAPPER -->
+    <div class="auth-wrapper">
+
+        <!-- LEFT — FORM -->
+        <div class="auth-left">
+            <div class="auth-form-box">
+                <h2>Tạo tài khoản</h2>
+                <p class="sub">Đăng ký để nhận ưu đãi độc quyền và theo dõi đơn hàng</p>
+
+                <!-- SOCIAL -->
+                <div class="social-btns">
+                    <button class="social-btn" onclick="socialReg('Google')">
+                        <svg width="18" height="18" viewBox="0 0 24 24">
+                            <path fill="#EA4335"
+                                d="M5.27 9.76A7.08 7.08 0 0112 4.9c1.69 0 3.21.6 4.4 1.57l3.27-3.27A12 12 0 000 12c0 1.99.48 3.87 1.34 5.54l3.93-3.08a7.11 7.11 0 010-4.7z" />
+                            <path fill="#FBBC05"
+                                d="M12 24c3.24 0 5.95-1.07 7.93-2.91l-3.67-2.84A7.08 7.08 0 015.2 16.46l-3.93 3.08C3.27 22.04 7.31 24 12 24z" />
+                            <path fill="#4285F4"
+                                d="M23.49 12.27c0-.79-.07-1.56-.2-2.3H12v4.51h6.47a5.54 5.54 0 01-2.4 3.63l3.67 2.84c2.14-1.97 3.75-4.9 3.75-8.68z" />
+                            <path fill="#34A853"
+                                d="M5.2 16.46a7.11 7.11 0 010-4.7L1.27 8.7A12.02 12.02 0 000 12c0 1.99.48 3.87 1.34 5.54l3.86-3.08z" />
+                        </svg>
+                        Google
+                    </button>
+                    <button class="social-btn" onclick="socialReg('Facebook')">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="#1877F2">
+                            <path
+                                d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.99 3.66 9.12 8.44 9.88V14.9H7.9v-2.9h2.54V9.85c0-2.51 1.49-3.89 3.78-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.77l-.44 2.9h-2.33v6.98C18.34 21.12 22 17 22 12z" />
+                        </svg>
+                        Facebook
+                    </button>
+                </div>
+
+                <div class="or-divider">hoặc đăng ký bằng email</div>
+
+                <div id="errorMsg" class="error-msg"></div>
+                <div id="successMsg" class="success-msg"></div>
+
+                <!-- FIELDS -->
+                <div class="form-row-2">
+                    <div class="form-group">
+                        <label for="regName">Họ và tên <span style="color:#ef4444">*</span></label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input type="text" id="regName" placeholder="Nguyễn Văn A" autocomplete="name">
+                        </div>
+                        <div class="field-error" id="errName">Vui lòng nhập họ và tên</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="regUsername">Tên đăng nhập <span style="color:#ef4444">*</span></label>
+                        <div class="input-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                            <input type="text" id="regUsername" placeholder="username123" autocomplete="username">
+                        </div>
+                        <div class="field-error" id="errUsername">Vui lòng nhập tên đăng nhập</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="regEmail">Email <span style="color:#ef4444">*</span></label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                            <polyline points="22,6 12,13 2,6" />
+                        </svg>
+                        <input type="email" id="regEmail" placeholder="your@email.com" autocomplete="email">
+                    </div>
+                    <div class="field-error" id="errEmail">Email không hợp lệ</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Mật khẩu <span style="color:#ef4444">*</span></label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                        <input type="password" id="regPassword" placeholder="Tối thiểu 8 ký tự"
+                            autocomplete="new-password" oninput="checkStrength(this.value)">
+                        <button class="toggle-pw" type="button" onclick="togglePw('regPassword',this)">👁️</button>
+                    </div>
+                    <div class="pw-strength">
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                        <div class="strength-text" id="strengthText"></div>
+                    </div>
+                    <div class="field-error" id="errPassword">Mật khẩu tối thiểu 8 ký tự</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="regConfirm">Xác nhận mật khẩu <span style="color:#ef4444">*</span></label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="11" width="18" height="11" rx="2" />
+                            <path d="M7 11V7a5 5 0 0110 0v4" />
+                        </svg>
+                        <input type="password" id="regConfirm" placeholder="Nhập lại mật khẩu"
+                            autocomplete="new-password">
+                        <button class="toggle-pw" type="button" onclick="togglePw('regConfirm',this)">👁️</button>
+                    </div>
+                    <div class="field-error" id="errConfirm">Mật khẩu không khớp</div>
+                </div>
+
+                <div class="terms-check">
+                    <input type="checkbox" id="terms">
+                    <label for="terms">
+                        Tôi đồng ý với <a href="#">Điều khoản dịch vụ</a> và <a href="#">Chính sách bảo mật</a> của
+                        SPARK
+                    </label>
+                </div>
+
+                <button class="btn-submit" id="regBtn" onclick="doRegister()">Tạo tài khoản</button>
+
+                <div class="auth-switch">
+                    Đã có tài khoản? <a href="/page/login.html">Đăng nhập</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT — BRAND PANEL -->
+        <div class="auth-right">
+            <div class="auth-right-content">
+                <div class="auth-right-logo">SPAR<span>K</span></div>
+                <p class="auth-right-tagline">
+                    Tham gia ngay để mua sắm<br>với ưu đãi thành viên độc quyền
+                </p>
+
+                <img class="auth-right-shoe"
+                    src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80"
+                    alt="Sneaker" onerror="this.style.display='none'">
+
+                <div class="perks">
+                    <div class="perk">
+                        <span class="perk-icon">🎁</span>
+                        <div>Giảm <strong>25%</strong> cho đơn hàng đầu tiên</div>
+                    </div>
+                    <div class="perk">
+                        <span class="perk-icon">⚡</span>
+                        <div>Ưu tiên flash sale & sản phẩm mới</div>
+                    </div>
+                    <div class="perk">
+                        <span class="perk-icon">💎</span>
+                        <div>Tích điểm thành viên đổi quà</div>
+                    </div>
+                    <div class="perk">
+                        <span class="perk-icon">🚚</span>
+                        <div>Free ship không giới hạn đơn hàng</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="auth-footer">
+        © 2026 SPARK. All rights reserved.
+        &nbsp;·&nbsp; <a href="#" style="color:#6b7280">Chính sách</a>
+        &nbsp;·&nbsp; <a href="#" style="color:#6b7280">Hỗ trợ</a>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        function togglePw(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            const show = input.type === 'password';
+            input.type = show ? 'text' : 'password';
+            btn.textContent = show ? '🙈' : '👁️';
+        }
+
+        function socialReg(provider) {
+            showError('Tính năng đăng ký bằng ' + provider + ' đang được phát triển.');
+        }
+
+        function checkStrength(pw) {
+            const fill = document.getElementById('strengthFill');
+            const text = document.getElementById('strengthText');
+            let score = 0;
+            if (pw.length >= 8) score++;
+            if (/[A-Z]/.test(pw)) score++;
+            if (/[0-9]/.test(pw)) score++;
+            if (/[^A-Za-z0-9]/.test(pw)) score++;
+            const levels = [
+                { w: '0%', c: '#e5e7eb', t: '' },
+                { w: '25%', c: '#ef4444', t: 'Yếu' },
+                { w: '50%', c: '#f97316', t: 'Trung bình' },
+                { w: '75%', c: '#eab308', t: 'Khá mạnh' },
+                { w: '100%', c: '#22c55e', t: 'Mạnh 💪' },
+            ];
+            const l = levels[score] || levels[0];
+            fill.style.width = l.w;
+            fill.style.background = l.c;
+            text.textContent = l.t;
+            text.style.color = l.c;
+        }
+
+        function showError(msg) {
+            const el = document.getElementById('errorMsg');
+            el.textContent = msg;
+            el.classList.add('show');
+            document.getElementById('successMsg').classList.remove('show');
+        }
+
+        function showSuccess(msg) {
+            const el = document.getElementById('successMsg');
+            el.innerHTML = msg;
+            el.classList.add('show');
+            document.getElementById('errorMsg').classList.remove('show');
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+            document.querySelectorAll('.form-group input').forEach(i => i.classList.remove('error'));
+        }
+
+        function fieldError(id, errId) {
+            document.getElementById(id).classList.add('error');
+            document.getElementById(errId).classList.add('show');
+        }
+
+        async function doRegister() {
+            clearErrors();
+            document.getElementById('errorMsg').classList.remove('show');
+            document.getElementById('successMsg').classList.remove('show');
+
+            const name = document.getElementById('regName').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regConfirm').value;
+            const terms = document.getElementById('terms').checked;
+
+            let hasErr = false;
+            if (!name) { fieldError('regName', 'errName'); hasErr = true; }
+            if (!username) { fieldError('regUsername', 'errUsername'); hasErr = true; }
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { fieldError('regEmail', 'errEmail'); hasErr = true; }
+            if (password.length < 8) { fieldError('regPassword', 'errPassword'); hasErr = true; }
+            if (password !== confirm) { fieldError('regConfirm', 'errConfirm'); hasErr = true; }
+            if (hasErr) return;
+            if (!terms) { showError('Vui lòng đồng ý với điều khoản dịch vụ.'); return; }
+
+            const btn = document.getElementById('regBtn');
+            btn.classList.add('loading');
+            btn.disabled = true;
+            btn.textContent = 'Đang tạo tài khoản...';
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, name, email, password })
+                });
+
+                const data = await res.json();
+
+                if (!res.ok) {
+                    showError(typeof data === 'string' ? data : JSON.stringify(data));
+                    return;
+                }
+
+                showSuccess('✅ <strong>Đăng ký thành công!</strong> Đang chuyển đến trang đăng nhập...');
+                setTimeout(() => location.href = '/page/login.html', 2000);
+
+            } catch {
+                showError('Không kết nối được server. Vui lòng thử lại.');
+            } finally {
+                btn.classList.remove('loading');
+                btn.disabled = false;
+                btn.textContent = 'Tạo tài khoản';
+            }
+        }
+    </script>
+</body>
+
+</html>

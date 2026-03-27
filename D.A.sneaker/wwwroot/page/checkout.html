@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK – Thanh toán</title>
+    <meta name="description" content="Hoàn tất đơn hàng và chọn phương thức thanh toán phù hợp tại SPARK.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Barlow', sans-serif; background: #f5f5f5; color: #111; padding-top: 110px; min-height: 100vh; }
+        a { text-decoration: none; color: inherit; }
+
+        /* PAGE HERO */
+        .page-hero {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 22px 20px;
+        }
+        .page-hero-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .page-hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: -1px;
+        }
+        .breadcrumb { font-size: 13px; color: #9ca3af; display: flex; gap: 6px; align-items: center; }
+        .breadcrumb a { color: #6b7280; }
+        .breadcrumb a:hover { color: #111; }
+
+        /* STEPS */
+        .steps { display: flex; align-items: center; }
+        .step { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; color: #9ca3af; }
+        .step.active { color: #111; }
+        .step.done   { color: #22c55e; }
+        .step-num { width: 26px; height: 26px; border-radius: 50%; background: #e5e7eb; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+        .step.active .step-num { background: #111; color: #fff; }
+        .step.done   .step-num { background: #22c55e; color: #fff; }
+        .step-line { width: 36px; height: 1px; background: #e5e7eb; margin: 0 4px; }
+
+        /* LAYOUT */
+        .checkout-layout {
+            max-width: 1200px;
+            margin: 28px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* SECTION CARD */
+        .section-card {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .section-card-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-card-header h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+        }
+        .section-num {
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: #111;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .section-card-body { padding: 20px 22px; }
+
+        /* FORM FIELDS */
+        .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-group { margin-bottom: 14px; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 6px;
+        }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            font-size: 14px;
+            color: #111;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s, background .2s;
+            font-family: 'Barlow', sans-serif;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #111;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(17,24,39,0.07);
+        }
+        .form-group input.error { border-color: #ef4444; }
+        .form-group .field-error { font-size: 11px; color: #ef4444; margin-top: 4px; display: none; }
+        .form-group .field-error.show { display: block; }
+
+        /* PAYMENT METHODS */
+        .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 0; }
+        .pay-method {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 14px 12px;
+            cursor: pointer;
+            transition: border-color .2s, box-shadow .2s;
+            text-align: center;
+            position: relative;
+        }
+        .pay-method:hover { border-color: #9ca3af; }
+        .pay-method.active {
+            border-color: #111;
+            box-shadow: 0 0 0 2px rgba(17,24,39,0.1);
+        }
+        .pay-method-icon { font-size: 24px; margin-bottom: 6px; display: block; }
+        .pay-method-name { font-size: 12px; font-weight: 700; color: #374151; }
+        .pay-method-sub  { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+        .pay-method .check {
+            position: absolute;
+            top: 8px; right: 8px;
+            width: 16px; height: 16px;
+            border-radius: 50%;
+            background: #111;
+            color: #fff;
+            font-size: 9px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        .pay-method.active .check { display: flex; }
+
+        /* QR PANEL */
+        .qr-panel {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 10px;
+            margin-top: 16px;
+            border: 1px solid #e5e7eb;
+        }
+        .qr-panel.show { display: block; }
+        .qr-panel img { width: 180px; border-radius: 12px; border: 1px solid #e5e7eb; margin: 10px auto; display: block; }
+        .qr-panel p { font-size: 13px; color: #6b7280; }
+
+        /* CARD FIELDS */
+        .card-fields { display: none; margin-top: 16px; }
+        .card-fields.show { display: block; }
+        .card-number-wrap { position: relative; }
+        .card-number-wrap .card-type {
+            position: absolute;
+            right: 12px; top: 50%; transform: translateY(-50%);
+            font-size: 20px;
+        }
+
+        /* NOTE */
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            background: #f9fafb;
+            font-size: 14px;
+            color: #111;
+            outline: none;
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Barlow', sans-serif;
+            transition: border-color .2s;
+        }
+        .form-group textarea:focus { border-color: #111; background: #fff; }
+
+        /* ORDER SUMMARY */
+        .order-box {
+            background: #fff;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            position: sticky;
+            top: 120px;
+        }
+        .order-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #f0f0f0;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .order-header a {
+            font-size: 12px;
+            color: #6b7280;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 600;
+        }
+        .order-header a:hover { color: #111; }
+
+        .order-items { padding: 12px 20px; border-bottom: 1px solid #f0f0f0; max-height: 260px; overflow-y: auto; }
+
+        .order-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f9f9f9;
+        }
+        .order-item:last-child { border-bottom: none; }
+        .order-item-img {
+            width: 52px; height: 52px;
+            border-radius: 8px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #f5f5f5;
+            position: relative;
+        }
+        .order-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .order-item-badge {
+            position: absolute;
+            top: -4px; right: -4px;
+            width: 18px; height: 18px;
+            background: #111;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .order-item-info { flex: 1; min-width: 0; }
+        .order-item-name { font-size: 12px; font-weight: 600; color: #111; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .order-item-meta { font-size: 11px; color: #9ca3af; }
+        .order-item-price { font-size: 13px; font-weight: 700; flex-shrink: 0; }
+
+        .order-calc { padding: 14px 20px; }
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+        .calc-row span:last-child { font-weight: 600; color: #111; }
+        .calc-row.free span:last-child { color: #22c55e; font-weight: 700; }
+        .calc-divider { height: 1px; background: #f0f0f0; margin: 10px 0; }
+        .calc-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 16px;
+        }
+        .calc-total-label { font-size: 14px; font-weight: 700; }
+        .calc-total-val { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; }
+
+        /* PLACE ORDER BTN */
+        .btn-place {
+            width: 100%;
+            padding: 14px;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: background .2s, transform .15s;
+            letter-spacing: .3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .btn-place:hover { background: #374151; transform: translateY(-1px); }
+        .btn-place.loading { opacity: .7; pointer-events: none; }
+        .btn-place.loading::after {
+            content: '';
+            width: 15px; height: 15px;
+            border: 2px solid rgba(255,255,255,.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .secure-note {
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* ORDER SUCCESS OVERLAY */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .success-overlay.show { display: flex; }
+        .success-modal {
+            background: #fff;
+            border-radius: 20px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            animation: popIn .4s cubic-bezier(.34,1.56,.64,1) both;
+        }
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(.7); }
+            to   { opacity: 1; transform: scale(1); }
+        }
+        .success-icon { font-size: 64px; margin-bottom: 16px; }
+        .success-modal h2 { font-family: 'Barlow Condensed', sans-serif; font-size: 32px; font-weight: 900; color: #111; margin-bottom: 10px; }
+        .success-modal p { font-size: 14px; color: #6b7280; line-height: 1.6; margin-bottom: 6px; }
+        .success-order-id { background: #f3f4f6; border-radius: 8px; padding: 8px 16px; font-size: 14px; font-weight: 700; color: #111; display: inline-block; margin: 12px 0; }
+        .success-btns { display: flex; gap: 10px; margin-top: 24px; }
+        .success-btns a {
+            flex: 1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            text-align: center;
+            cursor: pointer;
+        }
+        .btn-continue-shop { background: #111; color: #fff; }
+        .btn-view-orders   { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
+
+        /* FOOTER */
+        .dark-footer { background: #111; color: #ccc; margin-top: 60px; }
+        .dark-footer-inner {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1.5fr;
+            gap: 36px;
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .dark-footer-logo { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; color: #fff; margin-bottom: 12px; }
+        .dark-footer-inner p { font-size: 13px; color: #888; line-height: 1.7; }
+        .dark-footer-col h4 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: #fff; margin-bottom: 14px; }
+        .dark-footer-col a { display: block; font-size: 13px; color: #888; margin-bottom: 8px; text-decoration: none; transition: color .2s; }
+        .dark-footer-col a:hover { color: #fff; }
+        .dark-footer-bot { border-top: 1px solid #222; padding: 18px 20px; text-align: center; font-size: 12px; color: #555; max-width: 1200px; margin: 0 auto; }
+
+        @media (max-width: 900px) {
+            .checkout-layout { grid-template-columns: 1fr; }
+            .order-box { position: static; }
+            .pay-methods { grid-template-columns: 1fr 1fr 1fr; }
+            .dark-footer-inner { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 560px) {
+            .form-grid-2 { grid-template-columns: 1fr; }
+            .pay-methods { grid-template-columns: 1fr 1fr; }
+            .dark-footer-inner { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+    <div class="page-hero-inner">
+        <div>
+            <h1>Thanh toán</h1>
+            <div class="breadcrumb">
+                <a href="/page/shop.html">Home</a> ›
+                <a href="/page/cart.html">Giỏ hàng</a> ›
+                <span>Thanh toán</span>
+            </div>
+        </div>
+        <div class="steps">
+            <div class="step done">
+                <div class="step-num">✓</div>
+                <span>Giỏ hàng</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step active">
+                <div class="step-num">2</div>
+                <span>Thanh toán</span>
+            </div>
+            <div class="step-line"></div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <span>Hoàn thành</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CHECKOUT LAYOUT -->
+<div class="checkout-layout">
+
+    <!-- LEFT: FORM -->
+    <div>
+
+        <!-- CONTACT INFO -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-num">1</div>
+                <h2>Thông tin liên hệ</h2>
+            </div>
+            <div class="section-card-body">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Họ và tên *</label>
+                        <input type="text" id="cName" placeholder="Nguyễn Văn A" autocomplete="name">
+                        <div class="field-error" id="errName">Vui lòng nhập họ tên</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="tel" id="cPhone" placeholder="09x xxxx xxxx" autocomplete="tel">
+                        <div class="field-error" id="errPhone">Số điện thoại không hợp lệ</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Email *</label>
+                    <input type="email" id="cEmail" placeholder="your@email.com" autocomplete="email">
+                    <div class="field-error" id="errEmail">Email không hợp lệ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SHIPPING ADDRESS -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-num">2</div>
+                <h2>Địa chỉ giao hàng</h2>
+            </div>
+            <div class="section-card-body">
+                <div class="form-group">
+                    <label>Địa chỉ (số nhà, tên đường) *</label>
+                    <input type="text" id="cAddress" placeholder="123 Đường Lê Lợi" autocomplete="street-address">
+                    <div class="field-error" id="errAddress">Vui lòng nhập địa chỉ</div>
+                </div>
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label>Tỉnh / Thành phố *</label>
+                        <select id="cCity">
+                            <option value="">-- Chọn tỉnh/thành --</option>
+                            <option>Hà Nội</option>
+                            <option>TP. Hồ Chí Minh</option>
+                            <option>Đà Nẵng</option>
+                            <option>Cần Thơ</option>
+                            <option>Hải Phòng</option>
+                            <option>Nha Trang</option>
+                            <option>Huế</option>
+                            <option>Bình Dương</option>
+                            <option>Đồng Nai</option>
+                            <option>Khác</option>
+                        </select>
+                        <div class="field-error" id="errCity">Vui lòng chọn tỉnh/thành</div>
+                    </div>
+                    <div class="form-group">
+                        <label>Quận / Huyện *</label>
+                        <input type="text" id="cDistrict" placeholder="Quận 1">
+                        <div class="field-error" id="errDistrict">Vui lòng nhập quận/huyện</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Ghi chú cho đơn hàng</label>
+                    <textarea id="cNote" placeholder="Ghi chú thêm (giao giờ hành chính, để tại bảo vệ,...)"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENT METHOD -->
+        <div class="section-card">
+            <div class="section-card-header">
+                <div class="section-num">3</div>
+                <h2>Phương thức thanh toán</h2>
+            </div>
+            <div class="section-card-body">
+                <div class="pay-methods">
+                    <div class="pay-method active" id="method-cod" onclick="selectMethod('cod')">
+                        <div class="check">✓</div>
+                        <span class="pay-method-icon">💵</span>
+                        <div class="pay-method-name">COD</div>
+                        <div class="pay-method-sub">Thanh toán khi nhận</div>
+                    </div>
+                    <div class="pay-method" id="method-bank" onclick="selectMethod('bank')">
+                        <div class="check">✓</div>
+                        <span class="pay-method-icon">🏦</span>
+                        <div class="pay-method-name">Chuyển khoản</div>
+                        <div class="pay-method-sub">Quét QR VietQR</div>
+                    </div>
+                    <div class="pay-method" id="method-card" onclick="selectMethod('card')">
+                        <div class="check">✓</div>
+                        <span class="pay-method-icon">💳</span>
+                        <div class="pay-method-name">Thẻ ngân hàng</div>
+                        <div class="pay-method-sub">Visa / Mastercard</div>
+                    </div>
+                </div>
+
+                <!-- QR -->
+                <div class="qr-panel" id="qrPanel">
+                    <p style="font-weight:700;margin-bottom:4px">Quét mã QR để thanh toán</p>
+                    <img id="qrImg" src="" alt="QR Code">
+                    <p>Ngân hàng: <strong>MB Bank</strong> – STK: <strong>1090901052005</strong></p>
+                    <p>Chủ TK: <strong>SPARK SNEAKER SHOP</strong></p>
+                    <p style="margin-top:6px;color:#ef4444;font-size:12px">Nội dung CK: <strong id="qrContent">SPARK-ORDER</strong></p>
+                </div>
+
+                <!-- CARD FIELDS -->
+                <div class="card-fields" id="cardFields">
+                    <div class="form-group">
+                        <label>Số thẻ</label>
+                        <div class="card-number-wrap">
+                            <input type="text" id="cardNum" placeholder="1111 2222 3333 4444" maxlength="19"
+                                   oninput="formatCard(this)">
+                            <span class="card-type" id="cardType">💳</span>
+                        </div>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label>Tên trên thẻ</label>
+                            <input type="text" id="cardName" placeholder="NGUYEN VAN A" style="text-transform:uppercase">
+                        </div>
+                        <div class="form-grid-2" style="grid-template-columns:1fr 1fr;gap:10px">
+                            <div class="form-group">
+                                <label>MM/YY</label>
+                                <input type="text" id="cardExp" placeholder="08/27" maxlength="5" oninput="formatExp(this)">
+                            </div>
+                            <div class="form-group">
+                                <label>CVV</label>
+                                <input type="password" id="cardCvv" placeholder="•••" maxlength="4">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: ORDER SUMMARY -->
+    <div class="order-box">
+        <div class="order-header">
+            <span>Đơn hàng (<span id="orderCount">0</span> sản phẩm)</span>
+            <a href="/page/cart.html">Sửa giỏ hàng</a>
+        </div>
+
+        <div class="order-items" id="orderItems">
+            <!-- Rendered by JS -->
+        </div>
+
+        <div class="order-calc">
+            <div class="calc-row">
+                <span>Tạm tính</span>
+                <span id="calcSubtotal">0đ</span>
+            </div>
+            <div class="calc-row" id="calcShipRow">
+                <span>Phí vận chuyển</span>
+                <span id="calcShip">30.000đ</span>
+            </div>
+            <div class="calc-row" id="calcDiscRow" style="display:none">
+                <span>Coupon</span>
+                <span id="calcDisc" style="color:#22c55e"></span>
+            </div>
+            <div class="calc-divider"></div>
+            <div class="calc-total">
+                <div class="calc-total-label">Tổng thanh toán</div>
+                <div class="calc-total-val" id="calcTotal">0đ</div>
+            </div>
+
+            <button class="btn-place" id="placeBtn" onclick="placeOrder()">
+                <span id="placeBtnText">Đặt hàng ngay</span>
+            </button>
+            <div class="secure-note">
+                🔒 Thông tin được mã hóa SSL bảo mật
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- SUCCESS OVERLAY -->
+<div class="success-overlay" id="successOverlay">
+    <div class="success-modal">
+        <div class="success-icon">🎉</div>
+        <h2>Đặt hàng thành công!</h2>
+        <p>Cảm ơn bạn đã mua hàng tại <strong>SPARK</strong></p>
+        <p>Chúng tôi sẽ xử lý đơn hàng trong vòng 24h</p>
+        <div class="success-order-id" id="successOrderId">#SPARK-000000</div>
+        <p style="font-size:12px;color:#9ca3af">Thông tin đơn hàng đã được gửi qua email</p>
+        <div class="success-btns">
+            <a href="/page/shop.html" class="btn-continue-shop">Tiếp tục mua sắm</a>
+            <a href="/page/orders.html" class="btn-view-orders">Xem đơn hàng</a>
+        </div>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div class="dark-footer">
+    <div class="dark-footer-inner">
+        <div>
+            <div class="dark-footer-logo">SPARK</div>
+            <p>Nơi bạn tìm thấy đôi giày phù hợp nhất. Chất lượng – Phong cách – Giá tốt.</p>
+        </div>
+        <div class="dark-footer-col">
+            <h4>Shop</h4>
+            <a href="/page/shop.html">Home</a>
+            <a href="/page/products.html">Products</a>
+            <a href="/page/cart.html">Cart</a>
+        </div>
+        <div class="dark-footer-col">
+            <h4>Support</h4>
+            <a href="#">FAQ</a>
+            <a href="#">Contact</a>
+            <a href="/page/login.html">Login</a>
+        </div>
+        <div class="dark-footer-col">
+            <h4>Subscribe</h4>
+            <p style="font-size:12px;color:#888;margin-bottom:10px">Nhận tin tức & ưu đãi mới nhất</p>
+            <div style="display:flex;gap:8px">
+                <input type="email" placeholder="Email của bạn" style="flex:1;padding:9px;background:#222;border:1px solid #333;border-radius:6px;color:#fff;font-size:12px;outline:none">
+                <button style="padding:9px 12px;background:#facc15;color:#111;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">GỬI</button>
+            </div>
+        </div>
+    </div>
+    <div class="dark-footer-bot">© 2026 SPARK. All rights reserved.</div>
+</div>
+
+<script src="/js/layout.js"></script>
+<script>
+    const SHIPPING = 30000;
+    let payMethod  = 'cod';
+    let cart       = JSON.parse(localStorage.getItem('cart') || '[]');
+
+    // Pre-fill if logged in
+    const savedName  = localStorage.getItem('name')  || '';
+    const savedEmail = localStorage.getItem('email') || '';
+    if (savedName)  document.getElementById('cName').value  = savedName;
+    if (savedEmail) document.getElementById('cEmail').value = savedEmail;
+
+    function loadOrder() {
+        const items = document.getElementById('orderItems');
+        const subtotalEl = document.getElementById('calcSubtotal');
+        const totalEl    = document.getElementById('calcTotal');
+        const shipEl     = document.getElementById('calcShip');
+        const countEl    = document.getElementById('orderCount');
+
+        if (!cart.length) {
+            items.innerHTML = '<p style="padding:20px;color:#9ca3af;font-size:13px">Giỏ hàng trống</p>';
+            subtotalEl.textContent = '0đ';
+            totalEl.textContent    = '0đ';
+            return;
+        }
+
+        let subtotal = 0;
+        items.innerHTML = cart.map(p => {
+            subtotal += p.price * p.qty;
+            return `
+<div class="order-item">
+  <div class="order-item-img">
+    <img src="${p.image || p.imageUrl || 'https://via.placeholder.com/52'}"
+         alt="${p.name}" onerror="this.src='https://via.placeholder.com/52x52?text=Shoe'">
+    <div class="order-item-badge">${p.qty}</div>
+  </div>
+  <div class="order-item-info">
+    <div class="order-item-name">${p.name}</div>
+    <div class="order-item-meta">${[p.size ? 'Size ' + p.size : '', p.color || ''].filter(Boolean).join(' · ')}</div>
+  </div>
+  <div class="order-item-price">${(p.price * p.qty).toLocaleString('vi-VN')}đ</div>
+</div>`;
+        }).join('');
+
+        const total = subtotal + SHIPPING;
+        countEl.textContent    = cart.length;
+        subtotalEl.textContent = subtotal.toLocaleString('vi-VN') + 'đ';
+        shipEl.textContent     = SHIPPING.toLocaleString('vi-VN') + 'đ';
+        totalEl.textContent    = total.toLocaleString('vi-VN') + 'đ';
+
+        // Generate QR
+        document.getElementById('qrImg').src =
+            `https://img.vietqr.io/image/MB-1090901052005-compact2.png?amount=${total}&addInfo=SPARK-ORDER`;
+        document.getElementById('qrContent').textContent = 'SPARK-ORDER-' + Date.now().toString().slice(-6);
+    }
+
+    function selectMethod(m) {
+        payMethod = m;
+        document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('active'));
+        document.getElementById('method-' + m).classList.add('active');
+        document.getElementById('qrPanel').classList.toggle('show',   m === 'bank');
+        document.getElementById('cardFields').classList.toggle('show', m === 'card');
+    }
+
+    function formatCard(input) {
+        let v = input.value.replace(/\D/g, '').slice(0, 16);
+        input.value = v.replace(/(.{4})/g, '$1 ').trim();
+        const icon = document.getElementById('cardType');
+        if (v.startsWith('4'))      icon.textContent = '💙';     // Visa
+        else if (v.startsWith('5')) icon.textContent = '🔴';     // MC
+        else                        icon.textContent = '💳';
+    }
+
+    function formatExp(input) {
+        let v = input.value.replace(/\D/g, '').slice(0, 4);
+        if (v.length >= 3) v = v.slice(0,2) + '/' + v.slice(2);
+        input.value = v;
+    }
+
+    function clearErrors() {
+        document.querySelectorAll('.field-error').forEach(e => e.classList.remove('show'));
+        document.querySelectorAll('.form-group input, .form-group select').forEach(i => i.classList.remove('error'));
+    }
+
+    function fieldError(id, errId) {
+        const el = document.getElementById(id);
+        if (el) { el.classList.add('error'); }
+        const err = document.getElementById(errId);
+        if (err) err.classList.add('show');
+    }
+
+    function placeOrder() {
+        clearErrors();
+        const name     = document.getElementById('cName').value.trim();
+        const phone    = document.getElementById('cPhone').value.trim();
+        const email    = document.getElementById('cEmail').value.trim();
+        const address  = document.getElementById('cAddress').value.trim();
+        const city     = document.getElementById('cCity').value;
+        const district = document.getElementById('cDistrict').value.trim();
+
+        let hasErr = false;
+        if (!name)                               { fieldError('cName',     'errName');    hasErr = true; }
+        if (!phone || !/^0\d{9}$/.test(phone.replace(/\s/g,'')))
+                                                 { fieldError('cPhone',    'errPhone');   hasErr = true; }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+                                                 { fieldError('cEmail',    'errEmail');   hasErr = true; }
+        if (!address)                            { fieldError('cAddress',  'errAddress'); hasErr = true; }
+        if (!city)                               { fieldError('cCity',     'errCity');    hasErr = true; }
+        if (!district)                           { fieldError('cDistrict', 'errDistrict'); hasErr = true; }
+        if (hasErr) { document.querySelector('.section-card').scrollIntoView({behavior:'smooth'}); return; }
+
+        if (!cart.length) { alert('Giỏ hàng đang trống!'); return; }
+
+        const btn = document.getElementById('placeBtn');
+        btn.classList.add('loading');
+        document.getElementById('placeBtnText').textContent = 'Đang xử lý...';
+
+        setTimeout(() => {
+            // Save order
+            const sub  = cart.reduce((s, p) => s + p.price * p.qty, 0);
+            const order = {
+                id:       'SPARK-' + Date.now().toString().slice(-6),
+                date:     new Date().toISOString(),
+                customer: { name, phone, email, address, city, district },
+                items:    cart,
+                payment:  payMethod,
+                subtotal: sub,
+                shipping: SHIPPING,
+                total:    sub + SHIPPING,
+                status:   'processing',
+                note:     document.getElementById('cNote').value.trim()
+            };
+
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.unshift(order);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            localStorage.removeItem('cart');
+
+            // Update header cart count
+            const cartEl = document.getElementById('cartCount');
+            if (cartEl) cartEl.textContent = '0';
+
+            // Show success
+            document.getElementById('successOrderId').textContent = '#' + order.id;
+            document.getElementById('successOverlay').classList.add('show');
+
+            btn.classList.remove('loading');
+            document.getElementById('placeBtnText').textContent = 'Đặt hàng ngay';
+        }, 1800);
+    }
+
+    loadOrder();
+
+    // Header cart count
+    const cartEl = document.getElementById('cartCount');
+    if (cartEl) cartEl.textContent = cart.reduce((s, i) => s + i.qty, 0);
+</script>
+</body>
+</html>

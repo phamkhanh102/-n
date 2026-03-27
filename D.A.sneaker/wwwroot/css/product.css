@@ -32,3 +32,10 @@
     font-size: 16px;
     cursor: pointer;
 }
+.product-card img {
+    transition: .3s;
+}
+
+.product-card:hover img {
+    transform: scale(1.1);
+}

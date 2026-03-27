@@ -3,13 +3,12 @@
 }
 
 .account-btn {
-    background: var(--panel);
-    padding: 10px 12px;
-    border-radius: 10px;
-    cursor: pointer;
-    border: 1px solid var(--border);
+    padding: 0 12px;
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
-
 /* dropdown */
 .account-menu {
     position: absolute;

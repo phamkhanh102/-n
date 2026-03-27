@@ -1,0 +1,36 @@
+﻿<h2>Admin Dashboard</h2>
+
+<pre id="data"></pre>
+
+<script>
+    const raw = '@Html.Raw(ViewBag.Data)';
+    const json = JSON.parse(raw);
+
+    document.getElementById("data").innerText =
+        "Doanh thu: " + json.revenue + "\n" +
+        "Đơn hàng: " + json.orders + "\n" +
+        "User: " + json.users + "\n" +
+        "Sản phẩm: " + json.products;
+            async function loadAdminDashboard() {
+
+        const token = localStorage.getItem("token");
+
+        const res = await fetch("https://localhost:7244/api/admin/dashboard", {
+            headers: {
+                "Authorization": "Bearer " + token
+            }
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        document.getElementById("admin").innerHTML = `
+            <h2>Admin Dashboard</h2>
+            <p>Orders: ${data.totalOrders}</p>
+            <p>Revenue: ${data.revenue}</p>
+            <p>Users: ${data.users}</p>
+            <p>Products: ${data.products}</p>
+        `;
+    }
+</script>

@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK – Sports Collection</title>
+    <meta name="description"
+        content="Shop the latest sports sneaker collection at SPARK. Top trending products, best sellers, and exclusive discounts.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+
+    <style>
+        /* ===== RESET / BASE ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow', 'Barlow Condensed', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-top: 110px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== HERO SLIDESHOW ===== */
+        .hero {
+            position: relative;
+            height: 500px;
+            overflow: hidden;
+            background: #0a0a0a;
+        }
+
+        /* Individual slides */
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+            will-change: transform;
+        }
+
+        .hero-slide.active { opacity: 1; }
+
+        /* Parallax bg image inside each slide */
+        .hero-slide-bg {
+            position: absolute;
+            inset: -10% 0;
+            background-size: cover;
+            background-position: center;
+            transition: transform .1s linear;
+            will-change: transform;
+        }
+
+        /* Dark overlay per slide */
+        .hero-slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to right, rgba(0,0,0,.62) 30%, rgba(0,0,0,.2) 70%);
+        }
+
+        /* Content */
+        .hero-content {
+            position: absolute;
+            inset: 0;
+            z-index: 3;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 10% 0 7%;
+            color: #fff;
+        }
+
+        .hero-eyebrow {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #facc15;
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity .6s .3s, transform .6s .3s;
+        }
+
+        .hero-slide.active .hero-eyebrow { opacity: 1; transform: translateY(0); }
+
+        .hero-content h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(48px, 8vw, 88px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            line-height: .95;
+            text-shadow: 0 4px 24px rgba(0,0,0,.4);
+            margin-bottom: 16px;
+            opacity: 0;
+            transform: translateY(28px);
+            transition: opacity .7s .5s, transform .7s .5s;
+        }
+
+        .hero-slide.active .hero-content h1 { opacity: 1; transform: translateY(0); }
+
+        .hero-sub {
+            font-size: 15px;
+            color: rgba(255,255,255,.8);
+            max-width: 360px;
+            line-height: 1.6;
+            margin-bottom: 28px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity .6s .7s, transform .6s .7s;
+        }
+
+        .hero-slide.active .hero-sub { opacity: 1; transform: translateY(0); }
+
+        .hero-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #facc15;
+            color: #111;
+            padding: 9px 20px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: .2px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s, transform .2s, box-shadow .2s;
+            opacity: 0;
+            transform: translateY(20px);
+            align-self: flex-start;
+        }
+
+        .hero-slide.active .hero-btn {
+            opacity: 1;
+            transform: translateY(0);
+            transition: opacity .6s .9s, transform .6s .9s, background .2s, box-shadow .2s;
+        }
+
+        .hero-btn:hover { background: #fde047; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(250,204,21,.4); }
+
+        /* Floating shoe image – REMOVED */
+        /* .hero-shoe rules removed, images no longer rendered */
+
+        /* Slider controls */
+        .hero-dots {
+            position: absolute;
+            bottom: 22px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            gap: 8px;
+        }
+
+        .hero-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,.4);
+            cursor: pointer;
+            transition: background .3s, transform .3s;
+            border: none;
+        }
+
+        .hero-dot.active { background: #facc15; transform: scale(1.3); }
+
+        /* Progress bar */
+        .hero-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: #facc15;
+            z-index: 10;
+            width: 0%;
+            transition: none;
+        }
+
+        .hero-progress.run {
+            width: 100%;
+            transition: width 5s linear;
+        }
+
+        /* Arrow buttons */
+        .hero-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            background: rgba(255,255,255,.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,.2);
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background .2s;
+            font-size: 18px;
+        }
+
+        .hero-arrow:hover { background: rgba(255,255,255,.3); }
+        .hero-arrow.prev { left: 20px; }
+        .hero-arrow.next { right: 20px; }
+
+        @keyframes float {
+            0%,100% { transform: translateX(0) rotate(-5deg); }
+            50%      { transform: translateX(0) translateY(-18px) rotate(-5deg); }
+        }
+
+        .hero-slide.active .hero-shoe { animation: float 4s ease-in-out infinite; }
+
+
+        /* ===== FEATURE BAR ===== */
+        .feature-bar {
+            background: var(--feature-bar-bg, #fff);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            max-width: 900px;
+            margin: -40px auto 0;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 22px 32px;
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text);
+        }
+
+        .feature-item svg {
+            width: 28px;
+            height: 28px;
+            flex-shrink: 0;
+            color: #555;
+        }
+
+        .feature-item .feat-text small {
+            display: block;
+            color: #888;
+            font-weight: 400;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+
+        .feature-sep {
+            width: 1px;
+            height: 40px;
+            background: #e5e7eb;
+        }
+
+        /* ===== SECTION ===== */
+        .section {
+            margin-top: 70px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+        }
+
+        .section-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .view-all {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color .2s;
+        }
+
+        .view-all:hover {
+            color: #111;
+        }
+
+        /* ===== PRODUCT GRID ===== */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+        }
+
+        .product-card {
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: transform .3s, box-shadow .3s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-card-img {
+            position: relative;
+            background: #f5f5f5;
+            height: 170px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .product-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .4s;
+        }
+
+        .product-card:hover .product-card-img img {
+            transform: scale(1.08);
+        }
+
+        .badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: #22c55e;
+            color: white;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: .5px;
+        }
+
+        .badge.sale {
+            background: #ef4444;
+        }
+
+        .badge.hot {
+            background: #f97316;
+        }
+
+        .badge.new {
+            background: #3b82f6;
+        }
+
+        .product-card-body {
+            padding: 12px 12px 14px;
+            background: var(--card);
+        }
+
+        .product-card-brand {
+            font-size: 11px;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 4px;
+        }
+
+        .product-card-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-card-stars {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-bottom: 8px;
+        }
+
+        .product-card-stars .star {
+            color: #facc15;
+            font-size: 12px;
+        }
+
+        .product-card-stars .star.half {
+            opacity: .6;
+        }
+
+        .rating-count {
+            font-size: 11px;
+            color: #888;
+            margin-left: 4px;
+        }
+
+        .product-card-prices {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .price-now {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .price-old {
+            font-size: 12px;
+            color: #bbb;
+            text-decoration: line-through;
+        }
+
+        .price-pct {
+            font-size: 11px;
+            color: #ef4444;
+            font-weight: 700;
+        }
+
+        /* ===== SKELETON ===== */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-start, #eee) 25%, var(--skeleton-end, #f5f5f5) 50%, var(--skeleton-start, #eee) 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 10px;
+            height: 280px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0 50%;
+            }
+        }
+
+        /* ===== CTA ===== */
+        .cta-section {
+            background: #facc15;
+            border-radius: 8px;
+            margin-top: 70px;
+            padding: 56px 56px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .cta-left h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: #111;
+            line-height: 1.25;
+            max-width: 340px;
+        }
+
+        .cta-left h2 span {
+            color: #ef4444;
+        }
+
+        .cta-left p {
+            margin-top: 12px;
+            font-size: 14px;
+            color: #555;
+            max-width: 300px;
+            line-height: 1.6;
+        }
+
+        .cta-right {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 300px;
+            max-width: 360px;
+            flex: 1;
+        }
+
+        .cta-right input {
+            padding: 13px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            outline: none;
+            transition: border-color .2s;
+        }
+
+        .cta-right input:focus {
+            border-color: #111;
+            background: #fff;
+        }
+
+        .cta-right button {
+            padding: 14px;
+            background: #111;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: .5px;
+            cursor: pointer;
+            transition: background .2s, transform .2s;
+        }
+
+        .cta-right button:hover {
+            background: #000;
+            transform: translateY(-1px);
+        }
+
+        /* ===== BLOG ===== */
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        .blog-card {
+            background: var(--card);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            transition: box-shadow .3s, transform .3s;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-card img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+        }
+
+        .blog-card-body {
+            padding: 16px;
+        }
+
+        .blog-card-meta {
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .blog-card-meta span {
+            background: var(--blog-card-meta, #f3f4f6);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: var(--muted);
+        }
+
+        .blog-card h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text);
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .blog-card p {
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .blog-read-more {
+            display: inline-block;
+            margin-top: 10px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom: 1px solid var(--text);
+            padding-bottom: 1px;
+        }
+
+        /* ===== TRUST BAR ===== */
+        .trust-bar {
+            background: var(--trust-bg, #fff);
+            border-top: 1px solid var(--trust-border, #ebebeb);
+            border-bottom: 1px solid var(--trust-border, #ebebeb);
+            margin-top: 70px;
+            padding: 30px 0;
+        }
+
+        .trust-bar-inner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        .trust-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 8px;
+        }
+
+        .trust-item svg {
+            width: 36px;
+            height: 36px;
+            color: #374151;
+        }
+
+        .trust-item h5 {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .trust-item p {
+            font-size: 11px;
+            color: var(--muted);
+            max-width: 120px;
+        }
+
+        /* ===== FOOTER OVERRIDE ===== */
+        .footer {
+            background: #111 !important;
+            color: #ccc !important;
+            border-top: none !important;
+            margin-top: 0 !important;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr 1fr 1.5fr;
+            gap: 36px;
+            padding: 50px 20px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .footer-logo-text {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #fff;
+            margin-bottom: 12px;
+            letter-spacing: -1px;
+        }
+
+        .footer-brand-desc {
+            font-size: 13px;
+            color: #888;
+            line-height: 1.7;
+            margin-bottom: 18px;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 10px;
+        }
+
+        .footer-socials a {
+            width: 34px;
+            height: 34px;
+            border-radius: 6px;
+            background: #222;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            transition: background .2s, color .2s;
+        }
+
+        .footer-socials a:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .footer-col h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .footer-col a {
+            display: block;
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            transition: color .2s;
+        }
+
+        .footer-col a:hover {
+            color: #fff;
+        }
+
+        .footer-newsletter h4 {
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .footer-newsletter p {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 14px;
+            line-height: 1.6;
+        }
+
+        .footer-newsletter-form {
+            display: flex;
+            gap: 8px;
+        }
+
+        .footer-newsletter-form input {
+            flex: 1;
+            padding: 10px 14px;
+            background: #222;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .footer-newsletter-form input::placeholder {
+            color: #555;
+        }
+
+        .footer-newsletter-form button {
+            padding: 10px 16px;
+            background: #facc15;
+            color: #111;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #222;
+            padding: 18px 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #555;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1100px) {
+            .product-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .hero-content h1 {
+                font-size: 60px;
+            }
+
+            .hero-shoe {
+                height: 260px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .blog-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .cta-section {
+                flex-direction: column;
+                padding: 40px 30px;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .trust-bar-inner {
+                flex-wrap: wrap;
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding-top: 90px;
+            }
+
+            .hero-content h1 {
+                font-size: 42px;
+            }
+
+            .product-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-bar {
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .feature-sep {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER -->
+    <div id="header"></div>
+
+    <!-- HERO SLIDESHOW -->
+    <section class="hero" id="heroSection">
+
+        <!-- SLIDES -->
+        <div class="hero-slide active">
+            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1600&q=80')"></div>
+            <div class="hero-slide-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">New Season 2026</div>
+                <h1>Sports<br>Collection</h1>
+                <p class="hero-sub">Đột phá giới hạn với bộ sưu tập giày thể thao mới nhất – thiết kế táo bạo, êm ái vượt trội.</p>
+                <a href="/page/products.html" class="hero-btn">Mua ngay →</a>
+            </div>
+        </div>
+
+        <div class="hero-slide">
+            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1600&q=80')"></div>
+            <div class="hero-slide-overlay" style="background:linear-gradient(to right,rgba(0,0,0,.65) 30%,rgba(0,0,0,.15) 70%)"></div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">Bestseller 2026</div>
+                <h1>Street<br>Style</h1>
+                <p class="hero-sub">Phong cách đường phố đỉnh cao – những đôi sneaker đang làm mưa làm gió toàn cầu.</p>
+                <a href="/page/products.html" class="hero-btn">Khám phá →</a>
+            </div>
+        </div>
+
+        <div class="hero-slide">
+            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1600&q=80')"></div>
+            <div class="hero-slide-overlay" style="background:linear-gradient(to right,rgba(10,0,30,.7) 30%,rgba(0,0,0,.2) 70%)"></div>
+            <div class="hero-content">
+                <div class="hero-eyebrow">Flash Sale – 48h Only</div>
+                <h1>Sale<br>Up 50%</h1>
+                <p class="hero-sub">Ưu đãi cực lớn kéo dài 48 giờ – số lượng có hạn, đừng bỏ lỡ cơ hội ngàn vàng.</p>
+                <a href="/page/products.html" class="hero-btn" style="background:#ef4444;color:#fff">Xem ưu đãi →</a>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <button class="hero-arrow prev" onclick="heroMove(-1)" aria-label="Previous">&#8592;</button>
+        <button class="hero-arrow next" onclick="heroMove(1)" aria-label="Next">&#8594;</button>
+
+        <div class="hero-dots" id="heroDots"></div>
+        <div class="hero-progress" id="heroProgress"></div>
+
+    </section>
+
+    <!-- FEATURE BAR -->
+    <div class="container">
+        <div class="feature-bar">
+            <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke-linecap="round" />
+                </svg>
+                <div class="feat-text">
+                    <strong>Pick Up In Store</strong>
+                    <small>Order online, collect in-store</small>
+                </div>
+            </div>
+            <div class="feature-sep"></div>
+            <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z" />
+                    <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
+                </svg>
+                <div class="feat-text">
+                    <strong>Special Packaging</strong>
+                    <small>Premium gift wrapping available</small>
+                </div>
+            </div>
+            <div class="feature-sep"></div>
+            <div class="feature-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <div class="feat-text">
+                    <strong>Free Global Returns</strong>
+                    <small>30-day hassle-free returns</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <!-- TRENDING PRODUCTS -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Trending Products</div>
+            </div>
+            <div id="grid" class="product-grid">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </div>
+
+        <!-- BEST SELLING -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Best selling products</div>
+                <a href="products.html" class="view-all">
+                    View all &rsaquo;
+                </a>
+            </div>
+            <div id="grid2" class="product-grid">
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+                <div class="skeleton"></div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-section">
+            <div class="cta-left">
+                <h2>Get <span>25% Discount</span> on your first purchase</h2>
+                <p>Sign up with your email address to receive updates, news and special offers directly in your inbox.
+                </p>
+            </div>
+            <div class="cta-right">
+                <input type="text" placeholder="Name" id="ctaName">
+                <input type="email" placeholder="Email" id="ctaEmail">
+                <button onclick="handleCTA()">SUBMIT</button>
+            </div>
+        </div>
+
+        <!-- BLOG -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-title">Our Recent Blog</div>
+                <a href="#" class="view-all">Email &amp; Privacy &rsaquo;</a>
+            </div>
+            <div class="blog-grid">
+
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1518612880953-cb7ef3e960f2?auto=format&fit=crop&w=600&q=80"
+                        alt="Top casual looks"
+                        onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600'">
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span>03.27.2026</span>
+                        </div>
+                        <h4>Top 10 casual look ideas to dress up your kids</h4>
+                        <p>Discover our curated list of the season's most stylish and comfortable looks for children of
+                            all ages.</p>
+                        <a href="#" class="blog-read-more">Read more</a>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=600&q=80"
+                        alt="Street wear trends"
+                        onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600'">
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span>03.20.2026</span>
+                        </div>
+                        <h4>Latest trends of wearing street wears supremely</h4>
+                        <p>Street wear is constantly evolving. Here are the hottest trends that are taking sidewalks by
+                            storm.</p>
+                        <a href="#" class="blog-read-more">Read more</a>
+                    </div>
+                </div>
+
+                <div class="blog-card">
+                    <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80"
+                        alt="Comfortable shoes for women"
+                        onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600'">
+                    <div class="blog-card-body">
+                        <div class="blog-card-meta">
+                            <span>03.15.2026</span>
+                        </div>
+                        <h4>10 Different Types of comfortable clothes ideas for women</h4>
+                        <p>Comfort meets style in our picks for the most versatile and elegant clothing choices this
+                            season.</p>
+                        <a href="#" class="blog-read-more">Read more</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TRUST BAR -->
+    <div class="trust-bar">
+        <div class="trust-bar-inner">
+            <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path
+                        d="M1 3h1l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <h5>Free delivery</h5>
+                <p>On orders over 500k</p>
+            </div>
+            <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+                <h5>100% safe payment</h5>
+                <p>Secure checkout guaranteed</p>
+            </div>
+            <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <h5>Quality guarantee</h5>
+                <p>30-day return policy</p>
+            </div>
+            <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <h5>Guaranteed savings</h5>
+                <p>Best price matched</p>
+            </div>
+            <div class="trust-item">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path
+                        d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                        stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                <h5>Daily offers</h5>
+                <p>Fresh deals every day</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER (custom dark) -->
+    <footer class="footer">
+        <div class="footer-grid">
+
+            <!-- Brand -->
+            <div>
+                <div class="footer-logo-text">SPARK</div>
+                <p class="footer-brand-desc">Nơi bạn tìm thấy đôi giày phù hợp nhất.<br>Chất lượng – Phong cách – Giá
+                    tốt.</p>
+                <div class="footer-socials">
+                    <a href="#" aria-label="Facebook">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Instagram">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <circle cx="12" cy="12" r="4" />
+                            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Twitter">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="YouTube">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 00-1.94-1.94C18.88 4 12 4 12 4s-6.88 0-8.6.48A2.78 2.78 0 001.46 6.42 29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.94 1.94C5.12 20 12 20 12 20s6.88 0 8.6-.48a2.78 2.78 0 001.94-1.94A29 29 0 0023 12a29 29 0 00-.46-5.58z" />
+                            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#111" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Shop -->
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <a href="#">FAQ</a>
+                <a href="#">About us</a>
+                <a href="#">Sitemap</a>
+                <a href="#">Help centre</a>
+                <a href="#">Affiliate program</a>
+                <a href="#">Delivery information</a>
+            </div>
+
+            <!-- Customer Service -->
+            <div class="footer-col">
+                <h4>Customer Service</h4>
+                <a href="#">FAQ</a>
+                <a href="#">Contact</a>
+                <a href="#">Account</a>
+                <a href="#">Wishlist</a>
+                <a href="#">Order tracking</a>
+                <a href="#">Delivery information</a>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="footer-newsletter">
+                <h4>Subscribe Info</h4>
+                <p>Sign up to receive the latest news, updates and special offers delivered directly to your inbox.</p>
+                <div class="footer-newsletter-form">
+                    <input type="email" placeholder="Enter your email" id="footerEmail">
+                    <button onclick="handleNewsletter()">SUBSCRIBE</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="footer-bottom">
+            © 2026 SPARK. All rights reserved.
+        </div>
+    </footer>
+
+    <script src="/js/layout.js"></script>
+    <script src="/js/SanPham.js"></script>
+    <script>
+        // Sample products for display when API not available
+        const sampleProducts = [
+            { id: 1, name: 'Super Foam Runner', brand: 'Nike', price: 2490000, image: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80', rating: 4, reviews: 142, badge: 'sale', oldPrice: 3200000, pct: '-22%' },
+            { id: 2, name: 'Jordan Leather', brand: 'Jordan', price: 1890000, image: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=400&q=80', rating: 5, reviews: 98, badge: '', oldPrice: null },
+            { id: 3, name: 'Trending Retro', brand: 'Adidas', price: 2150000, image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=400&q=80', rating: 4, reviews: 76, badge: 'new', oldPrice: null },
+            { id: 4, name: 'Air Max Terra', brand: 'Nike', price: 3290000, image: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=400&q=80', rating: 5, reviews: 210, badge: 'hot', oldPrice: 3900000, pct: '-16%' },
+            { id: 5, name: 'Foam Rider', brand: 'Puma', price: 1750000, image: 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=400&q=80', rating: 4, reviews: 55, badge: '', oldPrice: null },
+            { id: 6, name: 'Cyan Splash', brand: 'Adidas', price: 1980000, image: 'https://images.unsplash.com/photo-1539185441755-769473a23570?w=400&q=80', rating: 4, reviews: 88, badge: 'sale', oldPrice: 2400000, pct: '-18%' },
+            { id: 7, name: 'Street Drive', brand: 'Jordan', price: 2750000, image: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=400&q=80', rating: 5, reviews: 134, badge: '', oldPrice: null },
+            { id: 8, name: 'Urban Classic', brand: 'Nike', price: 2100000, image: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=400&q=80', rating: 4, reviews: 67, badge: 'new', oldPrice: null },
+            { id: 9, name: 'Retro Boost', brand: 'Adidas', price: 1650000, image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=400&q=80', rating: 4, reviews: 43, badge: '', oldPrice: null },
+            { id: 10, name: 'Terrain Pro', brand: 'Puma', price: 2850000, image: 'https://images.unsplash.com/photo-1516478177764-9fe5bd7e9717?w=400&q=80', rating: 5, reviews: 189, badge: 'hot', oldPrice: 3400000, pct: '-16%' }
+        ];
+
+        function renderStars(rating) {
+            let html = '<div class="product-card-stars">';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) html += '<span class="star">★</span>';
+                else html += '<span class="star" style="color:#ddd">★</span>';
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function renderCard(p) {
+            const badgeMap = { sale: 'SALE', hot: 'HOT', new: 'NEW' };
+            const badgeColorMap = { sale: '#ef4444', hot: '#f97316', new: '#3b82f6' };
+            const badge = p.badge && badgeMap[p.badge]
+                ? `<span class="badge" style="background:${badgeColorMap[p.badge]}">${badgeMap[p.badge]}</span>`
+                : '';
+
+            const oldPrice = p.oldPrice
+                ? `<span class="price-old">${p.oldPrice.toLocaleString('vi-VN')}đ</span>
+                   <span class="price-pct">${p.pct}</span>`
+                : '';
+
+            return `
+<div class="product-card" onclick="location.href='product-detail.html?id=${p.id}'">
+  <div class="product-card-img">
+    ${badge}
+    <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Sneaker'">
+  </div>
+  <div class="product-card-body">
+    <div class="product-card-brand">${p.brand || ''}</div>
+    <div class="product-card-name">${p.name}</div>
+    ${renderStars(p.rating || 4)}
+    <div class="product-card-prices">
+      <span class="price-now">${(p.price || 0).toLocaleString('vi-VN')}đ</span>
+      ${oldPrice}
+    </div>
+  </div>
+</div>`;
+        }
+
+        async function loadProducts() {
+            const grid1 = document.getElementById('grid');
+            const grid2 = document.getElementById('grid2');
+
+            try {
+                const res = await fetch('/api/products');
+                if (!res.ok) throw new Error('API error');
+                const data = await res.json();
+
+                const products = data.map(p => ({
+                    id: p.Id,
+                    name: p.Name,
+                    brand: p.Brand || '',
+                    price: p.Price,
+                    image: p.ImageUrl || 'https://via.placeholder.com/300x200?text=Sneaker',
+                    rating: Math.floor(Math.random() * 2) + 4,
+                    reviews: Math.floor(Math.random() * 200) + 20,
+                    badge: ['sale', '', 'new', 'hot', ''][Math.floor(Math.random() * 5)]
+                }));
+
+                const trending = products.slice(0, 10);
+                const best = products.length > 5 ? products.slice(-5) : products.slice(0, 5);
+
+                grid1.innerHTML = trending.map(renderCard).join('');
+                grid2.innerHTML = best.map(renderCard).join('');
+            } catch {
+                // Use sample products
+                grid1.innerHTML = sampleProducts.map(renderCard).join('');
+                grid2.innerHTML = sampleProducts.slice(0, 5).map(renderCard).join('');
+            }
+
+            // Update cart count
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((s, i) => s + i.qty, 0);
+            const el = document.getElementById('cartCount');
+            if (el) el.innerText = count;
+        }
+
+        function addToCart(id) {
+            const all = [...sampleProducts];
+            const product = all.find(p => p.id === id);
+            if (!product) return;
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const exist = cart.find(x => x.id === id);
+            if (exist) exist.qty++;
+            else cart.push({ id: product.id, name: product.name, price: product.price, image: product.image, qty: 1 });
+            localStorage.setItem('cart', JSON.stringify(cart));
+            const el = document.getElementById('cartCount');
+            if (el) el.innerText = cart.reduce((s, i) => s + i.qty, 0);
+        }
+
+        function handleCTA() {
+            const name = document.getElementById('ctaName').value.trim();
+            const email = document.getElementById('ctaEmail').value.trim();
+            if (!name || !email) { alert('Vui lòng điền đầy đủ thông tin!'); return; }
+            alert('✅ Cảm ơn ' + name + '! Ưu đãi 25% đã được gửi tới ' + email);
+            document.getElementById('ctaName').value = '';
+            document.getElementById('ctaEmail').value = '';
+        }
+
+        function handleNewsletter() {
+            const email = document.getElementById('footerEmail').value.trim();
+            if (!email) { alert('Vui lòng nhập email!'); return; }
+            alert('✅ Đăng ký thành công! Cảm ơn bạn.');
+            document.getElementById('footerEmail').value = '';
+        }
+
+        /* ═══════════════════════════════════════════════
+           HERO SLIDESHOW + PARALLAX
+           ═══════════════════════════════════════════════ */
+        (function initHero() {
+            const slides  = document.querySelectorAll('.hero-slide');
+            const dotsEl  = document.getElementById('heroDots');
+            const progEl  = document.getElementById('heroProgress');
+            const hero    = document.getElementById('heroSection');
+            let current   = 0;
+            let timer;
+
+            // Build dots
+            slides.forEach((_, i) => {
+                const d = document.createElement('button');
+                d.className = 'hero-dot' + (i === 0 ? ' active' : '');
+                d.setAttribute('aria-label', 'Slide ' + (i + 1));
+                d.onclick = () => goTo(i);
+                dotsEl.appendChild(d);
+            });
+
+            function goTo(idx) {
+                slides[current].classList.remove('active');
+                dotsEl.children[current].classList.remove('active');
+
+                current = (idx + slides.length) % slides.length;
+
+                slides[current].classList.add('active');
+                dotsEl.children[current].classList.add('active');
+
+                // Reset + restart progress bar
+                progEl.classList.remove('run');
+                progEl.style.transition = 'none';
+                progEl.style.width = '0%';
+                requestAnimationFrame(() => requestAnimationFrame(() => {
+                    progEl.classList.add('run');
+                }));
+
+                restartTimer();
+            }
+
+            function heroMove(dir) { goTo(current + dir); }
+            window.heroMove = heroMove;
+
+            function restartTimer() {
+                clearTimeout(timer);
+                timer = setTimeout(() => goTo(current + 1), 5000);
+            }
+
+            // Pause on hover
+            hero.addEventListener('mouseenter', () => clearTimeout(timer));
+            hero.addEventListener('mouseleave', () => restartTimer());
+
+            // Parallax on scroll
+            function onScroll() {
+                const scrollY = window.scrollY;
+                const heroH   = hero.offsetHeight;
+                if (scrollY > heroH) return;
+
+                const pct = scrollY / heroH;          // 0..1
+                const shift = pct * 80;               // px to shift bg (subtle)
+
+                slides.forEach(s => {
+                    const bg = s.querySelector('.hero-slide-bg');
+                    if (bg) bg.style.transform = `translateY(${shift}px)`;
+                });
+
+                // Also gently pull content upward
+                const contents = hero.querySelectorAll('.hero-content');
+                contents.forEach(c => {
+                    c.style.transform = `translateY(${scrollY * 0.25}px)`;
+                });
+            }
+
+            window.addEventListener('scroll', onScroll, { passive: true });
+
+            // Start
+            goTo(0);
+
+            // Keyboard nav
+            document.addEventListener('keydown', e => {
+                if (e.key === 'ArrowLeft')  heroMove(-1);
+                if (e.key === 'ArrowRight') heroMove(1);
+            });
+
+            // Touch/swipe support
+            let touchX = 0;
+            hero.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+            hero.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - touchX;
+                if (Math.abs(dx) > 40) heroMove(dx < 0 ? 1 : -1);
+            });
+        })();
+
+        loadProducts();
+    </script>
+</body>
+
+</html>
