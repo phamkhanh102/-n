@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hỗ trợ khách hàng – SPARK</title>
+    <meta name="description" content="Trung tâm hỗ trợ khách hàng SPARK – Câu hỏi thường gặp, chính sách đổi trả, liên hệ và theo dõi đơn hàng.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding-top: 130px;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ── HERO ── */
+        .support-hero {
+            background: linear-gradient(135deg, #111827 0%, #1e3a8a 100%);
+            color: #fff;
+            padding: 60px 20px 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .support-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 30% 50%, rgba(99,102,241,.3) 0%, transparent 60%),
+                        radial-gradient(ellipse at 70% 50%, rgba(59,130,246,.2) 0%, transparent 60%);
+            pointer-events: none;
+        }
+        .support-hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: -1.5px;
+            margin-bottom: 14px;
+            position: relative;
+        }
+        .support-hero p {
+            font-size: 18px;
+            opacity: .8;
+            max-width: 520px;
+            margin: 0 auto 32px;
+            line-height: 1.6;
+            position: relative;
+        }
+        .support-search {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,.25);
+        }
+        .support-search input {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            font-size: 15px;
+            color: #111;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        .support-search button {
+            padding: 0 24px;
+            background: #111827;
+            color: #fff;
+            border: none;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background .2s;
+            font-family: 'Inter', sans-serif;
+        }
+        .support-search button:hover { background: #374151; }
+
+        /* ── QUICK LINKS ── */
+        .quick-links {
+            max-width: 1100px;
+            margin: -36px auto 0;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            position: relative;
+            z-index: 10;
+        }
+        .quick-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+        }
+        .quick-card:hover { transform: translateY(-6px); box-shadow: 0 16px 40px rgba(0,0,0,.1); }
+        .quick-icon { font-size: 36px; margin-bottom: 12px; }
+        .quick-card h3 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .quick-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+        /* ── MAIN ── */
+        .support-main {
+            max-width: 1100px;
+            margin: 60px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* SECTION TITLE */
+        .section-title-lg {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 30px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .section-sub { color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+        /* FAQ TABS */
+        .faq-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+        .faq-tab {
+            padding: 8px 18px;
+            border-radius: 20px;
+            border: 1.5px solid var(--border);
+            background: transparent;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: all .2s;
+        }
+        .faq-tab.active { background: #111827; color: #fff; border-color: #111827; }
+        body.dark .faq-tab.active { background: #3b82f6; border-color: #3b82f6; }
+        .faq-tab:hover:not(.active) { background: var(--bg); }
+
+        /* FAQ ITEM */
+        .faq-item {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: box-shadow .2s;
+        }
+        .faq-item:hover { box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+        .faq-item.open { border-color: #111827; }
+        body.dark .faq-item.open { border-color: #3b82f6; }
+
+        .faq-q {
+            width: 100%;
+            padding: 18px 20px;
+            background: var(--card);
+            border: none;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Inter', sans-serif;
+            transition: background .2s;
+        }
+        .faq-q:hover { background: var(--bg); }
+        .faq-chevron { width: 20px; height: 20px; flex-shrink: 0; transition: transform .3s; color: var(--muted); }
+        .faq-item.open .faq-chevron { transform: rotate(180deg); }
+
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height .35s ease; background: var(--card); }
+        .faq-a-inner { padding: 0 20px 18px; font-size: 14px; color: var(--muted); line-height: 1.7; }
+        .faq-item.open .faq-a { max-height: 400px; }
+
+        /* SIDEBAR */
+        .support-sidebar { display: flex; flex-direction: column; gap: 20px; }
+        .sidebar-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        .sidebar-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--text); }
+
+        /* CONTACT */
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: background .2s, border-color .2s;
+            text-decoration: none;
+            color: var(--text);
+        }
+        .contact-item:hover { background: var(--bg); border-color: #111827; }
+        body.dark .contact-item:hover { border-color: #3b82f6; }
+        .contact-item:last-child { margin-bottom: 0; }
+        .contact-icon {
+            width: 42px; height: 42px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+        .contact-icon.green  { background: #f0fdf4; }
+        .contact-icon.blue   { background: #eff6ff; }
+        .contact-icon.purple { background: #f5f3ff; }
+        body.dark .contact-icon.green  { background: rgba(34,197,94,.1); }
+        body.dark .contact-icon.blue   { background: rgba(59,130,246,.1); }
+        body.dark .contact-icon.purple { background: rgba(139,92,246,.1); }
+        .contact-info strong { display: block; font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+        .contact-info span   { font-size: 12px; color: var(--muted); }
+
+        /* STATUS BANNER */
+        .status-banner {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 600;
+        }
+        body.dark .status-banner { background: rgba(34,197,94,.08); border-color: rgba(34,197,94,.2); color: #4ade80; }
+        .status-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: #22c55e;
+            animation: blink 2s infinite;
+            flex-shrink: 0;
+        }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+
+        /* FORM */
+        .track-input {
+            width: 100%;
+            padding: 11px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--bg);
+            color: var(--text);
+            outline: none;
+            font-family: 'Inter', sans-serif;
+            transition: border-color .2s;
+        }
+        .track-input:focus { border-color: #111827; }
+        body.dark .track-input:focus { border-color: #3b82f6; }
+        .track-btn {
+            width: 100%;
+            padding: 12px;
+            background: #111827;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background .2s;
+        }
+        .track-btn:hover { background: #374151; }
+        body.dark .track-btn { background: #3b82f6; }
+        body.dark .track-btn:hover { background: #2563eb; }
+        .form-col { display: flex; flex-direction: column; gap: 10px; }
+
+        /* POLICY */
+        .policy-section { max-width: 1100px; margin: 0 auto 60px; padding: 0 20px; }
+        .policy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .policy-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            transition: transform .25s, box-shadow .25s;
+        }
+        .policy-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,.08); }
+        .policy-card-icon { font-size: 32px; margin-bottom: 14px; }
+        .policy-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+        .policy-card p  { font-size: 13px; color: var(--muted); line-height: 1.7; }
+        .policy-card a  { display: inline-block; margin-top: 14px; font-size: 13px; font-weight: 600; color: #111827; border-bottom: 1.5px solid currentColor; padding-bottom: 1px; }
+        body.dark .policy-card a { color: #60a5fa; }
+
+        /* RESPONSIVE */
+        @media (max-width: 900px) {
+            .quick-links { grid-template-columns: repeat(2, 1fr); }
+            .support-main { grid-template-columns: 1fr; }
+            .policy-grid  { grid-template-columns: repeat(2, 1fr); }
+            .support-hero h1 { font-size: 38px; }
+        }
+        @media (max-width: 560px) {
+            .quick-links { grid-template-columns: 1fr 1fr; }
+            .policy-grid  { grid-template-columns: 1fr; }
+            .support-hero { padding: 40px 20px 70px; }
+            .support-hero h1 { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="header"></div>
+
+    <!-- HERO -->
+    <div class="support-hero">
+        <h1>Hỗ trợ Khách hàng</h1>
+        <p>Chúng tôi luôn sẵn sàng giải đáp mọi thắc mắc và hỗ trợ bạn 24/7.</p>
+        <div class="support-search">
+            <input type="text" id="searchInput" placeholder="Tìm kiếm câu hỏi...">
+            <button onclick="searchFAQ()">Tìm kiếm</button>
+        </div>
+    </div>
+
+    <!-- QUICK LINKS -->
+    <div class="quick-links">
+        <a class="quick-card" href="#faq" onclick="scrollToFAQ()">
+            <div class="quick-icon">❓</div>
+            <h3>Câu hỏi thường gặp</h3>
+            <p>Giải đáp nhanh các thắc mắc phổ biến nhất</p>
+        </a>
+        <a class="quick-card" href="#track">
+            <div class="quick-icon">📦</div>
+            <h3>Theo dõi đơn hàng</h3>
+            <p>Kiểm tra trạng thái và vị trí đơn hàng của bạn</p>
+        </a>
+        <a class="quick-card" href="#policy">
+            <div class="quick-icon">🔄</div>
+            <h3>Chính sách đổi trả</h3>
+            <p>Đổi trả miễn phí trong 30 ngày không điều kiện</p>
+        </a>
+        <a class="quick-card" href="#contact">
+            <div class="quick-icon">💬</div>
+            <h3>Liên hệ chúng tôi</h3>
+            <p>Chat, email hoặc gọi điện — chúng tôi luôn ở đây</p>
+        </a>
+    </div>
+
+    <!-- MAIN: FAQ + SIDEBAR -->
+    <div class="support-main">
+
+        <!-- LEFT: FAQ -->
+        <div id="faq">
+            <div class="section-title-lg">Câu hỏi thường gặp</div>
+            <div class="section-sub">Chọn danh mục bên dưới để tìm câu trả lời nhanh nhất.</div>
+
+            <!-- Tabs -->
+            <div class="faq-tabs">
+                <button class="faq-tab active" onclick="filterFAQ('all',this)">Tất cả</button>
+                <button class="faq-tab" onclick="filterFAQ('order',this)">Đơn hàng</button>
+                <button class="faq-tab" onclick="filterFAQ('ship',this)">Vận chuyển</button>
+                <button class="faq-tab" onclick="filterFAQ('return',this)">Đổi trả</button>
+                <button class="faq-tab" onclick="filterFAQ('payment',this)">Thanh toán</button>
+                <button class="faq-tab" onclick="filterFAQ('product',this)">Sản phẩm</button>
+            </div>
+
+            <div id="faqList">
+
+                <!-- ĐƠN HÀNG -->
+                <div class="faq-item" data-cat="order">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Làm thế nào để theo dõi đơn hàng của tôi?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Bạn có thể theo dõi đơn hàng bằng cách đăng nhập vào tài khoản, vào mục "Đơn hàng của tôi" và nhập mã đơn hàng. Chúng tôi cũng gửi email xác nhận kèm đường link theo dõi sau khi đơn hàng được xử lý.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="order">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Tôi có thể huỷ đơn hàng sau khi đặt không?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Bạn có thể huỷ đơn hàng trong vòng 2 giờ sau khi đặt. Sau thời gian này, nếu đơn hàng đã được xử lý, vui lòng liên hệ hotline để được hỗ trợ. Đơn hàng đã giao không thể huỷ, nhưng có thể đổi trả trong 30 ngày.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="order">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Tôi có thể thay đổi địa chỉ giao hàng sau khi đặt không?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Vui lòng liên hệ hỗ trợ ngay trong vòng 1 giờ sau khi đặt hàng để yêu cầu thay đổi địa chỉ. Nếu đơn đã chuyển sang trạng thái "Đang giao hàng", chúng tôi sẽ không thể thay đổi địa chỉ giao.
+                    </div></div>
+                </div>
+
+                <!-- VẬN CHUYỂN -->
+                <div class="faq-item" data-cat="ship">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Phí vận chuyển là bao nhiêu?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Phí vận chuyển là 30.000đ cho mỗi đơn hàng. Miễn phí vận chuyển cho đơn hàng từ 500.000đ trở lên. Giao hàng nhanh (express) có phí 60.000đ và dự kiến 1–2 ngày làm việc.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="ship">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Thời gian giao hàng mất bao lâu?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Nội thành (Hà Nội, TP.HCM, Đà Nẵng): 1–2 ngày làm việc. Tỉnh thành khác: 3–5 ngày làm việc. Khu vực miền núi / hải đảo: 5–7 ngày làm việc. Thời gian trên có thể thay đổi vào mùa cao điểm.
+                    </div></div>
+                </div>
+
+                <!-- ĐỔI TRẢ -->
+                <div class="faq-item" data-cat="return">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Chính sách đổi trả hàng như thế nào?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        SPARK hỗ trợ đổi trả trong 30 ngày kể từ ngày nhận hàng. Sản phẩm cần ở trạng thái chưa sử dụng, còn nhãn mác đầy đủ và kèm hoá đơn. Phí ship chiều về do SPARK chi trả nếu lỗi thuộc về phía chúng tôi.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="return">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Tôi nhận hàng rồi mới phát hiện lỗi — phải làm gì?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Hãy chat với chúng tôi hoặc gọi tới số hotline kèm hình ảnh chụp sản phẩm bị lỗi. Chúng tôi sẽ xử lý đổi hàng mới hoặc hoàn tiền trong vòng 48 giờ làm việc mà không tính bất kỳ phí nào.
+                    </div></div>
+                </div>
+
+                <!-- THANH TOÁN -->
+                <div class="faq-item" data-cat="payment">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        SPARK hỗ trợ những hình thức thanh toán nào?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Chúng tôi chấp nhận: (1) COD – thanh toán khi nhận hàng, (2) Chuyển khoản ngân hàng / quét QR VietQR, (3) Thẻ tín dụng / ghi nợ Visa, Mastercard, (4) Ví điện tử MoMo, ZaloPay.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="payment">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Thông tin thẻ ngân hàng của tôi có được bảo mật không?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Tất cả giao dịch đều được mã hoá SSL 256-bit. Chúng tôi không lưu trữ thông tin thẻ của bạn – các giao dịch được xử lý trực tiếp qua cổng thanh toán PCI-DSS đạt chuẩn quốc tế.
+                    </div></div>
+                </div>
+
+                <!-- SẢN PHẨM -->
+                <div class="faq-item" data-cat="product">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Làm sao biết size giày phù hợp với tôi?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        Mỗi trang sản phẩm có bảng hướng dẫn chọn size chi tiết. Quy tắc chung: đo chiều dài bàn chân (cm) rồi đối chiếu với bảng quy đổi. Nếu bạn đang ở giữa 2 size, hãy chọn size lớn hơn để thoải mái hơn khi mang.
+                    </div></div>
+                </div>
+
+                <div class="faq-item" data-cat="product">
+                    <button class="faq-q" onclick="toggleFAQ(this)">
+                        Sản phẩm có là hàng chính hãng không?
+                        <svg class="faq-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="faq-a"><div class="faq-a-inner">
+                        100% sản phẩm tại SPARK là hàng chính hãng, nhập khẩu trực tiếp từ các thương hiệu (Nike, Adidas, Puma, Jordan...). Mỗi sản phẩm đều có bao bì gốc, tem nhãn và giấy chứng nhận authenticity.
+                    </div></div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- RIGHT: SIDEBAR -->
+        <div class="support-sidebar" id="contact">
+
+            <!-- Online status -->
+            <div class="sidebar-card">
+                <div class="status-banner">
+                    <div class="status-dot"></div>
+                    Hỗ trợ trực tuyến — Phản hồi trong 5 phút
+                </div>
+            </div>
+
+            <!-- Contact options -->
+            <div class="sidebar-card">
+                <h3>Liên hệ chúng tôi</h3>
+
+                <a class="contact-item" href="https://wa.me/84912345678" target="_blank">
+                    <div class="contact-icon green">📱</div>
+                    <div class="contact-info">
+                        <strong>Hotline / Zalo</strong>
+                        <span>0912 345 678 — 8:00–22:00</span>
+                    </div>
+                </a>
+
+                <a class="contact-item" href="mailto:support@spark.vn">
+                    <div class="contact-icon blue">✉️</div>
+                    <div class="contact-info">
+                        <strong>Email hỗ trợ</strong>
+                        <span>support@spark.vn — Phản hồi trong 4h</span>
+                    </div>
+                </a>
+
+                <a class="contact-item" href="#" onclick="openChat();return false;">
+                    <div class="contact-icon purple">💬</div>
+                    <div class="contact-info">
+                        <strong>Live Chat AI</strong>
+                        <span>Chat trực tiếp với trợ lý AI của SPARK</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Order tracking -->
+            <div class="sidebar-card" id="track">
+                <h3>📦 Theo dõi đơn hàng</h3>
+                <div class="form-col">
+                    <input class="track-input" type="text" id="trackId" placeholder="Nhập mã đơn hàng (VD: SPARK-123456)">
+                    <input class="track-input" type="email" id="trackEmail" placeholder="Email đặt hàng">
+                    <button class="track-btn" onclick="trackOrder()">Kiểm tra ngay</button>
+                </div>
+                <div id="trackResult" style="margin-top:14px;font-size:13px;color:var(--muted)"></div>
+            </div>
+
+            <!-- Contact form -->
+            <div class="sidebar-card">
+                <h3>✉️ Gửi tin nhắn</h3>
+                <div class="form-col">
+                    <input class="track-input" type="text" id="cName" placeholder="Họ và tên">
+                    <input class="track-input" type="email" id="cEmail" placeholder="Email của bạn">
+                    <select class="track-input" id="cCategory">
+                        <option value="">Chọn chủ đề...</option>
+                        <option>Đơn hàng</option>
+                        <option>Vận chuyển</option>
+                        <option>Đổi trả hàng</option>
+                        <option>Sản phẩm</option>
+                        <option>Thanh toán</option>
+                        <option>Khác</option>
+                    </select>
+                    <textarea class="track-input" id="cMsg" rows="4" placeholder="Mô tả vấn đề của bạn..." style="resize:vertical"></textarea>
+                    <button class="track-btn" onclick="sendContact()">Gửi yêu cầu</button>
+                    <div id="contactResult" style="font-size:13px;color:var(--muted)"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- POLICY SECTION -->
+    <div class="policy-section" id="policy">
+        <div class="section-title-lg" style="margin-bottom:6px">Chính sách của SPARK</div>
+        <div class="section-sub">Cam kết minh bạch và bảo vệ quyền lợi khách hàng.</div>
+        <div class="policy-grid">
+            <div class="policy-card">
+                <div class="policy-card-icon">🔄</div>
+                <h3>Chính sách đổi trả</h3>
+                <p>Đổi trả miễn phí trong 30 ngày kể từ ngày nhận hàng. Sản phẩm còn nguyên tem mác, chưa qua sử dụng. Phí ship chiều về miễn phí nếu lỗi do SPARK.</p>
+                <a href="#">Xem chi tiết</a>
+            </div>
+            <div class="policy-card">
+                <div class="policy-card-icon">🚚</div>
+                <h3>Chính sách vận chuyển</h3>
+                <p>Giao hàng toàn quốc qua GHTK, GHN. Miễn phí vận chuyển cho đơn hàng từ 500.000đ. Thời gian giao từ 1–7 ngày tuỳ khu vực.</p>
+                <a href="#">Xem chi tiết</a>
+            </div>
+            <div class="policy-card">
+                <div class="policy-card-icon">🛡️</div>
+                <h3>Bảo mật & Quyền riêng tư</h3>
+                <p>Thông tin cá nhân được bảo vệ theo tiêu chuẩn GDPR. Chúng tôi không bán hoặc chia sẻ dữ liệu của bạn với bên thứ ba mà không có sự đồng ý.</p>
+                <a href="#">Xem chi tiết</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        function toggleFAQ(btn) {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        }
+
+        function filterFAQ(cat, tabEl) {
+            document.querySelectorAll('.faq-tab').forEach(t => t.classList.remove('active'));
+            tabEl.classList.add('active');
+            document.querySelectorAll('.faq-item').forEach(item => {
+                item.style.display = (cat === 'all' || item.dataset.cat === cat) ? '' : 'none';
+            });
+        }
+
+        function searchFAQ() {
+            const q = document.getElementById('searchInput').value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+            if (!q) { document.querySelectorAll('.faq-item').forEach(i => i.style.display = ''); return; }
+            document.querySelectorAll('.faq-item').forEach(item => {
+                const text = (item.querySelector('.faq-q').textContent + item.querySelector('.faq-a-inner').textContent)
+                             .toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+                item.style.display = text.includes(q) ? '' : 'none';
+            });
+            document.getElementById('faq').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        document.getElementById('searchInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') searchFAQ();
+        });
+
+        function scrollToFAQ() {
+            setTimeout(() => document.getElementById('faq').scrollIntoView({ behavior: 'smooth' }), 50);
+        }
+
+        function trackOrder() {
+            const id    = document.getElementById('trackId').value.trim();
+            const email = document.getElementById('trackEmail').value.trim();
+            const res   = document.getElementById('trackResult');
+            if (!id || !email) {
+                res.innerHTML = '<span style="color:#ef4444">Vui lòng nhập đủ mã đơn hàng và email.</span>';
+                return;
+            }
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            const order  = orders.find(o => o.id === id);
+            if (order) {
+                res.innerHTML = `<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:12px;color:#16a34a">
+                    <strong>Tìm thấy đơn hàng!</strong><br>
+                    Mã: <b>${order.id}</b> — Trạng thái: <b>${order.status || 'Đang xử lý'}</b>
+                </div>`;
+            } else {
+                res.innerHTML = `<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px;color:#1d4ed8">
+                    Không tìm thấy đơn hàng với mã này. Vui lòng kiểm tra lại hoặc liên hệ hỗ trợ.
+                </div>`;
+            }
+        }
+
+        function sendContact() {
+            const name  = document.getElementById('cName').value.trim();
+            const email = document.getElementById('cEmail').value.trim();
+            const msg   = document.getElementById('cMsg').value.trim();
+            const res   = document.getElementById('contactResult');
+            if (!name || !email || !msg) {
+                res.innerHTML = '<span style="color:#ef4444">Vui lòng điền đầy đủ thông tin.</span>';
+                return;
+            }
+            res.innerHTML = '<span style="color:#16a34a">✓ Đã gửi thành công! Chúng tôi sẽ phản hồi trong vòng 4 giờ làm việc.</span>';
+            ['cName','cEmail','cCategory','cMsg'].forEach(id => { document.getElementById(id).value = ''; });
+            setTimeout(() => res.textContent = '', 5000);
+        }
+
+        function openChat() {
+            const btn = document.getElementById('sparkAiBtn');
+            if (btn) btn.click();
+        }
+    </script>
+</body>
+</html>

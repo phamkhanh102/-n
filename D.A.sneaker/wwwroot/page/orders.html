@@ -449,41 +449,104 @@
 
     <script src="/js/layout.js"></script>
     <script>
-        /* ─── SAMPLE / REAL ORDERS ───────────────────────────────── */
-        let allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+        /* ─── FETCH REAL ORDERS FROM API ─────────────────────────── */
+        let allOrders = [];
 
-        // If no orders → add demo orders so the page isn't totally empty
-        if (allOrders.length === 0) {
-            allOrders = [
-                {
-                    id: 'SP20260001',
-                    date: '27/03/2026',
-                    status: 'shipping',
-                    statusText: 'Đang giao hàng',
-                    items: [
-                        { name: 'Nike Air Force 1 Panda',   price: 2490000, qty: 1, image: '' },
-                        { name: 'Adidas Ultraboost 22',      price: 3190000, qty: 1, image: '' },
-                    ]
-                },
-                {
-                    id: 'SP20260002',
-                    date: '20/03/2026',
-                    status: 'done',
-                    statusText: 'Đã giao thành công',
-                    items: [
-                        { name: 'New Balance 550 White',      price: 2890000, qty: 2, image: '' },
-                    ]
-                },
-                {
-                    id: 'SP20260003',
-                    date: '15/03/2026',
-                    status: 'processing',
-                    statusText: 'Đang xử lý',
-                    items: [
-                        { name: 'Puma RS-X Efekt',            price: 1990000, qty: 1, image: '' },
-                    ]
+        async function loadOrders() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                allOrders = [];
+                updateStats(allOrders);
+                renderOrders(allOrders);
+                const empty = document.getElementById('emptyState');
+                empty.classList.add('show');
+                empty.querySelector('h3').textContent = 'Vui lòng đăng nhập';
+                empty.querySelector('p').textContent = 'Đăng nhập để xem đơn hàng của bạn.';
+                const btn = empty.querySelector('a');
+                if (btn) { btn.href = '/page/login.html'; btn.textContent = 'Đăng nhập'; }
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/orders/my', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!res.ok) {
+                    console.warn('GET /api/orders/my →', res.status);
+                    allOrders = [];
+                } else {
+                    const data = await res.json();
+
+                    const statusMap = {
+                        'Pending': 'processing', 'Confirmed': 'processing',
+                        'Shipping': 'shipping', 'Completed': 'done',
+                        'Paid': 'done', 'Cancelled': 'cancelled'
+                    };
+                    const statusTextMap = {
+                        'Pending': 'Đang xử lý', 'Confirmed': 'Đã xác nhận',
+                        'Shipping': 'Đang giao hàng', 'Completed': 'Đã giao thành công',
+                        'Paid': 'Đã thanh toán', 'Cancelled': 'Đã huỷ'
+                    };
+
+                    allOrders = data.map(o => {
+                        // Handle PascalCase (PropertyNamingPolicy=null)
+                        const rawStatus = o.Status || o.status || 'Pending';
+                        const rawId = o.Id || o.id;
+                        const rawDate = o.CreatedAt || o.createdAt;
+                        const rawTotal = o.TotalAmount || o.totalAmount || 0;
+                        const rawItems = o.Items || o.items || [];
+
+                        return {
+                            rawId: rawId,
+                            id: 'SP' + String(rawId).padStart(8, '0'),
+                            date: new Date(rawDate).toLocaleDateString('vi-VN'),
+                            status: statusMap[rawStatus] || 'processing',
+                            statusText: statusTextMap[rawStatus] || rawStatus,
+                            rawStatus: rawStatus,
+                            total: rawTotal,
+                            items: rawItems.map(i => ({
+                                name: i.ProductName || i.productName || 'Sản phẩm',
+                                price: i.Price || i.price || 0,
+                                qty: i.Quantity || i.quantity || 1,
+                                size: i.SizeNumber || i.sizeNumber || '',
+                                color: i.ColorName || i.colorName || ''
+                            }))
+                        };
+                    });
                 }
-            ];
+            } catch (err) {
+                console.error('Error loading orders:', err);
+                allOrders = [];
+            }
+
+            updateStats(allOrders);
+            renderOrders(allOrders);
+        }
+
+        /* ─── CANCEL ORDER ───────────────────────────────────────── */
+        async function cancelOrder(rawId) {
+            if (!confirm('Bạn có chắc chắn muốn huỷ đơn hàng #' + rawId + ' không?')) return;
+
+            const token = localStorage.getItem('token');
+            if (!token) { alert('Vui lòng đăng nhập'); return; }
+
+            try {
+                const res = await fetch(`/api/orders/${rawId}/cancel`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (res.ok) {
+                    alert('✅ Đã huỷ đơn hàng thành công!');
+                    loadOrders();
+                } else {
+                    const data = await res.json().catch(() => ({}));
+                    alert('❌ ' + (data.error || data.message || 'Không thể huỷ đơn hàng'));
+                }
+            } catch {
+                alert('❌ Lỗi kết nối server');
+            }
         }
 
         /* ─── UPDATE STATS ───────────────────────────────────────── */
@@ -494,14 +557,13 @@
             document.getElementById('statDone').textContent       = orders.filter(o => o.status === 'done').length;
         }
 
-        /* ─── TIMELINE STEPS ─────────────────────────────────────── */
+        /* ─── TIMELINE ───────────────────────────────────────────── */
         const STEPS = ['processing','shipping','done'];
         const STEP_LABELS = { processing: 'Xử lý', shipping: 'Đang giao', done: 'Hoàn thành' };
 
         function buildTimeline(status) {
             const curIdx = STEPS.indexOf(status);
             if (curIdx === -1 || status === 'cancelled') return '';
-
             return `<div class="order-timeline">` +
                 STEPS.map((s, i) => {
                     let cls = '';
@@ -512,11 +574,9 @@
                         <div class="tl-dot">${icon}</div>
                         <div class="tl-label">${STEP_LABELS[s]}</div>
                     </div>`;
-                }).join('') +
-                `</div>`;
+                }).join('') + `</div>`;
         }
 
-        /* ─── STATUS LABEL ───────────────────────────────────────── */
         function statusLabel(status, text) {
             const map = {
                 processing: ['status-processing', text || 'Đang xử lý'],
@@ -542,23 +602,17 @@
             empty.classList.remove('show');
 
             list.innerHTML = orders.map((order, idx) => {
-                const total = (order.items || []).reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
+                const total = order.total || (order.items || []).reduce((s, i) => s + (i.price * (i.qty || 1)), 0);
 
-                const itemsHTML = (order.items || []).map(p => {
-                    const imgPart = p.image
-                        ? `<img class="order-item-img" src="/images/${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
-                        : '';
-                    const ph = `<div class="order-item-img-placeholder" style="${p.image ? 'display:none' : ''}">👟</div>`;
-                    return `
-                        <div class="order-item">
-                            ${imgPart}${ph}
-                            <div class="order-item-info">
-                                <div class="order-item-name">${p.name}</div>
-                                <div class="order-item-meta">Số lượng: ${p.qty || 1}</div>
-                            </div>
-                            <div class="order-item-price">${(p.price * (p.qty||1)).toLocaleString('vi-VN')}đ</div>
-                        </div>`;
-                }).join('');
+                const itemsHTML = (order.items || []).map(p => `
+                    <div class="order-item">
+                        <div class="order-item-img-placeholder">👟</div>
+                        <div class="order-item-info">
+                            <div class="order-item-name">${p.name}</div>
+                            <div class="order-item-meta">Số lượng: ${p.qty || 1}${p.size ? ' · Size ' + p.size : ''}${p.color ? ' · ' + p.color : ''}</div>
+                        </div>
+                        <div class="order-item-price">${(p.price * (p.qty||1)).toLocaleString('vi-VN')}đ</div>
+                    </div>`).join('');
 
                 return `
                 <div class="order-card" style="animation-delay:${idx * 0.06}s">
@@ -574,9 +628,9 @@
                     <div class="order-foot">
                         <div class="order-total">Tổng tiền <strong>${total.toLocaleString('vi-VN')}đ</strong></div>
                         <div class="order-foot-actions">
-                            <button class="btn-sm btn-sm-ghost" onclick="alert('Tính năng liên hệ sẽ sớm có!')">Hỗ trợ</button>
-                            ${order.status === 'done' ? `<button class="btn-sm btn-sm-primary" onclick="alert('Tính năng mua lại sẽ sớm có!')">Mua lại</button>` : ''}
-                            ${order.status === 'processing' ? `<button class="btn-sm btn-sm-ghost" onclick="alert('Bạn có thể huỷ đơn này sớm thôi~')">Huỷ đơn</button>` : ''}
+                            <button class="btn-sm btn-sm-ghost" onclick="alert('Liên hệ hotline: 1800 1234 để được hỗ trợ!')">Hỗ trợ</button>
+                            ${order.status === 'done' ? `<button class="btn-sm btn-sm-primary" onclick="location.href='/page/products.html'">Mua lại</button>` : ''}
+                            ${order.status === 'processing' ? `<button class="btn-sm btn-sm-ghost" style="color:#ef4444;border-color:#ef4444" onclick="cancelOrder(${order.rawId})">Huỷ đơn</button>` : ''}
                         </div>
                     </div>
                 </div>`;
@@ -591,9 +645,11 @@
             renderOrders(filtered);
         }
 
-        /* ─── INIT ───────────────────────────────────────────────── */
-        updateStats(allOrders);
-        renderOrders(allOrders);
+        /* ─── INIT + AUTO REFRESH ────────────────────────────────── */
+        loadOrders();
+
+        // Tự động refresh mỗi 30 giây để thấy thay đổi trạng thái từ admin
+        setInterval(loadOrders, 30000);
     </script>
 </body>
 </html>

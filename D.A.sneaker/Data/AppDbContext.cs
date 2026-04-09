@@ -68,48 +68,8 @@ namespace D.A.sneaker.Data
     }
 
 );
-            modelBuilder.Entity<Product>().HasData(
 
- new Product
- {
-     Id = 1,
-     Name = "Nike Air Force 1",
-     Brand = "Nike",
-     CategoryId = 2,
-     Price = 3200000,
-     Description = "Classic Nike sneaker",
-     MainImage = "Nike/nike-af1.jpg"
- },
 
- new Product
- {
-     Id = 2,
-     Name = "Adidas Run Falcon 5",
-     Brand = "Adidas",
-     CategoryId = 1,
-     Price = 2100000,
-     Description = "Lightweight running shoes",
-     MainImage = "Adidas/AdidasMensRunFalcon5.jpg"
- }
-
- );
-            modelBuilder.Entity<ProductImage>().HasData(
-
-new ProductImage
-{
-    Id = 1,
-    ProductId = 1,
-    ImageUrl = "Nike/af1-1.jpg"
-},
-
-new ProductImage
-{
-    Id = 2,
-    ProductId = 2,
-    ImageUrl = "Adidas/AdidasMensRunFalcon5.jpg"
-}
-
-);
 
             // ===== TABLE NAME MAP =====
             modelBuilder.Entity<User>().ToTable("Users");

@@ -4,681 +4,634 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tài khoản – SPARK</title>
-    <meta name="description" content="Quản lý tài khoản, bảo mật và cài đặt cá nhân của bạn tại SPARK Sneaker.">
+    <meta name="description" content="Quản lý tài khoản, đơn hàng và thông tin cá nhân của bạn tại SPARK Sneaker.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/css/theme.css">
     <link rel="stylesheet" href="/css/Header.css">
-    <link rel="stylesheet" href="/css/footer.css">
     <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding-top: 120px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); padding-top: 120px; min-height: 100vh; }
 
-        /* ─── ACCOUNT LAYOUT ─────────────────────────────────────── */
-        .account-wrapper {
-            flex: 1;
-            display: flex;
-            max-width: 1100px;
-            margin: 40px auto;
-            width: 100%;
-            padding: 0 20px;
-            gap: 28px;
-            align-items: flex-start;
-        }
+        /* WRAPPER */
+        .acc-wrap { max-width: 1080px; margin: 0 auto; padding: 36px 20px; display: flex; gap: 24px; align-items: flex-start; }
 
-        /* ─── SIDEBAR ────────────────────────────────────────────── */
+        /* SIDEBAR */
         .acc-sidebar {
-            width: 240px;
-            flex-shrink: 0;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 24px 16px;
-            position: sticky;
-            top: 130px;
+            width: 260px; flex-shrink: 0;
+            background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+            overflow: hidden; position: sticky; top: 136px;
         }
 
-        .acc-avatar-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            padding-bottom: 20px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--border);
+        .acc-profile-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            padding: 28px 20px 24px; text-align: center; position: relative;
         }
+        body.dark .acc-profile-header { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); }
 
         .acc-avatar {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #111827, #374151);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            color: #fff;
-            font-weight: 800;
-            letter-spacing: -1px;
-            flex-shrink: 0;
+            width: 76px; height: 76px; border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900;
+            color: #fff; margin: 0 auto 12px; border: 3px solid rgba(255,255,255,.15);
+            box-shadow: 0 8px 24px rgba(0,0,0,.3);
+        }
+        .acc-user-name { color: #fff; font-weight: 700; font-size: 16px; margin-bottom: 4px; }
+        .acc-user-email { color: rgba(255,255,255,.55); font-size: 12px; }
+        .acc-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            margin-top: 10px; padding: 3px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+            background: rgba(59,130,246,.25); color: #93c5fd; border: 1px solid rgba(59,130,246,.3);
         }
 
-        .acc-name-label {
-            font-weight: 700;
-            font-size: 15px;
-            color: var(--text);
-            text-align: center;
-            line-height: 1.3;
-        }
-
-        .acc-role-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: .5px;
-            background: #111827;
-            color: #fff;
-        }
-
-        .acc-role-badge.admin {
-            background: linear-gradient(90deg, #f59e0b, #ef4444);
-        }
-
-        /* ─── MENU ITEMS ─────────────────────────────────────────── */
-        .acc-menu {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .acc-menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 14px;
-            border-radius: 10px;
-            cursor: pointer;
-            color: var(--text);
-            font-size: 14px;
-            font-weight: 500;
-            transition: background .2s, color .2s;
+        .acc-nav { padding: 12px 10px; }
+        .acc-nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 14px; border-radius: 10px; border: none; background: none;
+            width: 100%; text-align: left; font-size: 13.5px; font-weight: 500;
+            color: var(--text); cursor: pointer; transition: background .15s, color .15s;
             text-decoration: none;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
         }
+        .acc-nav-item svg { width: 17px; height: 17px; flex-shrink: 0; opacity: .55; }
+        .acc-nav-item:hover { background: var(--bg); }
+        .acc-nav-item.active { background: #eff6ff; color: #1d4ed8; font-weight: 600; }
+        .acc-nav-item.active svg { opacity: 1; }
+        body.dark .acc-nav-item.active { background: rgba(59,130,246,.12); color: #60a5fa; }
+        .acc-nav-item.danger { color: #ef4444; }
+        .acc-nav-item.danger svg { opacity: .7; }
+        .acc-nav-divider { height: 1px; background: var(--border); margin: 8px 10px; }
 
-        .acc-menu-item svg {
-            width: 17px;
-            height: 17px;
-            flex-shrink: 0;
-            opacity: .7;
+        /* MAIN */
+        .acc-main { flex: 1; min-width: 0; }
+
+        /* SECTIONS */
+        .acc-section { display: none; }
+        .acc-section.active { display: block; animation: fadein .2s ease; }
+        @keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; } }
+
+        /* CARD */
+        .card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; margin-bottom: 20px; }
+        .card-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+        .card-head h3 { font-size: 15px; font-weight: 700; }
+        .card-body { padding: 22px; }
+
+        /* FORM */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .form-col { display: flex; flex-direction: column; }
+        .form-col.full { grid-column: 1/-1; }
+        .form-label { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 7px; text-transform: uppercase; letter-spacing: .5px; }
+        .form-input {
+            padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 10px;
+            background: var(--bg); color: var(--text); font-size: 14px;
+            font-family: 'Inter', sans-serif; outline: none; transition: border-color .18s;
         }
+        .form-input:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.1); }
+        .form-input:disabled { opacity: .5; cursor: not-allowed; }
 
-        .acc-menu-item:hover {
-            background: var(--bg);
-            color: var(--text);
-        }
-
-        .acc-menu-item.active {
-            background: #111827;
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .acc-menu-item.active svg { opacity: 1; }
-
-        body.dark .acc-menu-item.active {
-            background: #3b82f6;
-        }
-
-        .acc-menu-item.danger { color: #ef4444; }
-        .acc-menu-item.danger:hover { background: #fef2f2; }
-        body.dark .acc-menu-item.danger:hover { background: rgba(239,68,68,.1); }
-
-        /* ─── MAIN CONTENT ───────────────────────────────────────── */
-        .acc-main {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .acc-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            display: none;
-            animation: fadeIn .25s ease;
-        }
-
-        .acc-card.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .acc-card-title {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -1px;
-            color: var(--text);
-            margin-bottom: 6px;
-        }
-
-        .acc-card-sub {
-            color: var(--muted);
-            font-size: 14px;
-            margin-bottom: 28px;
-        }
-
-        /* ─── INFO GRID ──────────────────────────────────────────── */
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-
-        .info-field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .info-field label {
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: .5px;
-            text-transform: uppercase;
-            color: var(--muted);
-        }
-
-        .info-value {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 16px;
-            font-size: 15px;
-            font-weight: 500;
-            color: var(--text);
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-        }
-
-        .info-value.editable {
-            border: none;
-            background: var(--input, var(--bg));
-            outline: none;
-            width: 100%;
-            cursor: text;
-            transition: border .2s, box-shadow .2s;
-        }
-
-        .info-value.editable:focus {
-            box-shadow: 0 0 0 2px #111827;
-        }
-
-        body.dark .info-value.editable:focus {
-            box-shadow: 0 0 0 2px #3b82f6;
-        }
-
-        /* ─── STAT CARDS ─────────────────────────────────────────── */
-        .stat-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 28px;
-        }
-
-        .stat-card {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
-        }
-
-        .stat-card .stat-num {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 32px;
-            font-weight: 900;
-            color: var(--text);
-            line-height: 1;
-        }
-
-        .stat-card .stat-label {
-            font-size: 12px;
-            color: var(--muted);
-            margin-top: 4px;
-            font-weight: 500;
-        }
-
-        /* ─── BUTTONS ────────────────────────────────────────────── */
+        /* BUTTON */
         .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 22px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background .2s, color .2s, transform .1s;
-            border: none;
-            letter-spacing: .2px;
+            padding: 10px 20px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            cursor: pointer; border: none; font-family: 'Inter', sans-serif;
+            transition: all .15s; display: inline-flex; align-items: center; gap: 7px;
         }
-
-        .btn:active { transform: scale(.97); }
-
-        .btn-primary {
-            background: #111827;
-            color: #fff;
-        }
-
-        .btn-primary:hover { background: #374151; }
-
+        .btn-primary { background: #111827; color: #fff; }
+        .btn-primary:hover { background: #374151; transform: translateY(-1px); }
         body.dark .btn-primary { background: #3b82f6; }
         body.dark .btn-primary:hover { background: #2563eb; }
-
-        .btn-outline {
-            background: transparent;
-            color: var(--text);
-            border: 1.5px solid var(--border);
-        }
-
+        .btn-outline { background: transparent; border: 1.5px solid var(--border); color: var(--text); }
         .btn-outline:hover { background: var(--bg); }
-
-        .btn-danger {
-            background: #fef2f2;
-            color: #ef4444;
-            border: 1.5px solid #fee2e2;
-        }
-
+        .btn-danger { background: #fef2f2; color: #dc2626; border: 1.5px solid #fecaca; }
         .btn-danger:hover { background: #fee2e2; }
+        .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
+        .btn-success { background: #f0fdf4; color: #16a34a; border: 1.5px solid #bbf7d0; }
 
-        body.dark .btn-danger { background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.2); }
+        /* ALERT */
+        .alert { border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 500; margin-bottom: 16px; }
+        .alert-success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert-error   { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
-        /* ─── DIVIDER ────────────────────────────────────────────── */
-        .divider {
-            border: none;
-            border-top: 1px solid var(--border);
-            margin: 24px 0;
-        }
+        /* ORDERS TABLE */
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 700; letter-spacing: .7px; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--bg); }
+        td { padding: 13px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--bg); }
 
-        /* ─── SECURITY ITEMS ─────────────────────────────────────── */
-        .security-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 0;
-            border-bottom: 1px solid var(--border);
-        }
+        /* BADGE */
+        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .badge-green  { background: #f0fdf4; color: #16a34a; }
+        .badge-blue   { background: #eff6ff; color: #1d4ed8; }
+        .badge-orange { background: #fff7ed; color: #c2410c; }
+        .badge-red    { background: #fef2f2; color: #dc2626; }
+        .badge-gray   { background: #f3f4f6; color: #6b7280; }
+        body.dark .badge-green  { background: rgba(34,197,94,.12);  color: #4ade80; }
+        body.dark .badge-blue   { background: rgba(59,130,246,.12); color: #60a5fa; }
+        body.dark .badge-orange { background: rgba(249,115,22,.12); color: #fb923c; }
+        body.dark .badge-red    { background: rgba(239,68,68,.12);  color: #f87171; }
+        body.dark .badge-gray   { background: rgba(107,114,128,.12);color: #9ca3af; }
 
-        .security-item:last-child { border-bottom: none; }
+        /* STAT CARD (wishlist/orders count) */
+        .quick-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 22px; }
+        .qs-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 18px 20px; }
+        .qs-val  { font-size: 26px; font-weight: 700; font-family: 'Barlow Condensed', sans-serif; }
+        .qs-lbl  { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
-        .security-item-left { display: flex; align-items: center; gap: 14px; }
+        /* PASSWORD STRENGTH */
+        .pwd-meter { display: flex; gap: 4px; margin-top: 8px; }
+        .pwd-bar { height: 3px; flex: 1; border-radius: 2px; background: var(--border); transition: background .3s; }
+        .pwd-bar.weak { background: #ef4444; }
+        .pwd-bar.medium { background: #f59e0b; }
+        .pwd-bar.strong { background: #22c55e; }
+        .pwd-hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
 
-        .sec-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            flex-shrink: 0;
-        }
+        /* EMPTY */
+        .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+        .empty-state .icon { font-size: 42px; margin-bottom: 10px; opacity: .35; }
+        .empty-state p { font-size: 14px; }
 
-        .sec-title { font-size: 14px; font-weight: 600; color: var(--text); }
-        .sec-desc  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+        /* LOADING */
+        .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: #3b82f6; border-radius: 50%; animation: spin .7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ─── LINKED ACCOUNTS ────────────────────────────────────── */
-        .linked-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 14px 16px;
-            border-radius: 12px;
-            border: 1.5px solid var(--border);
-            margin-bottom: 12px;
-        }
+        /* SECTION TITLE */
+        .sec-title { font-family: 'Barlow Condensed', sans-serif; font-size: 26px; font-weight: 900; letter-spacing: -.3px; margin-bottom: 20px; }
 
-        .linked-item-left { display: flex; align-items: center; gap: 12px; }
-
-        .linked-icon {
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            background: var(--bg);
-        }
-
-        .linked-name { font-size: 14px; font-weight: 600; color: var(--text); }
-        .linked-status { font-size: 12px; color: var(--muted); margin-top: 2px; }
-        .linked-status.active { color: #22c55e; }
-
-        /* ─── RESPONSIVE ─────────────────────────────────────────── */
-        @media (max-width: 800px) {
-            .account-wrapper { flex-direction: column; }
+        @media (max-width: 768px) {
+            .acc-wrap { flex-direction: column; }
             .acc-sidebar { width: 100%; position: static; }
-            .acc-menu { flex-direction: row; flex-wrap: wrap; }
-            .info-grid { grid-template-columns: 1fr; }
-            .stat-row { grid-template-columns: repeat(3, 1fr); }
-        }
-
-        @media (max-width: 480px) {
-            .stat-row { grid-template-columns: 1fr; }
-            .acc-card { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .quick-stats { grid-template-columns: repeat(2,1fr); }
         }
     </style>
 </head>
-
 <body>
-    <div id="site-header"></div>
+<div id="header"></div>
 
-    <div class="account-wrapper">
+<div class="acc-wrap">
+    <!-- ── SIDEBAR ── -->
+    <aside class="acc-sidebar">
+        <div class="acc-profile-header">
+            <div class="acc-avatar" id="sideAvatar">?</div>
+            <div class="acc-user-name" id="sideUserName">Đang tải...</div>
+            <div class="acc-user-email" id="sideUserEmail"></div>
+            <div class="acc-badge" id="sideRole">👤 Khách</div>
+        </div>
+        <nav class="acc-nav">
+            <button class="acc-nav-item active" onclick="showTab('overview',this)" id="navOverview">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                Tổng quan
+            </button>
+            <button class="acc-nav-item" onclick="showTab('orders',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Đơn hàng của tôi
+            </button>
+            <button class="acc-nav-item" onclick="showTab('profile',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Hồ sơ & địa chỉ
+            </button>
+            <button class="acc-nav-item" onclick="showTab('password',this)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                Đổi mật khẩu
+            </button>
+            <div class="acc-nav-divider"></div>
+            <button class="acc-nav-item" onclick="location.href='/page/shop.html'">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+                Mua sắm ngay
+            </button>
+            <button class="acc-nav-item danger" onclick="doLogout()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Đăng xuất
+            </button>
+        </nav>
+    </aside>
 
-        <!-- ── SIDEBAR ── -->
-        <aside class="acc-sidebar">
-            <div class="acc-avatar-wrap">
-                <div class="acc-avatar" id="accAvatarCircle">?</div>
-                <div class="acc-name-label" id="accNameLabel">–</div>
-                <span class="acc-role-badge" id="accRoleBadge">Member</span>
+    <!-- ── MAIN ── -->
+    <div class="acc-main">
+
+        <!-- OVERVIEW -->
+        <div class="acc-section active" id="sec-overview">
+            <p class="sec-title">Xin chào, <span id="greetName">bạn</span>! 👋</p>
+
+            <div class="quick-stats">
+                <div class="qs-card">
+                    <div class="qs-val" id="qsTotalOrders">—</div>
+                    <div class="qs-lbl">📦 Tổng đơn hàng</div>
+                </div>
+                <div class="qs-card">
+                    <div class="qs-val" id="qsCompleted">—</div>
+                    <div class="qs-lbl">✅ Hoàn thành</div>
+                </div>
+                <div class="qs-card">
+                    <div class="qs-val" id="qsSpent">—đ</div>
+                    <div class="qs-lbl">💰 Đã chi tiêu</div>
+                </div>
             </div>
-            <nav class="acc-menu">
-                <button class="acc-menu-item active" id="tab-info" onclick="switchTab('info',this)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    Thông tin tài khoản
-                </button>
-                <button class="acc-menu-item" id="tab-orders" onclick="location.href='/page/orders.html'">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-                    Đơn hàng
-                </button>
-                <button class="acc-menu-item" id="tab-security" onclick="switchTab('security',this)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    Bảo mật
-                </button>
-                <button class="acc-menu-item" id="tab-linked" onclick="switchTab('linked',this)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-                    Liên kết
-                </button>
-                <button class="acc-menu-item" id="tab-sub" onclick="switchTab('sub',this)">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                    Gói dịch vụ
-                </button>
-                <button id="tab-admin-btn" class="acc-menu-item" onclick="switchTab('admin',this)" style="display:none">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14l-5-4.87 6.91-1.01z"/></svg>
-                    Admin Panel
-                </button>
-                <hr class="divider">
-                <button class="acc-menu-item danger" onclick="logout()">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                    Đăng xuất
-                </button>
-            </nav>
-        </aside>
 
-        <!-- ── MAIN ── -->
-        <main class="acc-main">
+            <div class="card">
+                <div class="card-head">
+                    <h3>Đơn hàng gần đây</h3>
+                    <button class="btn btn-outline btn-sm" onclick="showTab('orders', document.querySelector('[onclick*=orders]'))">Xem tất cả</button>
+                </div>
+                <div id="recentOrdersWrap">
+                    <div class="empty-state"><div class="icon">📦</div><p>Đang tải...</p></div>
+                </div>
+            </div>
 
-            <!-- INFO TAB -->
-            <section id="tab-info-card" class="acc-card active">
-                <div class="acc-card-title">Thông tin tài khoản</div>
-                <div class="acc-card-sub">Xem và cập nhật thông tin cá nhân của bạn.</div>
-
-                <div class="stat-row">
-                    <div class="stat-card">
-                        <div class="stat-num" id="statOrders">–</div>
-                        <div class="stat-label">Đơn hàng</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="statItems">–</div>
-                        <div class="stat-label">Sản phẩm đã mua</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-num" id="statDone">–</div>
-                        <div class="stat-label">Hoàn thành</div>
+            <div class="card">
+                <div class="card-head"><h3>Thông tin tài khoản</h3>
+                    <button class="btn btn-outline btn-sm" onclick="showTab('profile', null)">Chỉnh sửa</button>
+                </div>
+                <div class="card-body">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+                        <div><div class="form-label">Họ tên</div><div id="infoName" style="font-weight:600">—</div></div>
+                        <div><div class="form-label">Email</div><div id="infoEmail">—</div></div>
+                        <div><div class="form-label">Số điện thoại</div><div id="infoPhone">—</div></div>
+                        <div><div class="form-label">Địa chỉ</div><div id="infoAddress">—</div></div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <div class="info-grid">
-                    <div class="info-field">
-                        <label>Họ tên</label>
-                        <div class="info-value" id="accName">–</div>
-                    </div>
-                    <div class="info-field">
-                        <label>Email</label>
-                        <div class="info-value" id="accEmail">–</div>
-                    </div>
-                    <div class="info-field">
-                        <label>Vai trò</label>
-                        <div class="info-value" id="accRole">Member</div>
-                    </div>
-                    <div class="info-field">
-                        <label>Tham gia</label>
-                        <div class="info-value" id="accJoined">–</div>
-                    </div>
+        <!-- ORDERS -->
+        <div class="acc-section" id="sec-orders">
+            <p class="sec-title">Đơn hàng của tôi</p>
+            <div class="card">
+                <div class="card-head">
+                    <h3>Lịch sử đặt hàng</h3>
+                    <select class="form-input" style="width:auto;padding:6px 12px;font-size:13px" id="orderFilter" onchange="renderOrders()">
+                        <option value="">Tất cả</option>
+                        <option value="Pending">Chờ xử lý</option>
+                        <option value="Confirmed">Đã xác nhận</option>
+                        <option value="Shipping">Đang giao</option>
+                        <option value="Completed">Hoàn thành</option>
+                        <option value="Cancelled">Đã huỷ</option>
+                    </select>
                 </div>
-
-                <div style="display:flex;gap:12px;flex-wrap:wrap">
-                    <button class="btn btn-primary" onclick="alert('Tính năng cập nhật thông tin sẽ sớm có!')">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4z"/></svg>
-                        Cập nhật thông tin
-                    </button>
-                    <button class="btn btn-outline" onclick="location.href='/page/orders.html'">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
-                        Xem đơn hàng
-                    </button>
+                <div id="ordersTableWrap">
+                    <div class="empty-state"><div class="spinner"></div></div>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- SECURITY TAB -->
-            <section id="tab-security-card" class="acc-card">
-                <div class="acc-card-title">Bảo mật</div>
-                <div class="acc-card-sub">Quản lý mật khẩu và các tuỳ chọn bảo mật.</div>
+        <!-- PROFILE -->
+        <div class="acc-section" id="sec-profile">
+            <p class="sec-title">Hồ sơ & Địa chỉ</p>
+            <div id="profileAlert"></div>
 
-                <div class="security-item">
-                    <div class="security-item-left">
-                        <div class="sec-icon">🔑</div>
-                        <div>
-                            <div class="sec-title">Mật khẩu</div>
-                            <div class="sec-desc">Lần đổi gần nhất: chưa đổi</div>
+            <div class="card">
+                <div class="card-head"><h3>Thông tin cá nhân</h3></div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-col">
+                            <label class="form-label">Họ tên *</label>
+                            <input class="form-input" id="pName" type="text" placeholder="Nguyễn Văn A">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Email</label>
+                            <input class="form-input" id="pEmail" type="email" disabled>
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Số điện thoại</label>
+                            <input class="form-input" id="pPhone" type="tel" placeholder="0901 234 567">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Ngày sinh</label>
+                            <input class="form-input" id="pDob" type="date">
                         </div>
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Tính năng đổi mật khẩu sẽ sớm có!')">Đổi mật khẩu</button>
                 </div>
+            </div>
 
-                <div class="security-item">
-                    <div class="security-item-left">
-                        <div class="sec-icon">📱</div>
-                        <div>
-                            <div class="sec-title">Xác thực 2 bước (2FA)</div>
-                            <div class="sec-desc">Bảo vệ tài khoản bằng mã OTP</div>
+            <div class="card">
+                <div class="card-head"><h3>Địa chỉ giao hàng mặc định</h3></div>
+                <div class="card-body">
+                    <div class="form-grid">
+                        <div class="form-col full">
+                            <label class="form-label">Địa chỉ (số nhà, tên đường)</label>
+                            <input class="form-input" id="pAddress" type="text" placeholder="123 Đường ABC">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Phường / Xã</label>
+                            <input class="form-input" id="pWard" type="text" placeholder="Phường 1">
+                        </div>
+                        <div class="form-col">
+                            <label class="form-label">Quận / Huyện</label>
+                            <input class="form-input" id="pDistrict" type="text" placeholder="Quận 1">
+                        </div>
+                        <div class="form-col full">
+                            <label class="form-label">Tỉnh / Thành phố</label>
+                            <input class="form-input" id="pCity" type="text" placeholder="TP. Hồ Chí Minh">
                         </div>
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Sắp ra mắt!')">Bật 2FA</button>
-                </div>
-
-                <div class="security-item">
-                    <div class="security-item-left">
-                        <div class="sec-icon">🛡️</div>
-                        <div>
-                            <div class="sec-title">Phiên đăng nhập</div>
-                            <div class="sec-desc">Quản lý các thiết bị đang đăng nhập</div>
-                        </div>
+                    <div style="margin-top:20px;display:flex;gap:10px">
+                        <button class="btn btn-primary" onclick="saveProfile()">💾 Lưu thay đổi</button>
+                        <button class="btn btn-outline" onclick="loadProfile()">↺ Đặt lại</button>
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Sắp ra mắt!')">Xem phiên</button>
                 </div>
+            </div>
+        </div>
 
-                <hr class="divider">
-                <h4 style="font-size:15px;color:var(--text);margin-bottom:16px">Vùng nguy hiểm</h4>
-                <button class="btn btn-danger" onclick="confirmDeleteAccount()">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-                    Xoá tài khoản
-                </button>
-            </section>
-
-            <!-- LINKED TAB -->
-            <section id="tab-linked-card" class="acc-card">
-                <div class="acc-card-title">Liên kết tài khoản</div>
-                <div class="acc-card-sub">Kết nối với các dịch vụ bên ngoài để đăng nhập nhanh hơn.</div>
-
-                <div class="linked-item">
-                    <div class="linked-item-left">
-                        <div class="linked-icon">🌐</div>
-                        <div>
-                            <div class="linked-name">Google</div>
-                            <div class="linked-status">Chưa liên kết</div>
-                        </div>
+        <!-- PASSWORD -->
+        <div class="acc-section" id="sec-password">
+            <p class="sec-title">Đổi mật khẩu</p>
+            <div id="pwdAlert"></div>
+            <div class="card">
+                <div class="card-head"><h3>Bảo mật tài khoản</h3></div>
+                <div class="card-body" style="max-width:440px">
+                    <div class="form-col" style="margin-bottom:16px">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input class="form-input" id="pwdCurrent" type="password" placeholder="••••••••">
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Sắp ra mắt!')">Liên kết</button>
-                </div>
-
-                <div class="linked-item">
-                    <div class="linked-item-left">
-                        <div class="linked-icon">📘</div>
-                        <div>
-                            <div class="linked-name">Facebook</div>
-                            <div class="linked-status">Chưa liên kết</div>
-                        </div>
+                    <div class="form-col" style="margin-bottom:6px">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input class="form-input" id="pwdNew" type="password" placeholder="••••••••" oninput="checkPwdStrength()">
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Sắp ra mắt!')">Liên kết</button>
-                </div>
-
-                <div class="linked-item">
-                    <div class="linked-item-left">
-                        <div class="linked-icon">🍎</div>
-                        <div>
-                            <div class="linked-name">Apple</div>
-                            <div class="linked-status">Chưa liên kết</div>
-                        </div>
+                    <div class="pwd-meter">
+                        <div class="pwd-bar" id="pb1"></div>
+                        <div class="pwd-bar" id="pb2"></div>
+                        <div class="pwd-bar" id="pb3"></div>
+                        <div class="pwd-bar" id="pb4"></div>
                     </div>
-                    <button class="btn btn-outline" onclick="alert('Sắp ra mắt!')">Liên kết</button>
+                    <div class="pwd-hint" id="pwdHint">Ít nhất 6 ký tự, gồm chữ hoa, thường và số</div>
+                    <div class="form-col" style="margin-top:16px;margin-bottom:20px">
+                        <label class="form-label">Xác nhận mật khẩu mới</label>
+                        <input class="form-input" id="pwdConfirm" type="password" placeholder="••••••••">
+                    </div>
+                    <button class="btn btn-primary" onclick="changePassword()">🔒 Cập nhật mật khẩu</button>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- SUB TAB -->
-            <section id="tab-sub-card" class="acc-card">
-                <div class="acc-card-title">Gói dịch vụ</div>
-                <div class="acc-card-sub">Xem và quản lý gói đăng ký hiện tại.</div>
-
-                <div style="background:linear-gradient(135deg,#111827,#1e3a8a);border-radius:16px;padding:28px;color:#fff;margin-bottom:20px;position:relative;overflow:hidden">
-                    <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.05)"></div>
-                    <div style="font-size:12px;font-weight:700;letter-spacing:1px;opacity:.7;margin-bottom:6px">GÓI HIỆN TẠI</div>
-                    <div style="font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;letter-spacing:-1px">FREE</div>
-                    <div style="font-size:13px;opacity:.7;margin-top:4px">Miễn phí mãi mãi · Giới hạn một số tính năng</div>
-                </div>
-
-                <button class="btn btn-primary" onclick="alert('Tính năng nâng cấp gói sẽ sớm có!')">
-                    ⚡ Nâng cấp lên PRO
-                </button>
-            </section>
-
-            <!-- ADMIN TAB -->
-            <section id="tab-admin-card" class="acc-card">
-                <div class="acc-card-title">Admin Panel</div>
-                <div class="acc-card-sub">Truy cập trang quản trị dành cho Admin.</div>
-                <p style="color:var(--muted);margin-bottom:20px">Bạn có quyền Admin. Bấm nút bên dưới để vào trang quản lý sản phẩm và dashboard.</p>
-                <button class="btn btn-primary" onclick="location.href='/page/admin.html'">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-                    Mở Admin Dashboard
-                </button>
-            </section>
-
-        </main>
     </div>
+</div>
 
-    <script src="/js/layout.js"></script>
-    <script>
-        /* ─── TAB SWITCH ─────────────────────────────────────────── */
-        function switchTab(name, btn) {
-            // hide all
-            document.querySelectorAll('.acc-card').forEach(c => c.classList.remove('active'));
-            document.querySelectorAll('.acc-menu-item').forEach(b => b.classList.remove('active'));
-            // show chosen
-            const card = document.getElementById('tab-' + name + '-card');
-            if (card) card.classList.add('active');
-            if (btn) btn.classList.add('active');
+<script src="/js/layout.js"></script>
+<script>
+// ═══════════════════════════════════════════════════════
+// AUTH CHECK
+// ═══════════════════════════════════════════════════════
+const TOKEN = localStorage.getItem('token') || '';
+const USER  = JSON.parse(localStorage.getItem('user') || 'null');
+
+if (!TOKEN || !USER) { location.href = '/page/login.html'; }
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════
+function showTab(name, btn) {
+    document.querySelectorAll('.acc-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.acc-nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + name)?.classList.add('active');
+    if (btn) btn.classList.add('active');
+    if (name === 'orders')   loadOrders();
+    if (name === 'profile')  loadProfile();
+    if (name === 'overview') loadOverview();
+}
+
+function doLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    location.href = '/page/login.html';
+}
+
+// ═══════════════════════════════════════════════════════
+// HEADER USER INFO
+// ═══════════════════════════════════════════════════════
+function initUserInfo() {
+    const name  = USER?.name  || USER?.Name  || 'Bạn';
+    const email = USER?.email || USER?.Email || '';
+    const role  = USER?.role  || USER?.Role  || 'Customer';
+
+    document.getElementById('sideAvatar').textContent   = name.charAt(0).toUpperCase();
+    document.getElementById('sideUserName').textContent = name;
+    document.getElementById('sideUserEmail').textContent= email;
+    document.getElementById('sideRole').textContent     = role === 'Admin' ? '🔑 Admin' : '👤 Khách hàng';
+    document.getElementById('greetName').textContent    = name;
+}
+
+// ═══════════════════════════════════════════════════════
+// ORDERS
+// ═══════════════════════════════════════════════════════
+let allOrders = [];
+
+function statusBadge(s) {
+    const cls = { Pending:'gray', Confirmed:'blue', Shipping:'orange', Completed:'green', Cancelled:'red', Paid:'green' };
+    const lbl = { Pending:'Chờ xử lý', Confirmed:'Xác nhận', Shipping:'Đang giao', Completed:'Hoàn thành', Cancelled:'Đã huỷ', Paid:'Đã thanh toán' };
+    return `<span class="badge badge-${cls[s]||'gray'}">${lbl[s]||s}</span>`;
+}
+
+function fmtMoney(n) { return Number(n||0).toLocaleString('vi-VN') + 'đ'; }
+function fmtDate(d)  { if (!d) return '—'; return new Date(d).toLocaleDateString('vi-VN', {day:'2-digit',month:'2-digit',year:'numeric'}); }
+
+async function loadOrders() {
+    const wrap = document.getElementById('ordersTableWrap');
+    wrap.innerHTML = '<div class="empty-state"><div class="spinner"></div></div>';
+    try {
+        const res = await fetch('/api/orders/my', { headers: { Authorization: `Bearer ${TOKEN}` } });
+        if (res.ok) {
+            allOrders = await res.json();
+        } else {
+            throw new Error();
         }
+    } catch {
+        // Fallback sinh viên: lấy từ localStorage
+        allOrders = JSON.parse(localStorage.getItem('orders') || '[]');
+    }
+    renderOrders();
+    updateOverviewStats();
+}
 
-        /* ─── JWT PARSE ──────────────────────────────────────────── */
-        function parseJwt(token) {
-            try {
-                const b64 = token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');
-                return JSON.parse(decodeURIComponent(atob(b64).split('').map(c=>'%'+('00'+c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-            } catch { return null; }
+function renderOrders() {
+    const filter = document.getElementById('orderFilter')?.value || '';
+    const rows   = filter ? allOrders.filter(o => o.status === filter || o.Status === filter) : allOrders;
+    const wrap   = document.getElementById('ordersTableWrap');
+
+    if (!rows.length) {
+        wrap.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Chưa có đơn hàng${filter?' với trạng thái này':''}</p><a href="/page/shop.html" class="btn btn-primary" style="margin-top:14px;text-decoration:none">🛍️ Mua ngay</a></div>`;
+        return;
+    }
+
+    wrap.innerHTML = `<table>
+        <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th></tr></thead>
+        <tbody>${rows.map(o => {
+            const id     = o.id || o.Id || '—';
+            const total  = o.totalAmount || o.total || o.TotalAmount || 0;
+            const status = o.status || o.Status || 'Pending';
+            const date   = o.createdAt || o.date || o.CreatedAt;
+            const items  = o.itemCount ?? (o.items?.length ?? (o.Items?.length ?? 1));
+            return `<tr>
+                <td><b>#${id}</b></td>
+                <td>${items} sản phẩm</td>
+                <td><b>${fmtMoney(total)}</b></td>
+                <td>${statusBadge(status)}</td>
+                <td>${fmtDate(date)}</td>
+            </tr>`;
+        }).join('')}</tbody>
+    </table>`;
+}
+
+function updateOverviewStats() {
+    document.getElementById('qsTotalOrders').textContent = allOrders.length;
+    const completed = allOrders.filter(o => (o.status||o.Status) === 'Completed' || (o.status||o.Status) === 'Paid');
+    document.getElementById('qsCompleted').textContent = completed.length;
+    const spent = allOrders.reduce((s,o) => s + (o.totalAmount||o.total||o.TotalAmount||0), 0);
+    document.getElementById('qsSpent').textContent = Number(spent).toLocaleString('vi-VN');
+}
+
+// ═══════════════════════════════════════════════════════
+// OVERVIEW
+// ═══════════════════════════════════════════════════════
+async function loadOverview() {
+    await loadOrders();
+
+    // Recent orders
+    const wrap = document.getElementById('recentOrdersWrap');
+    const recent = allOrders.slice(0, 3);
+    if (!recent.length) {
+        wrap.innerHTML = `<div class="empty-state"><div class="icon">📦</div><p>Chưa có đơn hàng nào</p><a href="/page/shop.html" class="btn btn-primary" style="margin-top:14px;text-decoration:none">🛍️ Khám phá sản phẩm</a></div>`;
+    } else {
+        wrap.innerHTML = `<table>
+            <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th></tr></thead>
+            <tbody>${recent.map(o => {
+                const id     = o.id || o.Id;
+                const total  = o.totalAmount || o.total || 0;
+                const status = o.status || o.Status || 'Pending';
+                const date   = o.createdAt || o.date;
+                const items  = o.itemCount ?? (o.items?.length ?? 1);
+                return `<tr>
+                    <td><b>#${id}</b></td>
+                    <td>${items} sản phẩm</td>
+                    <td><b>${fmtMoney(total)}</b></td>
+                    <td>${statusBadge(status)}</td>
+                    <td>${fmtDate(date)}</td>
+                </tr>`;
+            }).join('')}</tbody>
+        </table>`;
+    }
+
+    // Account info
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    document.getElementById('infoName').textContent    = USER?.name || '—';
+    document.getElementById('infoEmail').textContent   = USER?.email || '—';
+    document.getElementById('infoPhone').textContent   = profile.phone || '—';
+    document.getElementById('infoAddress').textContent = profile.address ? `${profile.address}, ${profile.city||''}` : '—';
+}
+
+// ═══════════════════════════════════════════════════════
+// PROFILE
+// ═══════════════════════════════════════════════════════
+function loadProfile() {
+    const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+    document.getElementById('pName').value    = USER?.name || profile.name || '';
+    document.getElementById('pEmail').value   = USER?.email || '';
+    document.getElementById('pPhone').value   = profile.phone || '';
+    document.getElementById('pDob').value     = profile.dob || '';
+    document.getElementById('pAddress').value = profile.address || '';
+    document.getElementById('pWard').value    = profile.ward || '';
+    document.getElementById('pDistrict').value= profile.district || '';
+    document.getElementById('pCity').value    = profile.city || '';
+}
+
+async function saveProfile() {
+    const name    = document.getElementById('pName').value.trim();
+    const phone   = document.getElementById('pPhone').value.trim();
+    const dob     = document.getElementById('pDob').value;
+    const address = document.getElementById('pAddress').value.trim();
+    const ward    = document.getElementById('pWard').value.trim();
+    const district= document.getElementById('pDistrict').value.trim();
+    const city    = document.getElementById('pCity').value.trim();
+    const alertEl = document.getElementById('profileAlert');
+
+    if (!name) { alertEl.innerHTML = '<div class="alert alert-error">Vui lòng nhập họ tên</div>'; return; }
+
+    // Lưu localStorage (luôn)
+    const profile = { name, phone, dob, address, ward, district, city };
+    localStorage.setItem('userProfile', JSON.stringify(profile));
+
+    // Cập nhật USER object
+    if (USER) { USER.name = name; localStorage.setItem('user', JSON.stringify(USER)); }
+
+    // Cập nhật sidebar
+    document.getElementById('sideUserName').textContent = name;
+    document.getElementById('sideAvatar').textContent = name.charAt(0).toUpperCase();
+    document.getElementById('greetName').textContent = name;
+
+    // Gọi API nếu có
+    try {
+        await fetch('/api/auth/profile', {
+            method: 'PUT',
+            headers: { 'Content-Type':'application/json', 'Authorization': `Bearer ${TOKEN}` },
+            body: JSON.stringify({ name, phone, address, ward, district, city })
+        });
+    } catch {}
+
+    alertEl.innerHTML = '<div class="alert alert-success">✅ Đã lưu thông tin thành công!</div>';
+    setTimeout(() => alertEl.innerHTML = '', 4000);
+}
+
+// ═══════════════════════════════════════════════════════
+// PASSWORD
+// ═══════════════════════════════════════════════════════
+function checkPwdStrength() {
+    const pwd = document.getElementById('pwdNew').value;
+    const bars = [document.getElementById('pb1'), document.getElementById('pb2'), document.getElementById('pb3'), document.getElementById('pb4')];
+    bars.forEach(b => { b.className = 'pwd-bar'; });
+
+    let score = 0;
+    if (pwd.length >= 6) score++;
+    if (/[A-Z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd)) score++;
+    if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+    const cls = score <= 1 ? 'weak' : score === 2 ? 'weak' : score === 3 ? 'medium' : 'strong';
+    const lbl = score <= 1 ? 'Quá yếu' : score === 2 ? 'Yếu' : score === 3 ? 'Trung bình' : '✓ Mạnh';
+    for (let i = 0; i < score; i++) bars[i].classList.add(cls);
+    document.getElementById('pwdHint').textContent = lbl;
+}
+
+async function changePassword() {
+    const current = document.getElementById('pwdCurrent').value;
+    const newPwd  = document.getElementById('pwdNew').value;
+    const confirm = document.getElementById('pwdConfirm').value;
+    const alertEl = document.getElementById('pwdAlert');
+
+    if (!current || !newPwd || !confirm) { alertEl.innerHTML = '<div class="alert alert-error">Vui lòng điền đầy đủ</div>'; return; }
+    if (newPwd !== confirm) { alertEl.innerHTML = '<div class="alert alert-error">Mật khẩu xác nhận không khớp</div>'; return; }
+    if (!/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$/.test(newPwd)) {
+        alertEl.innerHTML = '<div class="alert alert-error">Mật khẩu cần ít nhất 6 ký tự, gồm chữ hoa, thường và số</div>';
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/auth/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` },
+            body: JSON.stringify({ currentPassword: current, newPassword: newPwd })
+        });
+        if (res.ok) {
+            alertEl.innerHTML = '<div class="alert alert-success">✅ Mật khẩu đã được cập nhật!</div>';
+            document.getElementById('pwdCurrent').value = '';
+            document.getElementById('pwdNew').value = '';
+            document.getElementById('pwdConfirm').value = '';
+        } else {
+            const err = await res.json().catch(() => ({}));
+            alertEl.innerHTML = `<div class="alert alert-error">${err.error || 'Mật khẩu hiện tại không đúng'}</div>`;
         }
+    } catch {
+        alertEl.innerHTML = '<div class="alert alert-error">Không thể kết nối server</div>';
+    }
+    setTimeout(() => alertEl.innerHTML = '', 5000);
+}
 
-        /* ─── LOAD USER ──────────────────────────────────────────── */
-        function loadUser() {
-            const token = localStorage.getItem('token');
-            const claimName = 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name';
-            const claimRole = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
-
-            let user = {};
-            if (token) {
-                user = parseJwt(token) || {};
-            }
-
-            const name  = user.name  || user[claimName] || localStorage.getItem('name')  || 'Người dùng';
-            const email = user.email || user.sub         || localStorage.getItem('email') || '–';
-            const role  = user.role  || user[claimRole]  || localStorage.getItem('role')  || 'Member';
-
-            // Avatar letter
-            const initial = name.charAt(0).toUpperCase();
-            document.getElementById('accAvatarCircle').textContent = initial;
-            document.getElementById('accNameLabel').textContent = name;
-
-            const roleBadge = document.getElementById('accRoleBadge');
-            roleBadge.textContent = role;
-            if (role === 'Admin') roleBadge.classList.add('admin');
-
-            // Info fields
-            document.getElementById('accName').textContent  = name;
-            document.getElementById('accEmail').textContent = email;
-            document.getElementById('accRole').textContent  = role;
-            document.getElementById('accJoined').textContent = new Date().toLocaleDateString('vi-VN', { year:'numeric', month:'long' });
-
-            // Admin tab
-            if (role === 'Admin') {
-                document.getElementById('tab-admin-btn').style.display = 'flex';
-            }
-
-            // Stats from localStorage orders
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            document.getElementById('statOrders').textContent = orders.length;
-            const items = orders.reduce((s, o) => s + (o.items ? o.items.reduce((a,i) => a + (i.qty||1), 0) : 0), 0);
-            document.getElementById('statItems').textContent = items;
-            const done = orders.filter(o => o.status === 'done').length;
-            document.getElementById('statDone').textContent = done;
-        }
-
-        function confirmDeleteAccount() {
-            if (confirm('Bạn chắc chắn muốn xoá tài khoản? Hành động này không thể hoàn tác.')) {
-                alert('Tính năng này sẽ sớm có!');
-            }
-        }
-
-        function logout() {
-            ['token','role','name','email','user'].forEach(k => localStorage.removeItem(k));
-            location.href = '/page/login.html';
-        }
-
-        loadUser();
-    </script>
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+    initUserInfo();
+    loadOverview();
+});
+</script>
 </body>
 </html>

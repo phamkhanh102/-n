@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPARK – Sports Collection</title>
+    <title>SPARK – Bộ sưu tập thể thao</title>
     <meta name="description"
-        content="Shop the latest sports sneaker collection at SPARK. Top trending products, best sellers, and exclusive discounts.">
+        content="Khám phá bộ sưu tập giày thể thao mới nhất tại SPARK. Sản phẩm hot, bán chạy và ưu đãi hấp dẫn.">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;800;900&display=swap"
         rel="stylesheet">
 
     <link rel="stylesheet" href="/css/theme.css">
@@ -29,10 +29,10 @@
         }
 
         body {
-            font-family: 'Barlow', 'Barlow Condensed', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
-            padding-top: 110px;
+            padding-top: 130px;
         }
 
         a {
@@ -63,7 +63,9 @@
             will-change: transform;
         }
 
-        .hero-slide.active { opacity: 1; }
+        .hero-slide.active {
+            opacity: 1;
+        }
 
         /* Parallax bg image inside each slide */
         .hero-slide-bg {
@@ -79,7 +81,7 @@
         .hero-slide-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to right, rgba(0,0,0,.62) 30%, rgba(0,0,0,.2) 70%);
+            background: linear-gradient(to right, rgba(0, 0, 0, .62) 30%, rgba(0, 0, 0, .2) 70%);
         }
 
         /* Content */
@@ -106,7 +108,10 @@
             transition: opacity .6s .3s, transform .6s .3s;
         }
 
-        .hero-slide.active .hero-eyebrow { opacity: 1; transform: translateY(0); }
+        .hero-slide.active .hero-eyebrow {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .hero-content h1 {
             font-family: 'Barlow Condensed', sans-serif;
@@ -114,18 +119,21 @@
             font-weight: 900;
             letter-spacing: -2px;
             line-height: .95;
-            text-shadow: 0 4px 24px rgba(0,0,0,.4);
+            text-shadow: 0 4px 24px rgba(0, 0, 0, .4);
             margin-bottom: 16px;
             opacity: 0;
             transform: translateY(28px);
             transition: opacity .7s .5s, transform .7s .5s;
         }
 
-        .hero-slide.active .hero-content h1 { opacity: 1; transform: translateY(0); }
+        .hero-slide.active .hero-content h1 {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .hero-sub {
             font-size: 15px;
-            color: rgba(255,255,255,.8);
+            color: rgba(255, 255, 255, .8);
             max-width: 360px;
             line-height: 1.6;
             margin-bottom: 28px;
@@ -134,7 +142,10 @@
             transition: opacity .6s .7s, transform .6s .7s;
         }
 
-        .hero-slide.active .hero-sub { opacity: 1; transform: translateY(0); }
+        .hero-slide.active .hero-sub {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
         .hero-btn {
             display: inline-flex;
@@ -162,7 +173,11 @@
             transition: opacity .6s .9s, transform .6s .9s, background .2s, box-shadow .2s;
         }
 
-        .hero-btn:hover { background: #fde047; transform: translateY(-2px); box-shadow: 0 6px 18px rgba(250,204,21,.4); }
+        .hero-btn:hover {
+            background: #fde047;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(250, 204, 21, .4);
+        }
 
         /* Floating shoe image – REMOVED */
         /* .hero-shoe rules removed, images no longer rendered */
@@ -182,13 +197,16 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background: rgba(255,255,255,.4);
+            background: rgba(255, 255, 255, .4);
             cursor: pointer;
             transition: background .3s, transform .3s;
             border: none;
         }
 
-        .hero-dot.active { background: #facc15; transform: scale(1.3); }
+        .hero-dot.active {
+            background: #facc15;
+            transform: scale(1.3);
+        }
 
         /* Progress bar */
         .hero-progress {
@@ -213,9 +231,9 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 10;
-            background: rgba(255,255,255,.15);
+            background: rgba(255, 255, 255, .15);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,.2);
+            border: 1px solid rgba(255, 255, 255, .2);
             color: #fff;
             width: 44px;
             height: 44px;
@@ -228,16 +246,33 @@
             font-size: 18px;
         }
 
-        .hero-arrow:hover { background: rgba(255,255,255,.3); }
-        .hero-arrow.prev { left: 20px; }
-        .hero-arrow.next { right: 20px; }
-
-        @keyframes float {
-            0%,100% { transform: translateX(0) rotate(-5deg); }
-            50%      { transform: translateX(0) translateY(-18px) rotate(-5deg); }
+        .hero-arrow:hover {
+            background: rgba(255, 255, 255, .3);
         }
 
-        .hero-slide.active .hero-shoe { animation: float 4s ease-in-out infinite; }
+        .hero-arrow.prev {
+            left: 20px;
+        }
+
+        .hero-arrow.next {
+            right: 20px;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateX(0) rotate(-5deg);
+            }
+
+            50% {
+                transform: translateX(0) translateY(-18px) rotate(-5deg);
+            }
+        }
+
+        .hero-slide.active .hero-shoe {
+            animation: float 4s ease-in-out infinite;
+        }
 
 
         /* ===== FEATURE BAR ===== */
@@ -880,33 +915,42 @@
 
         <!-- SLIDES -->
         <div class="hero-slide active">
-            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1600&q=80')"></div>
+            <div class="hero-slide-bg"
+                style="background-image:url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=1600&q=80')">
+            </div>
             <div class="hero-slide-overlay"></div>
             <div class="hero-content">
-                <div class="hero-eyebrow">New Season 2026</div>
-                <h1>Sports<br>Collection</h1>
-                <p class="hero-sub">Đột phá giới hạn với bộ sưu tập giày thể thao mới nhất – thiết kế táo bạo, êm ái vượt trội.</p>
+                <div class="hero-eyebrow">Mùa mới 2026</div>
+                <h1>Bộ sưu tập<br>Thể thao</h1>
+                <p class="hero-sub">Đột phá giới hạn với bộ sưu tập giày thể thao mới nhất – thiết kế táo bạo, êm ái
+                    vượt trội.</p>
                 <a href="/page/products.html" class="hero-btn">Mua ngay →</a>
             </div>
         </div>
 
         <div class="hero-slide">
-            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1600&q=80')"></div>
-            <div class="hero-slide-overlay" style="background:linear-gradient(to right,rgba(0,0,0,.65) 30%,rgba(0,0,0,.15) 70%)"></div>
+            <div class="hero-slide-bg"
+                style="background-image:url('https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=1600&q=80')">
+            </div>
+            <div class="hero-slide-overlay"
+                style="background:linear-gradient(to right,rgba(0,0,0,.65) 30%,rgba(0,0,0,.15) 70%)"></div>
             <div class="hero-content">
-                <div class="hero-eyebrow">Bestseller 2026</div>
-                <h1>Street<br>Style</h1>
+                <div class="hero-eyebrow">Bán chạy 2026</div>
+                <h1>Phong cách<br>Đường phố</h1>
                 <p class="hero-sub">Phong cách đường phố đỉnh cao – những đôi sneaker đang làm mưa làm gió toàn cầu.</p>
                 <a href="/page/products.html" class="hero-btn">Khám phá →</a>
             </div>
         </div>
 
         <div class="hero-slide">
-            <div class="hero-slide-bg" style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1600&q=80')"></div>
-            <div class="hero-slide-overlay" style="background:linear-gradient(to right,rgba(10,0,30,.7) 30%,rgba(0,0,0,.2) 70%)"></div>
+            <div class="hero-slide-bg"
+                style="background-image:url('https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=1600&q=80')">
+            </div>
+            <div class="hero-slide-overlay"
+                style="background:linear-gradient(to right,rgba(10,0,30,.7) 30%,rgba(0,0,0,.2) 70%)"></div>
             <div class="hero-content">
-                <div class="hero-eyebrow">Flash Sale – 48h Only</div>
-                <h1>Sale<br>Up 50%</h1>
+                <div class="hero-eyebrow">Flash Sale – Chỉ 48 giờ</div>
+                <h1>Giảm giá<br>Đến 50%</h1>
                 <p class="hero-sub">Ưu đãi cực lớn kéo dài 48 giờ – số lượng có hạn, đừng bỏ lỡ cơ hội ngàn vàng.</p>
                 <a href="/page/products.html" class="hero-btn" style="background:#ef4444;color:#fff">Xem ưu đãi →</a>
             </div>
@@ -929,8 +973,8 @@
                     <path d="M3 9h18M3 15h18M9 3v18M15 3v18" stroke-linecap="round" />
                 </svg>
                 <div class="feat-text">
-                    <strong>Pick Up In Store</strong>
-                    <small>Order online, collect in-store</small>
+                    <strong>Nhận tại cửa hàng</strong>
+                    <small>Đặt online, nhận trực tiếp tại shop</small>
                 </div>
             </div>
             <div class="feature-sep"></div>
@@ -940,8 +984,8 @@
                     <path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16" />
                 </svg>
                 <div class="feat-text">
-                    <strong>Special Packaging</strong>
-                    <small>Premium gift wrapping available</small>
+                    <strong>Đóng gói cao cấp</strong>
+                    <small>Gói quà sang trọng cho người thân</small>
                 </div>
             </div>
             <div class="feature-sep"></div>
@@ -950,8 +994,8 @@
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
                 <div class="feat-text">
-                    <strong>Free Global Returns</strong>
-                    <small>30-day hassle-free returns</small>
+                    <strong>Đổi trả miễn phí</strong>
+                    <small>30 ngày đổi trả không rắc rối</small>
                 </div>
             </div>
         </div>
@@ -962,7 +1006,7 @@
         <!-- TRENDING PRODUCTS -->
         <div class="section">
             <div class="section-header">
-                <div class="section-title">Trending Products</div>
+                <div class="section-title">Sản phẩm xu hướng</div>
             </div>
             <div id="grid" class="product-grid">
                 <div class="skeleton"></div>
@@ -976,9 +1020,9 @@
         <!-- BEST SELLING -->
         <div class="section">
             <div class="section-header">
-                <div class="section-title">Best selling products</div>
+                <div class="section-title">Bán chạy nhất</div>
                 <a href="products.html" class="view-all">
-                    View all &rsaquo;
+                    Xem tất cả &rsaquo;
                 </a>
             </div>
             <div id="grid2" class="product-grid">
@@ -993,22 +1037,22 @@
         <!-- CTA -->
         <div class="cta-section">
             <div class="cta-left">
-                <h2>Get <span>25% Discount</span> on your first purchase</h2>
-                <p>Sign up with your email address to receive updates, news and special offers directly in your inbox.
+                <h2>Nhận <span>ưu đãi 25%</span> cho lần mua đầu tiên</h2>
+                <p>Đăng ký email để nhận tin tức, cập nhật và ưu đãi đặc biệt gửi thẳng đến hộp thư của bạn.
                 </p>
             </div>
             <div class="cta-right">
-                <input type="text" placeholder="Name" id="ctaName">
+                <input type="text" placeholder="Họ và tên" id="ctaName">
                 <input type="email" placeholder="Email" id="ctaEmail">
-                <button onclick="handleCTA()">SUBMIT</button>
+                <button onclick="handleCTA()">ĐĂNG KÝ</button>
             </div>
         </div>
 
         <!-- BLOG -->
         <div class="section">
             <div class="section-header">
-                <div class="section-title">Our Recent Blog</div>
-                <a href="#" class="view-all">Email &amp; Privacy &rsaquo;</a>
+                <div class="section-title">Blog mới nhất</div>
+                <a href="/page/blog.html" class="view-all">Xem tất cả &rsaquo;</a>
             </div>
             <div class="blog-grid">
 
@@ -1020,10 +1064,10 @@
                         <div class="blog-card-meta">
                             <span>03.27.2026</span>
                         </div>
-                        <h4>Top 10 casual look ideas to dress up your kids</h4>
-                        <p>Discover our curated list of the season's most stylish and comfortable looks for children of
-                            all ages.</p>
-                        <a href="#" class="blog-read-more">Read more</a>
+                        <h4>Top 10 phong cách casual đẹp nhất cho trẻ em 2026</h4>
+                        <p>Khám phá danh sách được chọn lọc về những phong cách thoải mái và thời thượng nhất dành cho
+                            trẻ em mọi lứa tuổi.</p>
+                        <a href="/page/blog.html" class="blog-read-more">Đọc thêm</a>
                     </div>
                 </div>
 
@@ -1035,10 +1079,10 @@
                         <div class="blog-card-meta">
                             <span>03.20.2026</span>
                         </div>
-                        <h4>Latest trends of wearing street wears supremely</h4>
-                        <p>Street wear is constantly evolving. Here are the hottest trends that are taking sidewalks by
-                            storm.</p>
-                        <a href="#" class="blog-read-more">Read more</a>
+                        <h4>Xu hướng streetwear đang làm mưa làm gió toàn cầu</h4>
+                        <p>Streetwear không ngừng phát triển. Đây là những xu hướng nóng nhất đang chiếm lĩnh các con
+                            phố.</p>
+                        <a href="/page/blog.html" class="blog-read-more">Đọc thêm</a>
                     </div>
                 </div>
 
@@ -1050,10 +1094,10 @@
                         <div class="blog-card-meta">
                             <span>03.15.2026</span>
                         </div>
-                        <h4>10 Different Types of comfortable clothes ideas for women</h4>
-                        <p>Comfort meets style in our picks for the most versatile and elegant clothing choices this
-                            season.</p>
-                        <a href="#" class="blog-read-more">Read more</a>
+                        <h4>10 kiểu trang phục thoải mái và thanh lịch nhất dành cho nữ</h4>
+                        <p>Thoải mái gặp thời thượng trong danh sách các lựa chọn quần áo linh hoạt và tinh tế nhất mùa
+                            này.</p>
+                        <a href="/page/blog.html" class="blog-read-more">Đọc thêm</a>
                     </div>
                 </div>
 
@@ -1071,16 +1115,16 @@
                         d="M1 3h1l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <h5>Free delivery</h5>
-                <p>On orders over 500k</p>
+                <h5>Giao hàng miễn phí</h5>
+                <p>Đơn hàng từ 500.000đ</p>
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round"
                         stroke-linejoin="round" />
                 </svg>
-                <h5>100% safe payment</h5>
-                <p>Secure checkout guaranteed</p>
+                <h5>Thanh toán 100% an toàn</h5>
+                <p>Bảo mật tuyệt đối khi thanh toán</p>
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -1088,15 +1132,15 @@
                         d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <h5>Quality guarantee</h5>
-                <p>30-day return policy</p>
+                <h5>Bảo đảm chất lượng</h5>
+                <p>Đổi trả trong 30 ngày</p>
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                 </svg>
-                <h5>Guaranteed savings</h5>
-                <p>Best price matched</p>
+                <h5>Tiết kiệm mỗi ngày</h5>
+                <p>Giá tốt nhất được đảm bảo</p>
             </div>
             <div class="trust-item">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -1104,8 +1148,8 @@
                         d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                         stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <h5>Daily offers</h5>
-                <p>Fresh deals every day</p>
+                <h5>Ưu đãi hàng ngày</h5>
+                <p>Khuyến mãi mới mỗi ngày</p>
             </div>
         </div>
     </div>
@@ -1151,39 +1195,37 @@
 
             <!-- Shop -->
             <div class="footer-col">
-                <h4>Shop</h4>
-                <a href="#">FAQ</a>
-                <a href="#">About us</a>
-                <a href="#">Sitemap</a>
-                <a href="#">Help centre</a>
-                <a href="#">Affiliate program</a>
-                <a href="#">Delivery information</a>
+                <h4>Cửa hàng</h4>
+                <a href="/page/products.html">Sản phẩm</a>
+                <a href="/page/about.html">Về chúng tôi</a>
+                <a href="/page/brand.html">Thương hiệu</a>
+                <a href="/page/support.html">Hỗ trợ</a>
+                <a href="/page/blog.html">Blog</a>
             </div>
 
             <!-- Customer Service -->
             <div class="footer-col">
-                <h4>Customer Service</h4>
-                <a href="#">FAQ</a>
-                <a href="#">Contact</a>
-                <a href="#">Account</a>
-                <a href="#">Wishlist</a>
-                <a href="#">Order tracking</a>
-                <a href="#">Delivery information</a>
+                <h4>Dịch vụ khách hàng</h4>
+                <a href="/page/support.html">Câu hỏi thường gặp</a>
+                <a href="/page/support.html">Liên hệ</a>
+                <a href="/page/account.html">Tài khoản</a>
+                <a href="/page/orders.html">Theo dõi đơn hàng</a>
+                <a href="/page/support.html">Chính sách đổi trả</a>
             </div>
 
             <!-- Newsletter -->
             <div class="footer-newsletter">
-                <h4>Subscribe Info</h4>
-                <p>Sign up to receive the latest news, updates and special offers delivered directly to your inbox.</p>
+                <h4>Nhận ưu đãi</h4>
+                <p>Đăng ký để nhận tin tức, cập nhật và ưu đãi đặc biệt gửi thẳng đến hộp thư của bạn.</p>
                 <div class="footer-newsletter-form">
-                    <input type="email" placeholder="Enter your email" id="footerEmail">
-                    <button onclick="handleNewsletter()">SUBSCRIBE</button>
+                    <input type="email" placeholder="Nhập email của bạn" id="footerEmail">
+                    <button onclick="handleNewsletter()">ĐĂNG KÝ</button>
                 </div>
             </div>
 
         </div>
         <div class="footer-bottom">
-            © 2026 SPARK. All rights reserved.
+            © 2026 SPARK. Tất cả quyền được bảo lưu.
         </div>
     </footer>
 
@@ -1253,16 +1295,23 @@
                 if (!res.ok) throw new Error('API error');
                 const data = await res.json();
 
-                const products = data.map(p => ({
-                    id: p.Id,
-                    name: p.Name,
-                    brand: p.Brand || '',
-                    price: p.Price,
-                    image: p.ImageUrl || 'https://via.placeholder.com/300x200?text=Sneaker',
-                    rating: Math.floor(Math.random() * 2) + 4,
-                    reviews: Math.floor(Math.random() * 200) + 20,
-                    badge: ['sale', '', 'new', 'hot', ''][Math.floor(Math.random() * 5)]
-                }));
+                const products = data.map(p => {
+                    const rawImg = p.ImageUrl || p.imageUrl || '';
+                    const image = rawImg
+                        ? (rawImg.startsWith('http') ? rawImg : '/images/' + rawImg.replace(/^\/?(images\/)?/, ''))
+                        : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80';
+                    return {
+                        id: p.Id || p.id,
+                        name: p.Name || p.name,
+                        brand: p.Brand || p.brand || '',
+                        price: p.Price || p.price,
+                        image,
+                        rating: Math.floor(Math.random() * 2) + 4,
+                        reviews: Math.floor(Math.random() * 200) + 20,
+                        badge: ['sale', '', 'new', 'hot', ''][Math.floor(Math.random() * 5)]
+                    };
+                });
+
 
                 const trending = products.slice(0, 10);
                 const best = products.length > 5 ? products.slice(-5) : products.slice(0, 5);
@@ -1315,11 +1364,11 @@
            HERO SLIDESHOW + PARALLAX
            ═══════════════════════════════════════════════ */
         (function initHero() {
-            const slides  = document.querySelectorAll('.hero-slide');
-            const dotsEl  = document.getElementById('heroDots');
-            const progEl  = document.getElementById('heroProgress');
-            const hero    = document.getElementById('heroSection');
-            let current   = 0;
+            const slides = document.querySelectorAll('.hero-slide');
+            const dotsEl = document.getElementById('heroDots');
+            const progEl = document.getElementById('heroProgress');
+            const hero = document.getElementById('heroSection');
+            let current = 0;
             let timer;
 
             // Build dots
@@ -1366,7 +1415,7 @@
             // Parallax on scroll
             function onScroll() {
                 const scrollY = window.scrollY;
-                const heroH   = hero.offsetHeight;
+                const heroH = hero.offsetHeight;
                 if (scrollY > heroH) return;
 
                 const pct = scrollY / heroH;          // 0..1
@@ -1391,7 +1440,7 @@
 
             // Keyboard nav
             document.addEventListener('keydown', e => {
-                if (e.key === 'ArrowLeft')  heroMove(-1);
+                if (e.key === 'ArrowLeft') heroMove(-1);
                 if (e.key === 'ArrowRight') heroMove(1);
             });
 

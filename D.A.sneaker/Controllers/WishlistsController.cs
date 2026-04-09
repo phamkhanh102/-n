@@ -1,4 +1,4 @@
-﻿using D.A.sneaker.Data;
+using D.A.sneaker.Data;
 using D.A.sneaker.DTOs;
 using D.A.sneaker.Helpers;
 using D.A.sneaker.Models;
@@ -32,11 +32,35 @@ namespace D.A.sneaker.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var data = await _context.Wishlists
-                .Include(x => x.Product)
                 .Where(x => x.UserId == userId)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.ProductId,
+                    ProductName  = x.Product.Name,
+                    ProductBrand = x.Product.Brand,
+                    ProductPrice = x.Product.Price,
+                    ProductImg   = x.Product.MainImage
+                })
                 .ToListAsync();
 
-            return Ok(data);
+            var result = data.Select(x => new WishlistItemDTO
+            {
+                Id        = x.Id,
+                ProductId = x.ProductId,
+                Product   = new WishlistProductDTO
+                {
+                    Id        = x.ProductId,
+                    Name      = x.ProductName ?? "",
+                    Brand     = x.ProductBrand ?? "",
+                    Price     = x.ProductPrice,
+                    MainImage = string.IsNullOrEmpty(x.ProductImg) ? ""
+                              : x.ProductImg.StartsWith("http") ? x.ProductImg
+                              : "/images/" + x.ProductImg
+                }
+            }).ToList();
+
+            return Ok(result);
         }
 
         [HttpPost]
