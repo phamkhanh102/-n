@@ -17,6 +17,8 @@ namespace D.A.sneaker.DTOs
         public decimal DiscountAmount { get; set; } = 0;
         /// <summary>Mã coupon đã áp dụng</summary>
         public string? CouponCode { get; set; }
+        /// <summary>Phương thức thanh toán: COD | BANK | CARD</summary>
+        public string? PaymentMethod { get; set; } = "COD";
     }
 
 

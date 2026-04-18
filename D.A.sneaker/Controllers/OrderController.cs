@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace D.A.sneaker.Controllers
 {
@@ -17,6 +18,46 @@ namespace D.A.sneaker.Controllers
         public OrderController(AppDbContext context)
         {
             _context = context;
+        }
+
+        // ── Helper: lấy map giá sale từ promotions đang active ──
+        private async Task<Dictionary<int, decimal>> GetSalePriceMap()
+        {
+            try
+            {
+                var now = DateTime.Now;
+                var promos = await _context.Promotions
+                    .Where(p => p.IsActive && p.StartDate <= now && p.EndDate >= now)
+                    .ToListAsync();
+                if (!promos.Any()) return new Dictionary<int, decimal>();
+
+                var allPrices = await _context.Products
+                    .Where(p => p.IsActive)
+                    .Select(p => new { p.Id, p.Price })
+                    .ToDictionaryAsync(p => p.Id, p => p.Price);
+
+                var map = new Dictionary<int, decimal>();
+                foreach (var promo in promos)
+                {
+                    List<int>? pids = null;
+                    if (!string.IsNullOrEmpty(promo.ProductIds))
+                        try { pids = JsonSerializer.Deserialize<List<int>>(promo.ProductIds); } catch { }
+                    if (pids == null || !pids.Any()) pids = allPrices.Keys.ToList();
+
+                    foreach (var pid in pids)
+                    {
+                        if (!allPrices.TryGetValue(pid, out var origPrice)) continue;
+                        decimal salePrice = promo.DiscountPercent > 0
+                            ? origPrice - (origPrice * promo.DiscountPercent / 100)
+                            : Math.Max(0, origPrice - promo.DiscountAmount);
+                        salePrice = Math.Round(salePrice, 0);
+                        if (!map.ContainsKey(pid) || salePrice < map[pid])
+                            map[pid] = salePrice;
+                    }
+                }
+                return map;
+            }
+            catch { return new Dictionary<int, decimal>(); }
         }
 
         // UPDATE ADDRESS
@@ -84,6 +125,7 @@ namespace D.A.sneaker.Controllers
                 };
 
                 decimal total = 0;
+                var salePriceMap = await GetSalePriceMap();
 
                 foreach (var item in cart)
                 {
@@ -92,11 +134,15 @@ namespace D.A.sneaker.Controllers
 
                     item.Variant.Stock -= item.Quantity;
 
+                    // Sử dụng giá sale nếu có, ngược lại dùng giá gốc
+                    var productId = item.Variant.Product.Id;
+                    var unitPrice = salePriceMap.TryGetValue(productId, out var sp) ? sp : item.Variant.Product.Price;
+
                     var orderItem = new OrderItem
                     {
                         VariantId = item.VariantId,
                         Quantity = item.Quantity,
-                        Price = item.Variant.Product.Price,
+                        Price = unitPrice,
                         ProductName = item.Variant.Product.Name,
                         ColorName = item.Variant.Color.Name,
                         SizeNumber = item.Variant.Size.Number
@@ -140,6 +186,8 @@ namespace D.A.sneaker.Controllers
 
             var orders = await _context.Orders
                 .Include(o => o.Items)
+                    .ThenInclude(i => i.Variant)
+                        .ThenInclude(v => v.Product)
                 .Where(o => o.CustomerId == customer.Id)
                 .OrderByDescending(o => o.CreatedAt)
                 .Select(o => new {
@@ -158,7 +206,13 @@ namespace D.A.sneaker.Controllers
                         i.ColorName,
                         i.SizeNumber,
                         i.Quantity,
-                        i.Price
+                        i.Price,
+                        ProductImage = i.Variant != null && i.Variant.Product != null
+                            ? (string.IsNullOrEmpty(i.Variant.Product.MainImage) ? ""
+                                : (i.Variant.Product.MainImage.StartsWith("http") || i.Variant.Product.MainImage.StartsWith("/"))
+                                    ? i.Variant.Product.MainImage
+                                    : "/images/" + i.Variant.Product.MainImage)
+                            : ""
                     })
                 })
                 .ToListAsync();
@@ -223,7 +277,7 @@ namespace D.A.sneaker.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}/status")]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] OrderStatusDto dto)
         {
             var order = await _context.Orders.FindAsync(id);
 
@@ -232,22 +286,23 @@ namespace D.A.sneaker.Controllers
 
             var valid = new[]
             {
-        "Pending",
-        "Confirmed",
-        "Shipping",
-        "Completed",
-        "Cancelled"
-    };
+                "Pending",
+                "Confirmed",
+                "Shipping",
+                "Completed",
+                "Cancelled"
+            };
 
-            if (!valid.Contains(status))
-                return BadRequest("Status không hợp lệ");
+            if (!valid.Contains(dto.Status))
+                return BadRequest(new { error = "Status không hợp lệ" });
 
-            order.Status = status;
+            order.Status = dto.Status;
 
             await _context.SaveChangesAsync();
 
-            return Ok(order);
+            return Ok(new { message = "Đã cập nhật", status = order.Status });
         }
+
         [Authorize]
         [HttpPost("{orderId}/pay")]
         public async Task<IActionResult> Pay(int orderId)
@@ -353,6 +408,7 @@ namespace D.A.sneaker.Controllers
                 };
 
                 decimal total = 0;
+                var salePriceMap = await GetSalePriceMap();
 
                 foreach (var item in dto.Items)
                 {
@@ -376,11 +432,15 @@ namespace D.A.sneaker.Controllers
 
                     variant.Stock -= item.Quantity;
 
+                    // Sử dụng giá sale nếu có, ngược lại dùng giá gốc
+                    var productId = variant.Product.Id;
+                    var unitPrice = salePriceMap.TryGetValue(productId, out var sp) ? sp : variant.Product.Price;
+
                     var orderItem = new OrderItem
                     {
                         VariantId   = variant.Id,
                         Quantity    = item.Quantity,
-                        Price       = variant.Product.Price,
+                        Price       = unitPrice,
                         ProductName = variant.Product.Name,
                         ColorName   = variant.Color.Name,
                         SizeNumber  = variant.Size.Number
@@ -399,7 +459,19 @@ namespace D.A.sneaker.Controllers
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                return Ok(new { id = order.Id, totalAmount = order.TotalAmount, discount, couponCode = dto.CouponCode, status = order.Status });
+                // Tạo Payment record
+                var payment = new Payment
+                {
+                    OrderId = order.Id,
+                    Amount = order.TotalAmount,
+                    Method = dto.PaymentMethod ?? "COD",
+                    Status = (dto.PaymentMethod == "COD") ? "Pending" : "Pending",
+                    CreatedAt = DateTime.Now
+                };
+                _context.Payments.Add(payment);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { id = order.Id, totalAmount = order.TotalAmount, discount, couponCode = dto.CouponCode, status = order.Status, paymentMethod = payment.Method });
             }
             catch (Exception ex)
             {
@@ -408,5 +480,61 @@ namespace D.A.sneaker.Controllers
             }
         }
 
+        // ── PAYMENT: xác nhận đã thanh toán (simulate) ──────────
+        [Authorize]
+        [HttpPut("{orderId}/confirm-payment")]
+        public async Task<IActionResult> ConfirmPayment(int orderId)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (customer == null) return NotFound(new { error = "Không tìm thấy khách hàng" });
+
+            var order = await _context.Orders
+                .Include(o => o.Payment)
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.CustomerId == customer.Id);
+            if (order == null) return NotFound(new { error = "Không tìm thấy đơn hàng" });
+
+            if (order.Payment != null)
+            {
+                order.Payment.Status = "Paid";
+                order.Payment.PaidAt = DateTime.Now;
+                order.Payment.TransactionCode = "VQR-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+            order.Status = "Confirmed";
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Đã xác nhận thanh toán", status = order.Status });
+        }
+
+        // ── PAYMENT: kiểm tra trạng thái thanh toán ──────────
+        [Authorize]
+        [HttpGet("{orderId}/payment-status")]
+        public async Task<IActionResult> GetPaymentStatus(int orderId)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            var customer = await _context.Customers.FirstOrDefaultAsync(c => c.UserId == userId);
+            if (customer == null) return Ok(new { status = "Unknown" });
+
+            var order = await _context.Orders
+                .Include(o => o.Payment)
+                .FirstOrDefaultAsync(o => o.Id == orderId && o.CustomerId == customer.Id);
+            if (order == null) return Ok(new { status = "Unknown" });
+
+            return Ok(new {
+                orderId = order.Id,
+                orderStatus = order.Status,
+                paymentStatus = order.Payment?.Status ?? "None",
+                paymentMethod = order.Payment?.Method ?? "COD",
+                amount = order.TotalAmount,
+                paidAt = order.Payment?.PaidAt
+            });
+        }
+
     }
-}
+
+    // ── DTOs ──────────────────────────────────────────────
+    public class OrderStatusDto
+    {
+        public string Status { get; set; } = "";
+    }
+}

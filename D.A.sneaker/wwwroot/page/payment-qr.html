@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thanh toán chuyển khoản – SPARK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/theme.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Barlow',sans-serif;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 50%,#f1f5f9 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.qr-page{max-width:480px;width:100%;animation:slideUp .5s ease}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+
+.qr-card{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.08),0 0 0 1px rgba(0,0,0,.04)}
+.qr-header{background:linear-gradient(135deg,#1e293b,#334155);color:#fff;padding:28px 24px;text-align:center;position:relative;overflow:hidden}
+.qr-header::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(59,130,246,.15) 0%,transparent 60%);pointer-events:none}
+.qr-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:4px}
+.qr-logo span{color:#facc15}
+.qr-sub{font-size:13px;color:rgba(255,255,255,.6);font-weight:500}
+.qr-body{padding:28px 24px}
+.qr-amount-box{background:linear-gradient(135deg,#eff6ff,#dbeafe);border:2px solid #bfdbfe;border-radius:16px;padding:18px;text-align:center;margin-bottom:20px}
+.qr-amount-label{font-size:12px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.qr-amount{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:900;color:#1e40af}
+.qr-order-id{font-size:12px;color:#64748b;margin-top:4px}
+
+.qr-img-wrap{text-align:center;margin:20px 0;position:relative}
+.qr-img-wrap img{width:220px;height:220px;border-radius:16px;border:3px solid #e2e8f0;animation:pulse 3s infinite}
+.qr-scan-hint{font-size:11px;color:#94a3b8;margin-top:8px}
+
+.bank-info{background:#f8fafc;border-radius:14px;padding:16px;margin:16px 0}
+.bank-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #f1f5f9;font-size:13px}
+.bank-row:last-child{border-bottom:none}
+.bank-label{color:#64748b;font-weight:500}
+.bank-value{font-weight:700;color:#1e293b;display:flex;align-items:center;gap:6px}
+.copy-btn{background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:3px 8px;font-size:10px;font-weight:700;color:#3b82f6;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:#3b82f6;color:#fff}
+.transfer-note{background:#fef3c7;border:1px solid #fcd34d;border-radius:10px;padding:12px 14px;font-size:12px;color:#92400e;margin:14px 0;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+
+.status-bar{text-align:center;padding:20px 0 8px}
+.status-waiting{display:flex;align-items:center;justify-content:center;gap:10px;font-size:14px;font-weight:600;color:#6b7280}
+.status-spinner{width:20px;height:20px;border:3px solid #e5e7eb;border-top-color:#3b82f6;border-radius:50%;animation:spin 1s linear infinite}
+.status-success{display:none;flex-direction:column;align-items:center;gap:8px}
+.status-success.show{display:flex}
+.status-success-icon{width:56px;height:56px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;animation:slideUp .4s ease}
+.status-success-text{font-size:16px;font-weight:700;color:#15803d}
+.status-success-sub{font-size:12px;color:#6b7280}
+.redirect-bar{background:linear-gradient(135deg,#dcfce7,#bbf7d0);border:1px solid #86efac;border-radius:12px;padding:14px 18px;text-align:center;margin-top:12px;display:none}
+.redirect-bar.show{display:block}
+.redirect-bar p{font-size:14px;font-weight:600;color:#15803d;margin-bottom:10px}
+.redirect-bar span{font-size:12px;color:#166534}
+
+.countdown{font-size:12px;color:#94a3b8;text-align:center;margin-top:6px}
+.countdown strong{color:#ef4444}
+
+.qr-actions{display:flex;gap:10px;margin-top:16px}
+.qr-actions a,.qr-actions button{flex:1;padding:13px;border-radius:12px;font-size:14px;font-weight:700;text-align:center;cursor:pointer;transition:all .2s;text-decoration:none;border:none;font-family:inherit}
+.btn-confirm{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;box-shadow:0 4px 14px rgba(34,197,94,.3)}
+.btn-confirm:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(34,197,94,.4)}
+.btn-confirm:disabled{opacity:.5;cursor:default;transform:none}
+.btn-view-order{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;box-shadow:0 4px 14px rgba(99,102,241,.3);opacity:1}
+.btn-view-order:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(99,102,241,.45)}
+.btn-view-order:disabled{opacity:.4;cursor:not-allowed;transform:none;background:#9ca3af;box-shadow:none}
+.btn-back{background:#f1f5f9;color:#374151;border:1px solid #e2e8f0}
+.btn-back:hover{background:#e2e8f0}
+
+.shimmer-bar{height:14px;border-radius:6px;background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 2s infinite}
+
+@media(max-width:500px){
+  .qr-page{padding:0}
+  .qr-card{border-radius:16px}
+  .qr-amount{font-size:28px}
+  .qr-img-wrap img{width:180px;height:180px}
+}
+</style>
+</head>
+<body>
+
+<div class="qr-page">
+  <div class="qr-card">
+    <div class="qr-header">
+      <div class="qr-logo">SPAR<span>K</span></div>
+      <div class="qr-sub">Thanh toán chuyển khoản ngân hàng</div>
+    </div>
+    <div class="qr-body">
+      <!-- Amount -->
+      <div class="qr-amount-box">
+        <div class="qr-amount-label">Số tiền cần thanh toán</div>
+        <div class="qr-amount" id="qrAmount">---</div>
+        <div class="qr-order-id">Đơn hàng: <strong id="qrOrderId">#---</strong></div>
+      </div>
+
+      <!-- QR Code -->
+      <div class="qr-img-wrap" id="qrWrap">
+        <img id="qrImage" src="" alt="QR Code thanh toán">
+        <div class="qr-scan-hint">📱 Mở app ngân hàng → Quét mã QR để thanh toán</div>
+      </div>
+
+      <!-- Bank Info -->
+      <div class="bank-info">
+        <div class="bank-row"><span class="bank-label">Ngân hàng</span><span class="bank-value">MB Bank</span></div>
+        <div class="bank-row"><span class="bank-label">Số tài khoản</span><span class="bank-value">1090901052005 <button class="copy-btn" onclick="copyText('1090901052005')">📋 Copy</button></span></div>
+        <div class="bank-row"><span class="bank-label">Chủ tài khoản</span><span class="bank-value">PHAM QUOC KHANH</span></div>
+        <div class="bank-row"><span class="bank-label">Nội dung CK</span><span class="bank-value" id="transferContent">SPARK000000 <button class="copy-btn" onclick="copyContent()">📋 Copy</button></span></div>
+      </div>
+
+      <!-- Transfer Note -->
+      <div class="transfer-note">
+        <span>⚠️</span>
+        <div>Vui lòng chuyển <strong>đúng số tiền</strong> và ghi <strong>đúng nội dung</strong> chuyển khoản để đơn hàng được xác nhận tự động.</div>
+      </div>
+
+      <!-- Status -->
+      <div class="status-bar">
+        <div class="status-waiting" id="statusWaiting">
+          <div class="status-spinner"></div>
+          <span>Đang chờ ngân hàng xác nhận...</span>
+        </div>
+        <div class="status-success" id="statusSuccess">
+          <div class="status-success-icon">✅</div>
+          <div class="status-success-text">Thanh toán thành công!</div>
+          <div class="status-success-sub">Ngân hàng đã xác nhận giao dịch</div>
+        </div>
+        <div class="redirect-bar" id="redirectBar">
+          <p>🎉 Đơn hàng #SPARK-<span id="redirectOrderId"></span> đã được xác nhận!</p>
+          <span id="redirectCountdownText">Tự động chuyển trang sau <strong id="redirectSec">5</strong> giây...</span>
+        </div>
+        <div class="countdown" id="countdown">Thời gian còn lại: <strong id="timer">15:00</strong></div>
+      </div>
+
+      <!-- Actions -->
+      <div class="qr-actions">
+        <button class="btn-view-order" id="viewOrderBtn" disabled onclick="goToOrder()">🔒 Xem đơn hàng</button>
+        <button class="btn-confirm" id="confirmBtn" onclick="confirmPayment()">✅ Đã chuyển khoản</button>
+      </div>
+      <div style="margin-top:10px;font-size:11px;color:#94a3b8;text-align:center">
+        ⚠️ Nút "Xem đơn hàng" sẽ mở khoá sau khi ngân hàng xác nhận giao dịch thành công
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast" style="position:fixed;bottom:20px;right:20px;z-index:999"></div>
+
+<script>
+const TOKEN = localStorage.getItem('token') || '';
+if (!TOKEN) location.href = '/page/login.html';
+
+const params = new URLSearchParams(location.search);
+const orderId = params.get('orderId');
+if (!orderId) { alert('Không tìm thấy đơn hàng'); location.href = '/page/orders.html'; }
+
+const H = () => ({ 'Content-Type': 'application/json', 'Authorization': `Bearer ${TOKEN}` });
+function toast(msg, type = 'ok') {
+  const el = document.createElement('div');
+  el.style.cssText = `padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;margin-top:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:slideUp .3s ease;background:${type === 'ok' ? '#10b981' : '#ef4444'}`;
+  el.textContent = msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => toast('📋 Đã copy!')).catch(() => {});
+}
+function copyContent() {
+  const t = 'SPARK' + orderId;
+  navigator.clipboard.writeText(t).then(() => toast('📋 Đã copy nội dung CK!')).catch(() => {});
+}
+
+// Load order info
+async function loadPayment() {
+  try {
+    const res = await fetch(`/api/orders/${orderId}/payment-status`, { headers: H() });
+    if (!res.ok) { toast('Không tải được thông tin', 'er'); return; }
+    const d = await res.json();
+    
+    const amount = d.amount || 0;
+    document.getElementById('qrAmount').textContent = Number(amount).toLocaleString('vi-VN') + 'đ';
+    document.getElementById('qrOrderId').textContent = '#SPARK-' + orderId;
+    
+    const content = 'SPARK' + orderId;
+    document.getElementById('transferContent').innerHTML = content + ` <button class="copy-btn" onclick="copyContent()">📋 Copy</button>`;
+    
+    // Generate VietQR
+    document.getElementById('qrImage').src = 
+      `https://img.vietqr.io/image/MB-1090901052005-compact2.png?amount=${amount}&addInfo=${content}&accountName=PHAM%20QUOC%20KHANH`;
+
+    if (d.paymentStatus === 'Paid') {
+      showSuccess();
+    }
+  } catch (e) { console.error(e); }
+}
+
+// Confirm payment – gọi API xác nhận, rồi poll lại trạng thái
+async function confirmPayment() {
+  const btn = document.getElementById('confirmBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Đang kiểm tra...';
+  
+  try {
+    // Kiểm tra trước xem đã thanh toán chưa (poll ngay)
+    const statusRes = await fetch(`/api/orders/${orderId}/payment-status`, { headers: H() });
+    if (statusRes.ok) {
+      const d = await statusRes.json();
+      if (d.paymentStatus === 'Paid') {
+        showSuccess();
+        return;
+      }
+    }
+
+    // Nếu chưa có xác nhận tự động → gọi endpoint confirm (để admin review sau)
+    const res = await fetch(`/api/orders/${orderId}/confirm-payment`, {
+      method: 'PUT', headers: H()
+    });
+    
+    if (res.ok) {
+      // Cập nhật trạng thái thành công (admin sẽ xác nhận thực tế)
+      btn.textContent = '⏳ Chờ ngân hàng xác nhận...';
+      btn.style.background = '#f59e0b';
+      toast('⚠️ Yêu cầu đã gửi! Hệ thống sẽ xác nhận sau khi ngân hàng xử lý.');
+      // Tiếp tục auto-check, không mở khoá nút xem đơn ngay
+    } else {
+      const data = await res.json().catch(() => ({}));
+      toast(data.error || 'Lỗi gửi yêu cầu', 'er');
+      btn.disabled = false;
+      btn.textContent = '✅ Đã chuyển khoản';
+    }
+  } catch {
+    toast('Lỗi kết nối', 'er');
+    btn.disabled = false;
+    btn.textContent = '✅ Đã chuyển khoản';
+  }
+}
+
+function showSuccess() {
+  if (document.getElementById('statusSuccess').classList.contains('show')) return; // tránh gọi 2 lần
+  document.getElementById('statusWaiting').style.display = 'none';
+  document.getElementById('statusSuccess').classList.add('show');
+  document.getElementById('countdown').style.display = 'none';
+
+  // Vô hiệu hóa nút confirm (không cần nữa)
+  const confirmBtn = document.getElementById('confirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = '✅ Đã xác nhận';
+  confirmBtn.style.background = '#6b7280';
+  clearInterval(timerInterval);
+  clearInterval(autoCheck);
+
+  // Mở khoá nút xem đơn hàng
+  const viewBtn = document.getElementById('viewOrderBtn');
+  viewBtn.disabled = false;
+  viewBtn.textContent = '📦 Xem chi tiết đơn hàng';
+  viewBtn.style.cursor = 'pointer';
+
+  // Hiện redirect bar & đếm ngược 5s tự chuyển trang
+  const bar = document.getElementById('redirectBar');
+  bar.classList.add('show');
+  document.getElementById('redirectOrderId').textContent = orderId;
+  let sec = 5;
+  document.getElementById('redirectSec').textContent = sec;
+  const redirectTimer = setInterval(() => {
+    sec--;
+    document.getElementById('redirectSec').textContent = sec;
+    if (sec <= 0) {
+      clearInterval(redirectTimer);
+      goToOrder();
+    }
+  }, 1000);
+
+  toast('✅ Thanh toán được xác nhận! Đang chuyển trang...');
+}
+
+function goToOrder() {
+  location.href = `/page/orders.html?highlight=${orderId}`;
+}
+
+// Auto-check payment every 10s – chỉ showSuccess khi ngân hàng THỰC SỰ xác nhận
+let checkCount = 0;
+const autoCheck = setInterval(async () => {
+  checkCount++;
+  if (checkCount > 90) { clearInterval(autoCheck); return; } // stop after 15min
+  try {
+    const res = await fetch(`/api/orders/${orderId}/payment-status`, { headers: H() });
+    if (!res.ok) return;
+    const d = await res.json();
+    // Chỉ showSuccess khi payment thực sự Paid (ngân hàng xác nhận)
+    if (d.paymentStatus === 'Paid') {
+      showSuccess();
+    }
+  } catch {}
+}, 10000);
+
+// Countdown 15 min
+let timeLeft = 15 * 60;
+let timerInterval = setInterval(() => {
+  timeLeft--;
+  if (timeLeft <= 0) {
+    clearInterval(timerInterval);
+    document.getElementById('timer').textContent = 'Hết hạn';
+    toast('⏰ Đã hết thời gian thanh toán', 'er');
+    return;
+  }
+  const m = Math.floor(timeLeft / 60);
+  const s = timeLeft % 60;
+  document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}, 1000);
+
+loadPayment();
+</script>
+</body>
+</html>

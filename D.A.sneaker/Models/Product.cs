@@ -1,4 +1,4 @@
-﻿using D.A.sneaker.Models;
+using D.A.sneaker.Models;
 
 public class Product
 {
@@ -9,6 +9,8 @@ public class Product
     public string Brand { get; set; }
 
     public decimal Price { get; set; }
+
+    public decimal CostPrice { get; set; } = 0; // Giá nhập
 
     public int CategoryId { get; set; }
 

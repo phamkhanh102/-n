@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sản phẩm – Admin SPARK</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2f5;--card:#fff;--sidebar:#0f172a;--sw:260px;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--pr:#3b82f6;--prd:#1d4ed8;--ok:#10b981;--warn:#f59e0b;--err:#ef4444;--pur:#8b5cf6;--r:16px;--sh:0 2px 12px rgba(0,0,0,.06)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px}
+
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:var(--sidebar);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sb-logo{padding:24px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo-t{font-size:26px;font-weight:800;letter-spacing:-1px}.sb-logo-t span{color:#facc15}
+.sb-logo-s{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.sb-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.sb-sec{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;padding:18px 14px 6px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.55);font-size:13.5px;font-weight:500;border:none;background:none;width:100%;text-align:left;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(2px)}
+.sb-item.active{background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(139,92,246,.15));color:#93c5fd;font-weight:600;box-shadow:inset 3px 0 0 #3b82f6}
+.sb-item .ic{width:18px;height:18px;flex-shrink:0;opacity:.65}.sb-item.active .ic{opacity:1}
+.sb-user{padding:16px 14px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:11px}
+.sb-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+.sb-un{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}
+.sb-ur{font-size:11px;color:rgba(255,255,255,.4)}
+.sb-out{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:5px;border-radius:6px;margin-left:auto;transition:all .2s}.sb-out:hover{color:#ef4444;background:rgba(239,68,68,.1)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-t{font-size:18px;font-weight:800;background:linear-gradient(135deg,#1e293b,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-r{display:flex;align-items:center;gap:10px}
+.btn{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-out{background:none;border:1px solid var(--border);color:var(--text)}.btn-out:hover{background:var(--bg);transform:translateY(-1px)}
+.btn-pr{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.3)}.btn-pr:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.btn-ok{background:var(--ok);color:#fff}.btn-wa{background:var(--warn);color:#fff}.btn-er{background:var(--err);color:#fff}
+.content{padding:28px;flex:1}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden;animation:fi .3s ease}
+.ch{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ch h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cb{padding:20px}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.si-input{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;width:220px;outline:none;transition:all .2s;font-family:inherit}
+.si-input:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+.fi-sel{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--card);cursor:pointer;outline:none;font-family:inherit}
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8fafc;padding:10px 14px;text-align:left;font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.t-img{width:46px;height:46px;border-radius:10px;object-fit:cover;background:#f1f5f9;flex-shrink:0;border:1px solid var(--border)}
+.t-nm{font-weight:600;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-mu{color:var(--muted);font-size:12px}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-g{background:#dcfce7;color:#15803d}.b-b{background:#dbeafe;color:#1d4ed8}
+.b-o{background:#fef9c3;color:#a16207}.b-r{background:#fee2e2;color:#b91c1c}
+.b-gr{background:#f1f5f9;color:#475569}.b-p{background:#f3e8ff;color:#7c3aed}
+
+/* ACTION BTN */
+.ab{display:flex;gap:6px;align-items:center;flex-wrap:nowrap}
+.bi{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.bi:hover{border-color:#94a3b8;transform:translateY(-1px)}
+.bi.pr{background:var(--pr);border-color:var(--pr);color:#fff}
+.bi.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.bi.wa{background:var(--warn);border-color:var(--warn);color:#fff}
+.bi.er{background:var(--err);border-color:var(--err);color:#fff}
+.bi:disabled{opacity:.5;cursor:default}
+
+/* PAGINATION */
+.pg{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.pg-b{display:flex;gap:5px}
+.pb{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;font-weight:500;transition:all .2s}
+.pb:hover:not(:disabled){background:var(--pr);color:#fff;border-color:var(--pr)}
+.pb:disabled{opacity:.4;cursor:default}
+.pb.act{background:var(--pr);color:#fff;border-color:var(--pr)}
+
+/* MODAL */
+.mo{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.mo.show{display:flex;animation:fi .2s ease}
+.md{background:var(--card);border-radius:20px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.25)}
+.mh{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mh h3{font-size:16px;font-weight:700}
+.mc{background:none;border:none;cursor:pointer;font-size:24px;color:var(--muted);line-height:1;width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:8px;transition:all .2s}
+.mc:hover{color:var(--text);background:#f1f5f9}
+.mb{padding:24px}
+.mf{padding:16px 24px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* FORM */
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.fr.s1{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:5px}
+.fl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.fc{padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);outline:none;transition:all .2s;background:var(--card);width:100%;font-family:inherit}
+.fc:focus{border-color:var(--pr);box-shadow:0 0 0 3px rgba(59,130,246,.1)}
+textarea.fc{resize:vertical;min-height:80px}
+
+/* IMAGE UPLOAD */
+.upload-zone{border:2px dashed var(--border);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:all .3s;background:#fafbfc;position:relative}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--pr);background:rgba(59,130,246,.04)}
+.upload-zone.has-image{border-style:solid;border-color:var(--ok);background:#f0fdf4}
+.upload-icon{font-size:32px;margin-bottom:8px}
+.upload-text{font-size:13px;color:var(--muted);font-weight:500}
+.upload-text b{color:var(--pr);cursor:pointer}
+.upload-hint{font-size:11px;color:var(--muted);margin-top:4px;opacity:.7}
+.upload-preview{display:none;align-items:center;gap:14px;text-align:left}
+.upload-zone.has-image .upload-placeholder{display:none}
+.upload-zone.has-image .upload-preview{display:flex}
+.preview-img{width:72px;height:72px;border-radius:10px;object-fit:cover;border:1px solid var(--border);background:#f1f5f9}
+.preview-info{flex:1;min-width:0}
+.preview-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-size{font-size:11px;color:var(--muted);margin-top:2px}
+.preview-status{font-size:11px;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px}
+.preview-status.ok{color:#15803d}
+.preview-status.uploading{color:var(--pr)}
+.preview-status.error{color:#b91c1c}
+.preview-remove{background:none;border:1px solid var(--border);border-radius:8px;padding:6px 10px;cursor:pointer;font-size:12px;font-weight:600;color:var(--muted);transition:all .2s;flex-shrink:0}
+.preview-remove:hover{border-color:var(--err);color:var(--err);background:#fef2f2}
+
+/* ALERT */
+.al{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;margin-bottom:14px;display:none}
+.al.show{display:block}
+.al-ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
+.al-er{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c}
+
+.empty{text-align:center;padding:40px 20px;color:var(--muted)}
+.empty-i{font-size:40px;margin-bottom:10px}
+#toast{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.ti{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fi .25s ease}
+.ti.ok{background:#10b981}.ti.er{background:#ef4444}.ti.inf{background:#3b82f6}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}}
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo">
+    <div class="sb-logo-t">SPAR<span>K</span></div>
+    <div class="sb-logo-s">Bảng điều khiển</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Tổng quan</div>
+    <a class="sb-item" href="/Admin/admin.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </a>
+    <div class="sb-sec">Quản lý</div>
+    <a class="sb-item active" href="/Admin/admin-products.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Sản phẩm
+    </a>
+    <a class="sb-item" href="/Admin/admin-orders.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+      Đơn hàng
+    </a>
+    <a class="sb-item role-need" data-roles="Admin" href="/Admin/admin-users.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+      Người dùng
+    </a>
+    <a class="sb-item" href="/Admin/admin-reviews.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Đánh giá
+    </a>
+    <a class="sb-item" href="/Admin/admin-promotions.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      Khuyến mãi
+    </a>
+    <div class="sb-sec">Báo cáo</div>
+    <a class="sb-item role-need" data-roles="Admin" href="/Admin/admin-finance.html">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
+      Tài chính
+    </a>
+  </nav>
+  <div class="sb-user">
+    <div class="sb-av" id="sbAv">A</div>
+    <div style="flex:1;min-width:0">
+      <div class="sb-un" id="sbNm">Admin</div>
+      <div class="sb-ur" id="sbRl">Quản trị viên</div>
+    </div>
+    <button class="sb-out" onclick="doLogout()" title="Đăng xuất">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+</aside>
+
+<div class="main">
+  <header class="topbar">
+    <span class="topbar-t">Quản lý sản phẩm</span>
+    <div class="topbar-r">
+      <span id="topD" style="font-size:12px;color:var(--muted)"></span>
+      <a href="/page/shop.html" target="_blank" class="btn btn-out">🌐 Website</a>
+    </div>
+  </header>
+  <div class="content">
+    <div class="card">
+      <div class="ch">
+        <h3>👟 Quản lý sản phẩm</h3>
+        <div class="toolbar">
+          <input class="si-input" id="pSrch" placeholder="🔍 Tìm sản phẩm..." oninput="debo(loadP,400)()">
+          <select class="fi-sel" id="pAct" onchange="loadP()">
+            <option value="">Tất cả</option><option value="true">Đang hiện</option><option value="false">Đang ẩn</option>
+          </select>
+          <button class="btn btn-pr admin-only" onclick="openPM()">+ Thêm sản phẩm</button>
+          <button class="btn btn-ok" onclick="exportProductsExcel()">📥 Xuất Excel</button>
+          <button class="btn btn-out admin-only" onclick="document.getElementById('xlsxInput').click()">📤 Import Excel</button>
+          <input type="file" id="xlsxInput" accept=".xlsx,.xls" style="display:none" onchange="previewImport(this.files)">
+        </div>
+      </div>
+      <div class="tw"><table>
+        <thead><tr><th>Ảnh</th><th>Tên sản phẩm</th><th>Hãng</th><th>Giá bán</th><th>Giá nhập</th><th>Tồn</th><th>Hiển thị</th><th>Thao tác</th></tr></thead>
+        <tbody id="pTb"><tr><td colspan="8" style="text-align:center;padding:32px;color:var(--muted)">Đang tải...</td></tr></tbody>
+      </table></div>
+      <div class="pg" id="pPg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUCT -->
+<div class="mo" id="moP">
+  <div class="md">
+    <div class="mh"><h3 id="moT">Thêm sản phẩm</h3><button class="mc" onclick="closeM('moP')">×</button></div>
+    <div class="mb">
+      <div id="pAl" class="al"></div>
+      <input type="hidden" id="pId">
+      <input type="hidden" id="pImgPath">
+      <div class="fr">
+        <div class="fg"><label class="fl">Tên sản phẩm *</label><input class="fc" id="pNm" placeholder="Nike Air Force 1"></div>
+        <div class="fg"><label class="fl">Hãng *</label>
+          <select class="fc" id="pBr">
+            <option value="">-- Chọn hãng --</option>
+            <option value="Nike">Nike</option>
+            <option value="Adidas">Adidas</option>
+            <option value="Jordan">Jordan</option>
+            <option value="Puma">Puma</option>
+            <option value="New Balance">New Balance</option>
+            <option value="Converse">Converse</option>
+            <option value="Vans">Vans</option>
+            <option value="Reebok">Reebok</option>
+            <option value="Asics">Asics</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Giá bán (VNĐ) *</label><input class="fc" id="pPr" type="number" placeholder="1500000" min="0"></div>
+        <div class="fg"><label class="fl">Giá nhập (VNĐ)</label><input class="fc" id="pCo" type="number" placeholder="900000" min="0"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Danh mục</label>
+          <select class="fc" id="pCt">
+            <option value="1">Giày thể thao</option><option value="2">Giày chạy bộ</option>
+            <option value="3">Giày bóng rổ</option><option value="4">Giày street</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">&nbsp;</label>
+          <div style="display:flex;align-items:center;gap:8px;height:100%">
+            <input type="checkbox" id="pAc" checked style="width:18px;height:18px;accent-color:var(--pr)">
+            <label for="pAc" style="font-size:13px;cursor:pointer;font-weight:500">Hiện sản phẩm trên website</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- IMAGE UPLOAD ZONE -->
+      <div class="fr s1" style="margin-bottom:14px">
+        <div class="fg">
+          <label class="fl">Ảnh sản phẩm</label>
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp,image/gif" style="display:none" onchange="handleFileSelect(this.files)">
+            <div class="upload-placeholder">
+              <div class="upload-icon">📁</div>
+              <div class="upload-text">Kéo thả ảnh vào đây hoặc <b>chọn file</b></div>
+              <div class="upload-hint">Hỗ trợ: JPG, PNG, WEBP, GIF — Tối đa 5MB</div>
+            </div>
+            <div class="upload-preview">
+              <img class="preview-img" id="previewImg" src="" alt="Preview">
+              <div class="preview-info">
+                <div class="preview-name" id="previewName">—</div>
+                <div class="preview-size" id="previewSize">—</div>
+                <div class="preview-status ok" id="previewStatus">✅ Đã upload thành công</div>
+              </div>
+              <button class="preview-remove" onclick="removeImage(event)">✕ Xóa</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="fr s1"><div class="fg"><label class="fl">Mô tả</label><textarea class="fc" id="pDs" rows="3" placeholder="Mô tả sản phẩm..."></textarea></div></div>
+    </div>
+    <div class="mf">
+      <button class="btn btn-out" onclick="closeM('moP')">Huỷ</button>
+      <button class="btn btn-pr" id="saveBtn" onclick="saveP()">💾 Lưu sản phẩm</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT PREVIEW MODAL -->
+<div class="mo" id="moImport">
+  <div class="md" style="max-width:740px">
+    <div class="mh"><h3>📤 Xem trước dữ liệu Import</h3><button class="mc" onclick="closeM('moImport')">×</button></div>
+    <div style="padding:16px 24px;font-size:12px;color:var(--muted);border-bottom:1px solid var(--border)">
+      📋 Cột yêu cầu: <b>Tên sản phẩm</b>, <b>Hãng</b>, <b>Giá bán</b>, <b>Giá nhập</b>, <b>Mô tả</b> (tuỳ chọn)<br>
+      ⚠️ Chỉ <b>thêm mới</b> sản phẩm – không ghi đè sản phẩm đã có.
+    </div>
+    <div style="padding:0 0 0;overflow-x:auto;max-height:320px;overflow-y:auto">
+      <table id="importPreviewTb" style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:#f8fafc"><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">#</th><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">Tên</th><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">Hãng</th><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">Giá bán</th><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">Giá nhập</th><th style="padding:8px 12px;text-align:left;color:var(--muted);border-bottom:1px solid var(--border)">Trạng thái</th></tr></thead>
+        <tbody id="importPreviewBody"></tbody>
+      </table>
+    </div>
+    <div class="mf">
+      <span id="importCount" style="font-size:12px;color:var(--muted);flex:1"></span>
+      <button class="btn btn-out" onclick="closeM('moImport')">Huỷ</button>
+      <button class="btn btn-pr" id="importBtn" onclick="doImport()">✅ Nhập tất cả</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const TOKEN = localStorage.getItem('token') || '';
+const USER  = JSON.parse(localStorage.getItem('user') || 'null');
+if (!TOKEN || !USER) location.href = '/page/login.html';
+const ROLE = USER?.role || USER?.Role || '';
+if (!['Admin','Staff','Cashier'].includes(ROLE)) location.href = '/page/account.html';
+
+const roleLabels = {Admin:'Quản trị viên', Staff:'Nhân viên', Cashier:'Thu ngân'};
+document.getElementById('sbNm').textContent = USER?.name || 'Admin';
+document.getElementById('sbAv').textContent = (USER?.name||'A').charAt(0).toUpperCase();
+document.getElementById('sbRl').textContent = roleLabels[ROLE] || ROLE;
+document.getElementById('topD').textContent = new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+document.querySelectorAll('.role-need').forEach(el => { if (!(el.dataset.roles||'').split(',').includes(ROLE)) el.style.display='none'; });
+if (ROLE !== 'Admin') document.querySelectorAll('.admin-only').forEach(el => el.style.display='none');
+
+const H = () => ({'Content-Type':'application/json','Authorization':`Bearer ${TOKEN}`});
+const fm = n => Number(n||0).toLocaleString('vi-VN') + 'đ';
+function debo(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
+function toast(msg,type='ok'){const w=document.getElementById('toast');const el=document.createElement('div');el.className=`ti ${type}`;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),3500);}
+function closeM(id){document.getElementById(id).classList.remove('show')}
+window.addEventListener('click',e=>{if(e.target.classList.contains('mo'))e.target.classList.remove('show')});
+function doLogout(){if(!confirm('Đăng xuất?'))return;localStorage.removeItem('token');localStorage.removeItem('user');location.href='/page/login.html';}
+function paginator(total,page,size,fn,elId){
+  const pages=Math.ceil(total/size)||1;const el=document.getElementById(elId);if(!el)return;
+  let h=`<span>${Math.min((page-1)*size+1,total)}–${Math.min(page*size,total)} / ${total}</span><div class="pg-b">`;
+  h+=`<button class="pb" ${page<=1?'disabled':''} onclick="${fn}(${page-1})">‹</button>`;
+  for(let i=Math.max(1,page-2);i<=Math.min(pages,page+2);i++) h+=`<button class="pb ${i===page?'act':''}" onclick="${fn}(${i})">${i}</button>`;
+  h+=`<button class="pb" ${page>=pages?'disabled':''} onclick="${fn}(${page+1})">›</button></div>`;
+  el.innerHTML=h;
+}
+
+// ═══ IMAGE UPLOAD ═══════════════════════════════════════
+let uploadedImagePath = '';
+
+// Drag & Drop
+const uploadZone = document.getElementById('uploadZone');
+['dragenter','dragover'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); uploadZone.classList.add('dragover'); }));
+['dragleave','drop'].forEach(e => uploadZone.addEventListener(e, ev => { ev.preventDefault(); ev.stopPropagation(); uploadZone.classList.remove('dragover'); }));
+uploadZone.addEventListener('drop', ev => {
+  const files = ev.dataTransfer.files;
+  if(files.length) handleFileSelect(files);
+});
+
+function formatBytes(bytes) {
+  if(bytes < 1024) return bytes + ' B';
+  if(bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  return (bytes/1048576).toFixed(1) + ' MB';
+}
+
+async function handleFileSelect(files) {
+  if(!files || !files.length) return;
+  const file = files[0];
+
+  // Validate
+  const allowed = ['image/jpeg','image/png','image/webp','image/gif'];
+  if(!allowed.includes(file.type)){
+    toast('Chỉ hỗ trợ file ảnh: JPG, PNG, WEBP, GIF','er');
+    return;
+  }
+  if(file.size > 5*1024*1024){
+    toast('File ảnh không được lớn hơn 5MB','er');
+    return;
+  }
+
+  // Show preview immediately
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('previewImg').src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+
+  document.getElementById('previewName').textContent = file.name;
+  document.getElementById('previewSize').textContent = formatBytes(file.size);
+  const statusEl = document.getElementById('previewStatus');
+  statusEl.className = 'preview-status uploading';
+  statusEl.innerHTML = '⏳ Đang upload...';
+  uploadZone.classList.add('has-image');
+
+  // Upload to server
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const res = await fetch('/api/admin/upload-image', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${TOKEN}` },
+      body: formData
+    });
+    const data = await res.json();
+
+    if(res.ok){
+      uploadedImagePath = data.path;
+      document.getElementById('pImgPath').value = data.path;
+      statusEl.className = 'preview-status ok';
+      statusEl.innerHTML = '✅ Upload thành công';
+      toast('Đã upload ảnh thành công');
+    } else {
+      statusEl.className = 'preview-status error';
+      statusEl.innerHTML = '❌ ' + (data.error || 'Lỗi upload');
+      toast(data.error || 'Lỗi upload ảnh','er');
+    }
+  } catch(e) {
+    statusEl.className = 'preview-status error';
+    statusEl.innerHTML = '❌ Lỗi kết nối';
+    toast('Lỗi kết nối khi upload ảnh','er');
+  }
+}
+
+function removeImage(ev) {
+  ev.stopPropagation();
+  uploadedImagePath = '';
+  document.getElementById('pImgPath').value = '';
+  document.getElementById('previewImg').src = '';
+  document.getElementById('fileInput').value = '';
+  uploadZone.classList.remove('has-image');
+}
+
+// ═══ PRODUCTS ═══════════════════════════════════════════
+let pPg=1;
+let productCache = {}; // Cache products by ID to avoid inline JSON issues
+
+async function loadP(pg=pPg){
+  pPg=pg;
+  const s=document.getElementById('pSrch')?.value||'';
+  const a=document.getElementById('pAct')?.value||'';
+  const q=new URLSearchParams({page:pg,size:20,...(s&&{search:s}),...(a!==''&&{active:a})});
+  try{
+    const res=await fetch(`/api/admin/products?${q}`,{headers:H()});
+    if(!res.ok){toast('Không có quyền','er');return}
+    const d=await res.json();const rows=d.products||[];
+    const isAdmin=ROLE==='Admin';const tb=document.getElementById('pTb');
+    if(!rows.length){tb.innerHTML='<tr><td colspan="8"><div class="empty"><div class="empty-i">👟</div><p>Không có sản phẩm</p></div></td></tr>';return}
+    
+    // Store products in cache
+    productCache = {};
+    rows.forEach(p => { productCache[p.id||p.Id] = p; });
+    
+    tb.innerHTML=rows.map(p=>{
+      const pid = p.id||p.Id;
+      const active=p.isActive??p.IsActive;
+      const img=p.mainImage||p.MainImage||'';
+      const cost=p.costPrice||p.CostPrice||0;
+      return`<tr>
+        <td><img class="t-img" src="${img||'/images/placeholder.jpg'}" onerror="this.src='/images/placeholder.jpg'" alt=""></td>
+        <td><div class="t-nm">${p.name||p.Name}</div><div class="t-mu">#${pid}</div></td>
+        <td>${p.brand||p.Brand}</td>
+        <td><b>${fm(p.price||p.Price)}</b></td>
+        <td>${cost>0?fm(cost):'<span style="color:var(--muted)">chưa nhập</span>'}</td>
+        <td>${p.stock||0} đôi</td>
+        <td>${active?'<span class="badge b-g">✅ Hiện</span>':'<span class="badge b-r">🚫 Ẩn</span>'}</td>
+        <td><div class="ab">
+          <a class="bi" href="/Admin/admin-product-detail.html?id=${pid}" style="text-decoration:none">📋 Chi tiết</a>
+          ${isAdmin?`<button class="bi pr" onclick="openPM(${pid})">✏️</button>`:''}
+          ${isAdmin?`<button class="bi ${active?'wa':'ok'}" onclick="toggleP(${pid},this)">${active?'🚫 Ẩn':'✅ Hiện'}</button>`:''}
+        </div></td>
+      </tr>`;
+    }).join('');
+    paginator(d.total,pg,20,'loadP','pPg');
+  }catch(e){console.error(e);toast('Lỗi tải sản phẩm','er');}
+}
+
+function openPM(idOrNull=null){
+  // If called with a product ID (number), look up from cache
+  const p = (typeof idOrNull === 'number') ? productCache[idOrNull] : idOrNull;
+  document.getElementById('moT').textContent=p?'Sửa sản phẩm':'Thêm sản phẩm mới';
+  document.getElementById('pAl').className='al';
+  document.getElementById('pId').value=p?.id||p?.Id||'';
+  document.getElementById('pNm').value=p?.name||p?.Name||'';
+  document.getElementById('pBr').value=p?.brand||p?.Brand||'';
+  document.getElementById('pPr').value=p?.price||p?.Price||'';
+  document.getElementById('pCo').value=p?.costPrice||p?.CostPrice||'';
+  document.getElementById('pCt').value=p?.categoryId||p?.CategoryId||1;
+  document.getElementById('pDs').value=p?.description||p?.Description||'';
+  document.getElementById('pAc').checked=p?(p.isActive??p.IsActive??true):true;
+
+  // Reset image upload
+  uploadedImagePath = '';
+  document.getElementById('pImgPath').value = '';
+  document.getElementById('fileInput').value = '';
+  uploadZone.classList.remove('has-image');
+
+  // If editing and has existing image, show it
+  const existingImg = p?.mainImage || p?.MainImage || '';
+  if(existingImg) {
+    uploadedImagePath = existingImg;
+    document.getElementById('pImgPath').value = existingImg;
+    document.getElementById('previewImg').src = existingImg;
+    document.getElementById('previewName').textContent = existingImg.split('/').pop();
+    document.getElementById('previewSize').textContent = 'Ảnh hiện tại';
+    document.getElementById('previewStatus').className = 'preview-status ok';
+    document.getElementById('previewStatus').innerHTML = '✅ Ảnh hiện tại';
+    uploadZone.classList.add('has-image');
+  }
+
+  document.getElementById('moP').classList.add('show');
+}
+
+async function saveP(){
+  const id=document.getElementById('pId').value;
+  const imgPath = document.getElementById('pImgPath').value || uploadedImagePath;
+  const body={
+    name:document.getElementById('pNm').value.trim(),
+    brand:document.getElementById('pBr').value.trim(),
+    price:parseFloat(document.getElementById('pPr').value)||0,
+    costPrice:parseFloat(document.getElementById('pCo').value)||0,
+    categoryId:parseInt(document.getElementById('pCt').value)||1,
+    mainImage: imgPath,
+    description:document.getElementById('pDs').value.trim(),
+    isActive:document.getElementById('pAc').checked
+  };
+  const al=document.getElementById('pAl');
+  if(!body.name||!body.brand||body.price<=0){al.textContent='Vui lòng nhập đầy đủ tên, hãng và giá hợp lệ.';al.className='al al-er show';return;}
+
+  // Disable save button
+  const saveBtn = document.getElementById('saveBtn');
+  const prevText = saveBtn.innerHTML;
+  saveBtn.disabled = true;
+  saveBtn.innerHTML = '⏳ Đang lưu...';
+
+  try{
+    const res=await fetch(id?`/api/admin/products/${id}`:'/api/admin/products',{method:id?'PUT':'POST',headers:H(),body:JSON.stringify(body)});
+    const data=await res.json();
+    if(!res.ok){al.textContent=data.error||'Lỗi khi lưu';al.className='al al-er show';saveBtn.disabled=false;saveBtn.innerHTML=prevText;return;}
+    closeM('moP');toast(id?'✅ Đã cập nhật sản phẩm':'✅ Đã thêm sản phẩm mới');loadP();
+  }catch{al.textContent='Lỗi kết nối';al.className='al al-er show';}
+  finally{saveBtn.disabled=false;saveBtn.innerHTML=prevText;}
+}
+
+async function toggleP(id,btn){
+  const prev=btn.innerHTML;btn.disabled=true;btn.innerHTML='...';
+  try{
+    const res=await fetch(`/api/admin/products/${id}/toggle`,{method:'PUT',headers:H()});
+    const data=await res.json();
+    if(res.ok){toast(data.message||'Đã cập nhật');loadP();}
+    else{toast(data.error||'Lỗi','er');btn.disabled=false;btn.innerHTML=prev;}
+  }catch{toast('Lỗi kết nối','er');btn.disabled=false;btn.innerHTML=prev;}
+}
+
+// ══ EXPORT EXCEL ══════════════════════════════════════════
+async function exportProductsExcel(){
+  toast('⏳ Đang xuất Excel...');
+  try{
+    const q=new URLSearchParams({page:1,size:9999});
+    const res=await fetch(`/api/admin/products?${q}`,{headers:H()});
+    const d=await res.json();
+    const rows=(d.products||[]).map(p=>({
+      'ID':p.id||p.Id,
+      'Tên sản phẩm':p.name||p.Name,
+      'Hãng':p.brand||p.Brand,
+      'Giá bán':p.price||p.Price||0,
+      'Giá nhập':p.costPrice||p.CostPrice||0,
+      'Tồn kho':p.stock||0,
+      'Hiện trên web':(p.isActive??p.IsActive)?'Có':'Không',
+      'Đánh giá':p.rating||p.Rating||0,
+      'Đã bán':p.soldCount||p.SoldCount||0,
+      'Mô tả':p.description||p.Description||''
+    }));
+    const ws=XLSX.utils.json_to_sheet(rows);
+    // Column widths
+    ws['!cols']=[{wch:6},{wch:30},{wch:14},{wch:12},{wch:12},{wch:10},{wch:12},{wch:8},{wch:8},{wch:40}];
+    const wb=XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb,ws,'Sản phẩm');
+    XLSX.writeFile(wb,`san-pham-${new Date().toISOString().slice(0,10)}.xlsx`);
+    toast('✅ Xuất Excel thành công!');
+  }catch(e){console.error(e);toast('Lỗi xuất Excel','er');}
+}
+
+// ══ IMPORT EXCEL ══════════════════════════════════════════
+let importRows=[];
+function previewImport(files){
+  if(!files||!files.length)return;
+  const file=files[0];
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary'});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const raw=XLSX.utils.sheet_to_json(ws,{defval:''});
+      // Flexible column mapping
+      importRows=raw.map(r=>{
+        const name=r['Tên sản phẩm']||r['ten san pham']||r['name']||r['Name']||'';
+        const brand=r['Hãng']||r['hang']||r['Brand']||r['brand']||'';
+        const price=parseFloat(r['Giá bán']||r['gia ban']||r['Price']||r['price']||0);
+        const cost=parseFloat(r['Giá nhập']||r['gia nhap']||r['CostPrice']||r['costPrice']||0);
+        const desc=r['Mô tả']||r['mo ta']||r['Description']||r['description']||'';
+        return{name:String(name).trim(),brand:String(brand).trim(),price,costPrice:cost,description:String(desc).trim(),categoryId:1,isActive:true};
+      }).filter(r=>r.name&&r.brand);
+
+      const tbody=document.getElementById('importPreviewBody');
+      tbody.innerHTML=importRows.map((r,i)=>`<tr style="border-bottom:1px solid var(--border)">
+        <td style="padding:6px 12px">${i+1}</td>
+        <td style="padding:6px 12px;font-weight:600">${r.name}</td>
+        <td style="padding:6px 12px">${r.brand}</td>
+        <td style="padding:6px 12px">${Number(r.price).toLocaleString('vi-VN')}đ</td>
+        <td style="padding:6px 12px">${Number(r.costPrice).toLocaleString('vi-VN')}đ</td>
+        <td style="padding:6px 12px"><span class="badge b-g">✅ Sẽ thêm</span></td>
+      </tr>`).join('');
+      document.getElementById('importCount').textContent=`${importRows.length} sản phẩm sẽ được nhập`;
+      document.getElementById('moImport').classList.add('show');
+      // Reset input
+      document.getElementById('xlsxInput').value='';
+    }catch(err){toast('Lỗi đọc file Excel: '+err.message,'er');}
+  };
+  reader.readAsBinaryString(file);
+}
+
+async function doImport(){
+  if(!importRows.length){toast('Không có dữ liệu','er');return}
+  const btn=document.getElementById('importBtn');
+  btn.disabled=true;btn.textContent='⏳ Đang nhập...';
+  let ok=0,fail=0;
+  for(const row of importRows){
+    try{
+      const res=await fetch('/api/admin/products',{method:'POST',headers:H(),body:JSON.stringify(row)});
+      if(res.ok)ok++;else fail++;
+    }catch{fail++;}
+  }
+  btn.disabled=false;btn.textContent='✅ Nhập tất cả';
+  closeM('moImport');
+  toast(`✅ Đã nhập ${ok} sản phẩm${fail>0?' ('+fail+' lỗi)':''}`);
+  loadP();
+}
+
+loadP();
+</script>
+</body>
+</html>

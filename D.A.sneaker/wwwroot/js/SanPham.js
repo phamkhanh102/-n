@@ -1,4 +1,4 @@
-﻿let all = []
+let all = []
 
 async function loadProducts() {
 
@@ -140,13 +140,19 @@ let filters = {
     size: "",
     sort: ""
 }
-document.getElementById("brandFilter").onchange = e => {
+
+// Guard: only attach filter listeners if the elements exist (products.html)
+const _brandEl = document.getElementById("brandFilter");
+const _priceEl = document.getElementById("priceFilter");
+const _sizeEl  = document.getElementById("sizeFilter");
+const _sortEl  = document.getElementById("sortFilter");
+
+if (_brandEl) _brandEl.onchange = e => {
     filters.brand = e.target.value
     applyFilters()
 }
 
-document.getElementById("priceFilter").onchange = e => {
-
+if (_priceEl) _priceEl.onchange = e => {
     if (!e.target.value) {
         filters.priceMin = 0
         filters.priceMax = Infinity
@@ -156,17 +162,15 @@ document.getElementById("priceFilter").onchange = e => {
         filters.priceMin = +min
         filters.priceMax = +max
     }
-
     applyFilters()
-
 }
 
-document.getElementById("sizeFilter").onchange = e => {
+if (_sizeEl) _sizeEl.onchange = e => {
     filters.size = e.target.value
     applyFilters()
 }
 
-document.getElementById("sortFilter").onchange = e => {
+if (_sortEl) _sortEl.onchange = e => {
     filters.sort = e.target.value
     applyFilters()
 }

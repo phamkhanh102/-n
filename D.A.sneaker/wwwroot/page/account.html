@@ -313,16 +313,22 @@
                             <input class="form-input" id="pAddress" type="text" placeholder="123 Đường ABC">
                         </div>
                         <div class="form-col">
-                            <label class="form-label">Phường / Xã</label>
-                            <input class="form-input" id="pWard" type="text" placeholder="Phường 1">
+                            <label class="form-label">Tỉnh / Thành phố</label>
+                            <select class="form-input" id="pCity" onchange="onAccProvinceChange(this.value)">
+                                <option value="">-- Chọn tỉnh/thành --</option>
+                            </select>
                         </div>
                         <div class="form-col">
                             <label class="form-label">Quận / Huyện</label>
-                            <input class="form-input" id="pDistrict" type="text" placeholder="Quận 1">
+                            <select class="form-input" id="pDistrict" onchange="onAccDistrictChange(this.value)">
+                                <option value="">-- Chọn quận/huyện --</option>
+                            </select>
                         </div>
                         <div class="form-col full">
-                            <label class="form-label">Tỉnh / Thành phố</label>
-                            <input class="form-input" id="pCity" type="text" placeholder="TP. Hồ Chí Minh">
+                            <label class="form-label">Phường / Xã</label>
+                            <select class="form-input" id="pWard">
+                                <option value="">-- Chọn phường/xã --</option>
+                            </select>
                         </div>
                     </div>
                     <div style="margin-top:20px;display:flex;gap:10px">
@@ -423,7 +429,14 @@ function statusBadge(s) {
 }
 
 function fmtMoney(n) { return Number(n||0).toLocaleString('vi-VN') + 'đ'; }
-function fmtDate(d)  { if (!d) return '—'; return new Date(d).toLocaleDateString('vi-VN', {day:'2-digit',month:'2-digit',year:'numeric'}); }
+function fmtDate(d)  {
+    if (d === null || d === undefined || d === '') return '—';
+    try {
+        const dt = new Date(d);
+        if (isNaN(dt.getTime())) return '—';
+        return dt.toLocaleDateString('vi-VN', {day:'2-digit',month:'2-digit',year:'numeric'});
+    } catch { return '—'; }
+}
 
 async function loadOrders() {
     const wrap = document.getElementById('ordersTableWrap');
@@ -456,11 +469,11 @@ function renderOrders() {
     wrap.innerHTML = `<table>
         <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th></tr></thead>
         <tbody>${rows.map(o => {
-            const id     = o.id || o.Id || '—';
-            const total  = o.totalAmount || o.total || o.TotalAmount || 0;
-            const status = o.status || o.Status || 'Pending';
-            const date   = o.createdAt || o.date || o.CreatedAt;
-            const items  = o.itemCount ?? (o.items?.length ?? (o.Items?.length ?? 1));
+            const id     = o.Id ?? o.id ?? '—';
+            const total  = o.TotalAmount ?? o.totalAmount ?? o.total ?? 0;
+            const status = o.Status || o.status || 'Pending';
+            const date   = o.CreatedAt ?? o.createdAt ?? o.date ?? null;
+            const items  = o.itemCount ?? o.ItemCount ?? (o.Items?.length ?? (o.items?.length ?? 1));
             return `<tr>
                 <td><b>#${id}</b></td>
                 <td>${items} sản phẩm</td>
@@ -474,9 +487,12 @@ function renderOrders() {
 
 function updateOverviewStats() {
     document.getElementById('qsTotalOrders').textContent = allOrders.length;
-    const completed = allOrders.filter(o => (o.status||o.Status) === 'Completed' || (o.status||o.Status) === 'Paid');
+    const completed = allOrders.filter(o => {
+        const st = o.Status || o.status || '';
+        return st === 'Completed' || st === 'Paid';
+    });
     document.getElementById('qsCompleted').textContent = completed.length;
-    const spent = allOrders.reduce((s,o) => s + (o.totalAmount||o.total||o.TotalAmount||0), 0);
+    const spent = allOrders.reduce((s,o) => s + Number(o.TotalAmount ?? o.totalAmount ?? o.total ?? 0), 0);
     document.getElementById('qsSpent').textContent = Number(spent).toLocaleString('vi-VN');
 }
 
@@ -495,11 +511,11 @@ async function loadOverview() {
         wrap.innerHTML = `<table>
             <thead><tr><th>Mã đơn</th><th>Sản phẩm</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th></tr></thead>
             <tbody>${recent.map(o => {
-                const id     = o.id || o.Id;
-                const total  = o.totalAmount || o.total || 0;
-                const status = o.status || o.Status || 'Pending';
-                const date   = o.createdAt || o.date;
-                const items  = o.itemCount ?? (o.items?.length ?? 1);
+                const id     = o.Id ?? o.id ?? '—';
+                const total  = o.TotalAmount ?? o.totalAmount ?? o.total ?? 0;
+                const status = o.Status || o.status || 'Pending';
+                const date   = o.CreatedAt ?? o.createdAt ?? o.date ?? null;
+                const items  = o.itemCount ?? o.ItemCount ?? (o.Items?.length ?? (o.items?.length ?? 1));
                 return `<tr>
                     <td><b>#${id}</b></td>
                     <td>${items} sản phẩm</td>
@@ -529,9 +545,19 @@ function loadProfile() {
     document.getElementById('pPhone').value   = profile.phone || '';
     document.getElementById('pDob').value     = profile.dob || '';
     document.getElementById('pAddress').value = profile.address || '';
-    document.getElementById('pWard').value    = profile.ward || '';
-    document.getElementById('pDistrict').value= profile.district || '';
-    document.getElementById('pCity').value    = profile.city || '';
+    // Province/District/Ward dropdowns -- restore saved codes
+    if (profile.cityCode) {
+        const pSel = document.getElementById('pCity');
+        // Wait for provinces to load then select
+        const trySelect = () => {
+            const opt = pSel.querySelector(`option[value="${profile.cityCode}"]`);
+            if (opt) {
+                pSel.value = profile.cityCode;
+                onAccProvinceChange(profile.cityCode, profile.districtCode, profile.wardCode);
+            } else { setTimeout(trySelect, 200); }
+        };
+        trySelect();
+    }
 }
 
 async function saveProfile() {
@@ -539,26 +565,39 @@ async function saveProfile() {
     const phone   = document.getElementById('pPhone').value.trim();
     const dob     = document.getElementById('pDob').value;
     const address = document.getElementById('pAddress').value.trim();
-    const ward    = document.getElementById('pWard').value.trim();
-    const district= document.getElementById('pDistrict').value.trim();
-    const city    = document.getElementById('pCity').value.trim();
+    const cityEl  = document.getElementById('pCity');
+    const distEl  = document.getElementById('pDistrict');
+    const wardEl  = document.getElementById('pWard');
+    const city     = cityEl.options[cityEl.selectedIndex]?.text || cityEl.value || '';
+    const district = distEl.options[distEl.selectedIndex]?.text || distEl.value || '';
+    const ward     = wardEl.options[wardEl.selectedIndex]?.text || wardEl.value || '';
+    const cityCode = cityEl.value || '';
+    const districtCode = distEl.value || '';
+    const wardCode = wardEl.value || '';
     const alertEl = document.getElementById('profileAlert');
 
     if (!name) { alertEl.innerHTML = '<div class="alert alert-error">Vui lòng nhập họ tên</div>'; return; }
 
-    // Lưu localStorage (luôn)
-    const profile = { name, phone, dob, address, ward, district, city };
+    const profile = { name, phone, dob, address, ward, district, city, cityCode, districtCode, wardCode };
     localStorage.setItem('userProfile', JSON.stringify(profile));
 
-    // Cập nhật USER object
-    if (USER) { USER.name = name; localStorage.setItem('user', JSON.stringify(USER)); }
+    // ── Đồng bộ các key riêng lẻ để checkout tự động điền ──
+    localStorage.setItem('name',          name);
+    localStorage.setItem('email',         USER?.email || '');
+    localStorage.setItem('userPhone',     phone);
+    localStorage.setItem('userAddress',   address);
+    localStorage.setItem('userCity',      city);
+    localStorage.setItem('userDistrict',  district);
+    localStorage.setItem('userWard',      ward);
+    localStorage.setItem('userCityCode',     cityCode);
+    localStorage.setItem('userDistrictCode', districtCode);
+    localStorage.setItem('userWardCode',     wardCode);
 
-    // Cập nhật sidebar
+    if (USER) { USER.name = name; localStorage.setItem('user', JSON.stringify(USER)); }
     document.getElementById('sideUserName').textContent = name;
     document.getElementById('sideAvatar').textContent = name.charAt(0).toUpperCase();
     document.getElementById('greetName').textContent = name;
 
-    // Gọi API nếu có
     try {
         await fetch('/api/auth/profile', {
             method: 'PUT',
@@ -626,11 +665,74 @@ async function changePassword() {
 }
 
 // ═══════════════════════════════════════════════════════
+// PROVINCE / DISTRICT / WARD DROPDOWNS
+// ═══════════════════════════════════════════════════════
+const ACC_PROVINCES_API = 'https://provinces.open-api.vn/api';
+
+async function loadAccProvinces() {
+    try {
+        const res = await fetch(`${ACC_PROVINCES_API}/p/`);
+        const data = await res.json();
+        const sel = document.getElementById('pCity');
+        data.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.code;
+            opt.textContent = p.name;
+            sel.appendChild(opt);
+        });
+    } catch {
+        // Fallback nếu API lỗi
+        const sel = document.getElementById('pCity');
+        ['Hà Nội','TP. Hồ Chí Minh','Đà Nẵng','Cần Thơ','Hải Phòng','Bình Dương','Đồng Nai','Khác'].forEach(n => {
+            const opt = document.createElement('option'); opt.value = n; opt.textContent = n; sel.appendChild(opt);
+        });
+    }
+}
+
+async function onAccProvinceChange(code, restoreDistCode, restoreWardCode) {
+    const distSel = document.getElementById('pDistrict');
+    const wardSel = document.getElementById('pWard');
+    distSel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+    wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+    if (!code) return;
+    try {
+        const res = await fetch(`${ACC_PROVINCES_API}/p/${code}?depth=2`);
+        const data = await res.json();
+        (data.districts || []).forEach(d => {
+            const opt = document.createElement('option');
+            opt.value = d.code; opt.textContent = d.name;
+            distSel.appendChild(opt);
+        });
+        if (restoreDistCode) {
+            distSel.value = restoreDistCode;
+            await onAccDistrictChange(restoreDistCode, restoreWardCode);
+        }
+    } catch (e) { console.warn('Lỗi tải quận/huyện:', e); }
+}
+
+async function onAccDistrictChange(code, restoreWardCode) {
+    const wardSel = document.getElementById('pWard');
+    wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+    if (!code) return;
+    try {
+        const res = await fetch(`${ACC_PROVINCES_API}/d/${code}?depth=2`);
+        const data = await res.json();
+        (data.wards || []).forEach(w => {
+            const opt = document.createElement('option');
+            opt.value = w.code; opt.textContent = w.name;
+            wardSel.appendChild(opt);
+        });
+        if (restoreWardCode) wardSel.value = restoreWardCode;
+    } catch (e) { console.warn('Lỗi tải phường/xã:', e); }
+}
+
+// ═══════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
     initUserInfo();
     loadOverview();
+    loadAccProvinces();
 });
 </script>
 </body>

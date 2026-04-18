@@ -863,10 +863,58 @@
     <script src="/js/layout.js"></script>
     <script>
         const SHIPPING = 30000;
-        const COUPONS = { SPARK10: 0.1, SPARK20: 0.2, FREESHIP: 'freeship' };
+        const COUPON_INFO = {
+            // Giảm theo %
+            SPARK10:  { type:'percent', value:0.10, label:'Giảm 10%' },
+            SPARK20:  { type:'percent', value:0.20, label:'Giảm 20%' },
+            SPARK30:  { type:'percent', value:0.30, label:'Giảm 30%' },
+            SPARK50:  { type:'percent', value:0.50, label:'Giảm 50%' },
+            SPARK70:  { type:'percent', value:0.70, label:'Giảm 70% - DEMO VIP' },
+            // Dịp đặc biệt
+            KHAISO:   { type:'percent', value:0.50, label:'Khai sổ giảm 50%' },
+            VIPDAY:   { type:'percent', value:0.40, label:'Khách VIP giảm 40%' },
+            FLASH30:  { type:'percent', value:0.30, label:'Flash Sale giảm 30%' },
+            DEMO99:   { type:'percent', value:0.99, label:'Demo 99% - Chỉ để test!' },
+            // Freeship
+            FREESHIP: { type:'freeship', label:'Miễn phí vận chuyển' },
+            SHIP0:    { type:'freeship', label:'Free ship toàn quốc' },
+            // Combo
+            NEWYEAR:  { type:'percent', value:0.25, label:'Năm mới giảm 25%' },
+            SALE15:   { type:'percent', value:0.15, label:'Sale 15%' },
+        };
+        // Compat: giữ COUPONS cũ để applyCoupon hoạt động
+        const COUPONS = Object.fromEntries(Object.entries(COUPON_INFO).map(([k,v])=>[k, v.type==='freeship'?'freeship':v.value]));
         let couponDiscount = 0;
         let freeShip = false;
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // ── Login suggestion banner (không khóa, chỉ gợi ý) ──
+        (function showLoginBanner() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                const banner = document.createElement('div');
+                banner.id = 'loginBanner';
+                banner.style.cssText = 'max-width:1200px;margin:12px auto;padding:14px 22px;background:linear-gradient(135deg,#eff6ff,#dbeafe);border:1px solid #93c5fd;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;';
+                banner.innerHTML = `
+                    <div style="display:flex;align-items:center;gap:10px">
+                        <span style="font-size:22px">👋</span>
+                        <div>
+                            <div style="font-size:14px;font-weight:700;color:#1e40af">Đăng nhập để có trải nghiệm tốt nhất!</div>
+                            <div style="font-size:12px;color:#3b82f6;margin-top:2px">Theo dõi đơn hàng, lưu sản phẩm yêu thích và thanh toán nhanh hơn.</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-shrink:0">
+                        <a href="/page/login.html?redirect=${encodeURIComponent('/page/cart.html')}" style="padding:8px 18px;background:#1d4ed8;color:#fff;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;">Đăng nhập</a>
+                        <a href="/page/register.html" style="padding:8px 18px;background:transparent;color:#1d4ed8;border:1.5px solid #93c5fd;border-radius:10px;font-size:13px;font-weight:600;text-decoration:none;">Đăng ký</a>
+                    </div>
+                `;
+                // Insert after header, before page-hero
+                const header = document.getElementById('header');
+                if (header && header.nextElementSibling) {
+                    header.parentNode.insertBefore(banner, header.nextElementSibling);
+                }
+            }
+        })();
 
         function renderCart() {
             const container = document.getElementById('cartItems');
@@ -883,7 +931,10 @@
                 return;
             }
 
-            container.innerHTML = cart.map((p, i) => `
+            container.innerHTML = cart.map((p, i) => {
+                const hasSale = p.originalPrice && p.originalPrice > p.price;
+                const discPct = hasSale ? Math.round((1 - p.price / p.originalPrice) * 100) : 0;
+                return `
 <div class="cart-item" id="item-${i}">
   <div class="cart-img-wrap">
     <img src="${p.image || p.imageUrl || 'https://via.placeholder.com/90'}"
@@ -896,6 +947,7 @@
     <div class="cart-item-meta">
       ${p.size ? `<span>Size ${p.size}</span>` : ''}
       ${p.color ? `<span>${p.color}</span>` : ''}
+      ${hasSale ? `<span style="background:#fef2f2;color:#ef4444;font-weight:700">🏷️ -${discPct}%</span>` : ''}
     </div>
     <div class="qty-ctrl">
       <button onclick="changeQty(${i}, -1)">−</button>
@@ -907,11 +959,15 @@
   <div class="cart-item-right">
     <div>
       <div class="cart-item-price">${(p.price * p.qty).toLocaleString('vi-VN')}đ</div>
-      <div class="cart-item-price-old">${p.price.toLocaleString('vi-VN')}đ / đôi</div>
+      ${hasSale
+        ? `<div class="cart-item-price-old">${p.originalPrice.toLocaleString('vi-VN')}đ / đôi</div>`
+        : `<div style="font-size:12px;color:#9ca3af">${p.price.toLocaleString('vi-VN')}đ / đôi</div>`
+      }
     </div>
     <button class="cart-item-remove" onclick="removeItem(${i})" title="Xóa">✕</button>
   </div>
-</div>`).join('');
+</div>`;
+            }).join('');
 
             const total = cart.reduce((s, p) => s + p.price * p.qty, 0);
             document.getElementById('itemCount').textContent = cart.length;
@@ -971,24 +1027,24 @@
 
         function applyCoupon() {
             const code = document.getElementById('couponInput').value.trim().toUpperCase();
-            const msg = document.getElementById('couponMsg');
-            const val = COUPONS[code];
+            const msg  = document.getElementById('couponMsg');
+            const info = COUPON_INFO[code];
             if (!code) { msg.textContent = ''; return; }
-            if (val === undefined) {
+            if (!info) {
                 msg.textContent = '❌ Mã không hợp lệ hoặc đã hết hạn';
                 msg.className = 'coupon-msg err';
                 couponDiscount = 0; freeShip = false;
                 localStorage.removeItem('appliedCoupon');
-            } else if (val === 'freeship') {
+            } else if (info.type === 'freeship') {
                 freeShip = true; couponDiscount = 0;
-                msg.textContent = '✅ Miễn phí vận chuyển!';
+                msg.textContent = `✅ ${info.label}`;
                 msg.className = 'coupon-msg ok';
-                localStorage.setItem('appliedCoupon', JSON.stringify({ code, type: 'freeship' }));
+                localStorage.setItem('appliedCoupon', JSON.stringify({ code, type:'freeship', label:info.label }));
             } else {
-                couponDiscount = val; freeShip = false;
-                msg.textContent = `✅ Giảm ${val * 100}% giá trị đơn hàng!`;
+                couponDiscount = info.value; freeShip = false;
+                msg.textContent = `✅ ${info.label}!`;
                 msg.className = 'coupon-msg ok';
-                localStorage.setItem('appliedCoupon', JSON.stringify({ code, type: 'percent', value: val }));
+                localStorage.setItem('appliedCoupon', JSON.stringify({ code, type:'percent', value:info.value, label:info.label }));
             }
             const sub = cart.reduce((s, p) => s + p.price * p.qty, 0);
             updateSummary(sub);

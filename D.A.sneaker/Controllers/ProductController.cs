@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Text.Json;
 
 namespace D.A.sneaker.Controllers
 {
@@ -23,6 +24,77 @@ namespace D.A.sneaker.Controllers
             _config = config;
         }
 
+        // ── Helper: lấy map giảm giá từ promotions đang active ──
+        private async Task<Dictionary<int, (decimal salePrice, int percent, string promoName)>> GetActivePromoMap()
+        {
+            try
+            {
+                var now = DateTime.Now;
+                var promos = await _context.Promotions
+                    .Where(p => p.IsActive && p.StartDate <= now && p.EndDate >= now)
+                    .ToListAsync();
+
+                if (!promos.Any())
+                    return new Dictionary<int, (decimal, int, string)>();
+
+                // Load TẤT CẢ product prices 1 lần (tránh N+1 queries)
+                var allPrices = await _context.Products
+                    .Where(p => p.IsActive)
+                    .Select(p => new { p.Id, p.Price })
+                    .ToDictionaryAsync(p => p.Id, p => p.Price);
+
+                var map = new Dictionary<int, (decimal salePrice, int percent, string promoName)>();
+
+                foreach (var promo in promos)
+                {
+                    List<int>? pids = null;
+                    if (!string.IsNullOrEmpty(promo.ProductIds))
+                    {
+                        try { pids = JsonSerializer.Deserialize<List<int>>(promo.ProductIds); }
+                        catch { }
+                    }
+
+                    // Nếu không chỉ định sản phẩm cụ thể → áp dụng tất cả
+                    if (pids == null || !pids.Any())
+                        pids = allPrices.Keys.ToList();
+
+                    foreach (var pid in pids)
+                    {
+                        if (!allPrices.TryGetValue(pid, out var originalPrice))
+                            continue;
+
+                        // Chỉ giữ promo có discount cao nhất
+                        if (map.ContainsKey(pid) && promo.DiscountPercent <= map[pid].percent)
+                            continue;
+
+                        decimal salePrice;
+                        int percent = promo.DiscountPercent;
+                        if (percent > 0)
+                        {
+                            salePrice = originalPrice - (originalPrice * percent / 100);
+                        }
+                        else
+                        {
+                            salePrice = Math.Max(0, originalPrice - promo.DiscountAmount);
+                            percent = originalPrice > 0
+                                ? (int)Math.Round((double)((originalPrice - salePrice) / originalPrice) * 100)
+                                : 0;
+                        }
+
+                        map[pid] = (Math.Round(salePrice, 0), percent, promo.Name);
+                    }
+                }
+
+                return map;
+            }
+            catch (Exception ex)
+            {
+                // Nếu bảng Promotions chưa tồn tại hoặc lỗi → trả map rỗng
+                System.Diagnostics.Debug.WriteLine($"[GetActivePromoMap] Error: {ex.Message}");
+                return new Dictionary<int, (decimal, int, string)>();
+            }
+        }
+
         //--------------------------------------------------
         // GET LIST (SHOP PAGE)
         //--------------------------------------------------
@@ -30,7 +102,7 @@ namespace D.A.sneaker.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _context.Products
-               .Where(p => p.IsActive) // Chỉ hiện sản phẩm đang active
+               .Where(p => p.IsActive)
                .Select(p => new ProductCardDto
                {
                    Id = p.Id,
@@ -43,6 +115,18 @@ namespace D.A.sneaker.Controllers
                            : "/images/" + p.MainImage
                })
                 .ToListAsync();
+
+            // Áp dụng giá sale từ promotions đang active
+            var promoMap = await GetActivePromoMap();
+            foreach (var p in products)
+            {
+                if (promoMap.TryGetValue(p.Id, out var promo))
+                {
+                    p.SalePrice = promo.salePrice;
+                    p.DiscountPercent = promo.percent;
+                    p.PromoName = promo.promoName;
+                }
+            }
 
             return Ok(products);
         }
@@ -69,11 +153,17 @@ namespace D.A.sneaker.Controllers
                 Brand = product.Brand,
                 Price = product.Price,
                 Description = product.Description,
-                MainImage = "/images/" + product.MainImage,
+                MainImage = string.IsNullOrEmpty(product.MainImage) ? ""
+                    : (product.MainImage.StartsWith("http") || product.MainImage.StartsWith("/"))
+                        ? product.MainImage
+                        : "/images/" + product.MainImage,
 
                 Images = product.Images
-    .Select(i => "/images/" + i.ImageUrl)
-    .ToList(),
+                    .Where(i => !string.IsNullOrEmpty(i.ImageUrl))
+                    .Select(i => (i.ImageUrl.StartsWith("http") || i.ImageUrl.StartsWith("/"))
+                        ? i.ImageUrl
+                        : "/images/" + i.ImageUrl)
+                    .ToList(),
 
                 Variants = product.Variants.Select(v => new VariantDTO
                 {
@@ -83,6 +173,15 @@ namespace D.A.sneaker.Controllers
                     Stock = v.Stock
                 }).ToList()
             };
+
+            // Áp dụng giá sale từ promotions đang active
+            var promoMap = await GetActivePromoMap();
+            if (promoMap.TryGetValue(id, out var promo))
+            {
+                dto.SalePrice = promo.salePrice;
+                dto.DiscountPercent = promo.percent;
+                dto.PromoName = promo.promoName;
+            }
 
             return Ok(dto);
         }

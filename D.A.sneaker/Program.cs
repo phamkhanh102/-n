@@ -1,4 +1,4 @@
-﻿using D.A.sneaker.Data;
+using D.A.sneaker.Data;
 using D.A.sneaker.Middleware;
 using D.A.sneaker.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -8,6 +8,17 @@ using Microsoft.OpenApi.Models;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ADD CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("allow", policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
 
 // ADD DB
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -88,6 +99,38 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// ═══ AUTO FIX IDENTITY SEED ═══════════════════════════════
+// Tự động reseed IDENTITY cho tất cả bảng khi app khởi động
+// để tránh lỗi "PRIMARY KEY constraint violation"
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    
+    var tables = new[] { "Users", "Products", "ProductImages", "ProductVariants",
+        "Orders", "OrderItems", "Payments", "Reviews", "Promotions",
+        "Customers", "CartItems", "Wishlists", "Colors", "Sizes", "Category",
+        "ChatHistories", "UserChatStates" };
+    
+    foreach (var table in tables)
+    {
+        try
+        {
+            var maxId = db.Database.ExecuteSqlRaw(
+                $"IF EXISTS (SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '{table}') " +
+                $"BEGIN DECLARE @max INT = (SELECT ISNULL(MAX(Id), 0) FROM [{table}]); " +
+                $"DBCC CHECKIDENT('{table}', RESEED, @max); END");
+        }
+        catch { /* table might not exist yet */ }
+    }
+    Console.WriteLine("✅ IDENTITY reseed completed for all tables.");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ IDENTITY reseed skipped: {ex.Message}");
+}
+
 // MIDDLEWARE (thứ tự quan trọng)
 if (app.Environment.IsDevelopment())
 {
@@ -107,3 +150,4 @@ app.UseMiddleware<ErrorMiddleware>();
 app.MapControllers();
 
 app.Run();
+

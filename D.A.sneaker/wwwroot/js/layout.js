@@ -1,10 +1,26 @@
-﻿// ── Global SVG placeholder generator (replaces via.placeholder.com) ──
+// ── Global SVG placeholder generator (replaces via.placeholder.com) ──
 // Usage: _placeholderSvg(300, 200, 'Sneaker') → data:image/svg+xml,... 
 window._placeholderSvg = function(w, h, text) {
   const t = encodeURIComponent(text || '');
   return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'%3E%3Crect width='${w}' height='${h}' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='sans-serif' font-size='${Math.max(12, Math.min(18, w/15))}'%3E${t}%3C/text%3E%3C/svg%3E`;
 };
 var _placeholderSvg = window._placeholderSvg;
+
+// ── Force re-login khi khởi động lại trình duyệt / đóng tất cả tab ──
+// sessionStorage sẽ bị xóa khi tất cả tab đóng → phát hiện "new session"
+;(function forceReloginOnRestart() {
+  const SESSION_KEY = 'spark_session_alive';
+  if (!sessionStorage.getItem(SESSION_KEY)) {
+    // New session → xóa token cũ để buộc đăng nhập lại
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    localStorage.removeItem('email');
+    localStorage.removeItem('user');
+    localStorage.removeItem('customerId');
+    sessionStorage.setItem(SESSION_KEY, '1');
+  }
+})();
 
 ; (function applyThemeEarly() {
   const isDark = localStorage.getItem('spark-dark') === 'true';
@@ -116,7 +132,8 @@ var _placeholderSvg = window._placeholderSvg;
   <a href="/page/about.html" class="nav-link">VỀ CHÚNG TÔI</a>
   <a href="/page/blog.html" class="nav-link">BLOG</a>
   <a href="/page/support.html" class="nav-link">HỖ TRỢ</a>
-  <a href="/page/products.html" class="nav-link nav-sale">SALE</a>
+  <a href="/page/Ai.html" class="nav-link" style="display:inline-flex;align-items:center;gap:4px">🤖 AI TƯ VẤN</a>
+  <a href="/page/sale.html" class="nav-link nav-sale">SALE</a>
 </div>
 
 </header>
@@ -178,13 +195,32 @@ var _placeholderSvg = window._placeholderSvg;
     const logoutBtn = document.getElementById('hdrLogoutBtn');
     const logoutDivider = document.getElementById('hdrLogoutDivider');
     const accountLabel = document.getElementById('accountLabel');
+    const dropdownInner = document.querySelector('.hdr-account-dropdown-inner');
+
     if (token) {
+      // ── Đã đăng nhập: hiện menu đầy đủ + nút Đăng xuất ──
       if (logoutBtn) logoutBtn.style.display = 'flex';
       if (logoutDivider) logoutDivider.style.display = 'block';
-      const name = localStorage.getItem('name') || localStorage.getItem('email') || '';
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      const name = user?.name || localStorage.getItem('name') || localStorage.getItem('email') || '';
       if (accountLabel && name) {
         const shortName = name.split(' ').pop() || 'Tài khoản';
         accountLabel.textContent = shortName.length > 12 ? 'Tài khoản' : shortName;
+      }
+    } else {
+      // ── Chưa đăng nhập: hiện Đăng nhập / Đăng ký ──
+      if (accountLabel) accountLabel.textContent = 'Đăng nhập';
+      if (dropdownInner) {
+        dropdownInner.innerHTML = `
+          <a href="/page/login.html" class="hdr-dd-item">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            Đăng nhập
+          </a>
+          <a href="/page/register.html" class="hdr-dd-item">
+            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            Đăng ký tài khoản
+          </a>
+        `;
       }
     }
   })();
@@ -548,10 +584,10 @@ function doSearch() {
 
   <!-- QUICK ACTIONS -->
   <div class="ai-quick-actions">
-    <button class="ai-quick-btn" onclick="sendQuick('Tư vấn chọn size')">📏 Chọn size</button>
-    <button class="ai-quick-btn" onclick="sendQuick('Xem sale hôm nay')">🔥 Sale</button>
+    <button class="ai-quick-btn" onclick="sendQuick('Bảng size giày')">📏 Size</button>
+    <button class="ai-quick-btn" onclick="sendQuick('Mã giảm giá hiện có')">🎟️ Mã KM</button>
     <button class="ai-quick-btn" onclick="sendQuick('Chính sách đổi trả')">🔄 Đổi trả</button>
-    <button class="ai-quick-btn" onclick="sendQuick('Kiểm tra đơn hàng')">📦 Đơn hàng</button>
+    <button class="ai-quick-btn" onclick="sendQuick('Tư vấn chọn giày chạy bộ')">🏃 Chạy bộ</button>
   </div>
 
   <!-- MESSAGES -->
@@ -696,6 +732,24 @@ function doSearch() {
     return BRANDS.find(b => q.includes(' ' + norm(b) + ' ')) || null;
   }
 
+  // ── Gọi API chat với JWT token (nếu đã đăng nhập) ────────────────────────
+  const statusEl = document.getElementById('aiStatusText');
+
+  async function callOllamaAsync(text, signal) {
+    const token = localStorage.getItem('token') || '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(text),
+      signal
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
+
   // ── Render product cards (có filter theo brand) ────────────
   function showFilteredProducts(brand, apiData) {
     let items;
@@ -739,20 +793,6 @@ function doSearch() {
     renderMsg(cardsHtml, 'bot', true);
   }
 
-  // ── Ollama async với AbortController ───────────────────────
-  const statusEl = document.getElementById('aiStatusText');
-
-  async function callOllamaAsync(text, signal) {
-    const res = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(text),
-      signal
-    });
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    return res.json();
-  }
-
   // ── HÀM GỢI Ý SẢN PHẨM: hiện typing "đang tìm..." rồi show cards ──
   function triggerProductSuggestion(brand, apiData) {
     // Bước 1: Sau 600ms hiện typing "đang tìm kiếm..."
@@ -766,7 +806,7 @@ function doSearch() {
     }, 600);
   }
 
-  // ── sendMessage — logic chặt chẽ ──────────────────────────
+  // ── sendMessage – backend xử lý toàn bộ intent ──────────────────────
   function sendMessage(text) {
     text = (text || '').trim();
     if (!text) return;
@@ -777,36 +817,16 @@ function doSearch() {
     sendBtn.disabled = true;
 
     const brand = detectBrand(text);
-
-    // Các query cần hiện gợi ý sản phẩm
     const wantProducts = SUGGEST_PRODUCTS.length > 0 && (
-      brand != null ||
-      /giày|sản phẩm|tìm|recommend|shoe/i.test(text)
+      brand != null || /giày|sản phẩm|tìm|recommend|shoe/i.test(text)
     );
 
-    // ── BƯỚC 1: Keyword match → trả lời NGAY ──────────────
-    const localReply = getBotReply(text);
-    const isUnknown = localReply === '__UNKNOWN__';
-
-    if (!isUnknown) {
-      // Có keyword → trả lời ngay lập tức
-      renderMsg(localReply.replace(/\n/g, '<br>'), 'bot', true);
-
-      // Nếu cần gợi ý sản phẩm → giả lập "đang tìm kiếm..." rồi show
-      if (wantProducts) triggerProductSuggestion(brand, null);
-
-      input.disabled = false;
-      sendBtn.disabled = false;
-      input.focus();
-      return;
-    }
-
-    // ── BƯỚC 2: Không match keyword → gọi Ollama 12s ─────
+    // Tất cả câu hỏi đều gửi về backend (backend tự phân loại intent)
     showTyping();
     if (statusEl) statusEl.textContent = 'Đang suy nghĩ...';
 
     const controller = new AbortController();
-    const timerId = setTimeout(() => controller.abort(), 12000);
+    const timerId = setTimeout(() => controller.abort(), 45000);
 
     callOllamaAsync(text, controller.signal)
       .then(data => {
@@ -814,17 +834,30 @@ function doSearch() {
         removeTyping();
         if (statusEl) statusEl.textContent = 'Đang hoạt động';
 
+        const intent = data.intent || 'General';
+
         if (data.type === 'products' && data.data?.length) {
-          renderMsg(`Tôi tìm thấy <b>${data.data.length}</b> sản phẩm phù hợp.`, 'bot', true);
+          // Trả về danh sách sản phẩm
+          const msg = data.message || `Tìm thấy ${data.data.length} sản phẩm phù hợp! 👟`;
+          renderMsg(msg, 'bot', true);
           triggerProductSuggestion(brand, data.data);
         } else {
           const reply = (data.message || '').trim();
-          if (!reply || reply.toLowerCase().includes('ollama') || reply.includes('kết nối')) {
+          if (!reply) {
             renderMsg('Bạn có thể mô tả rõ hơn không? Ví dụ: "giày Nike chạy bộ", "Adidas size 42"...', 'bot', true);
           } else {
-            renderMsg(reply.replace(/\n/g, '<br>'), 'bot', true);
+            // Render markdown đơn giản: **bold** → <b>, \n → <br>
+            const html = reply
+              .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+              .replace(/`([^`]+)`/g, '<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:12px">$1</code>')
+              .replace(/\n/g, '<br>');
+            renderMsg(html, 'bot', true);
           }
-          if (wantProducts) triggerProductSuggestion(brand, null);
+
+          // Gợi ý sản phẩm nếu câu hỏi liên quan đến giày (không gợi ý khi off-topic/policy/order)
+          const skipProductSuggest = ['OffTopic', 'Policy', 'OrderStatus', 'SmallTalk', 'Greeting'].includes(intent);
+          if (wantProducts && !skipProductSuggest)
+            triggerProductSuggestion(brand, null);
         }
       })
       .catch(err => {
@@ -832,8 +865,8 @@ function doSearch() {
         removeTyping();
         if (statusEl) statusEl.textContent = 'Đang hoạt động';
         const msg = err.name === 'AbortError'
-          ? 'Bạn có thể hỏi cụ thể hơn? Ví dụ: "giày Puma size 42", "Nike chạy bộ dưới 2 triệu"...'
-          : 'Tôi chưa hiểu câu hỏi này. Hãy thử hỏi về: giày Nike, Puma, size, giá, giao hàng...';
+          ? '😅 AI đang xử lý hơi lâu, bạn thử hỏi lại nhé! Hoặc liên hệ hotline <b>1800 1234</b>.'
+          : 'Mình chưa hiểu câu hỏi này. Hãy thử hỏi về: giày Nike, Puma, size, giá, giao hàng...';
         renderMsg(msg, 'bot', true);
       })
       .finally(() => {
@@ -853,6 +886,18 @@ function doSearch() {
   window.sendQuick = function (text) {
     if (!isOpen) openChat();
     sendMessage(text);
+  };
+
+  // Gọi từ product-detail.html để inject context sản phẩm vào chatbot
+  window.setProductContext = function (productName, productId) {
+    if (!isOpen) openChat();
+    // Điền sẵn câu hỏi vào input để user thấy
+    if (input) {
+      input.value = `Tư vấn về ${productName}`;
+      input.focus();
+    }
+    // Tự gửi luôn để chatbot biết đang hỏi về sản phẩm nào
+    sendMessage(`Tư vấn chi tiết về sản phẩm: ${productName}`);
   };
 
   sendBtn.addEventListener('click', () => sendMessage(input.value));

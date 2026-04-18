@@ -1,4 +1,4 @@
-﻿namespace D.A.sneaker.DTOs
+namespace D.A.sneaker.DTOs
 {
     public class ProductDetailDTO
     {
@@ -11,6 +11,11 @@
 
         public List<string> Images { get; set; }
         public List<VariantDTO> Variants { get; set; }
+
+        // Sale fields
+        public decimal? SalePrice { get; set; }
+        public int DiscountPercent { get; set; }
+        public string? PromoName { get; set; }
     }
 
     public class VariantDTO

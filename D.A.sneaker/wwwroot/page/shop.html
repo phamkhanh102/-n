@@ -1300,15 +1300,24 @@
                     const image = rawImg
                         ? (rawImg.startsWith('http') ? rawImg : '/images/' + rawImg.replace(/^\/?(images\/)?/, ''))
                         : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80';
+
+                    // Xác định giá sale từ API
+                    const origPrice = p.Price || p.price;
+                    const salePrice = p.SalePrice || p.salePrice || null;
+                    const hasSale = salePrice && salePrice < origPrice;
+                    const discPct = p.DiscountPercent || p.discountPercent || 0;
+
                     return {
                         id: p.Id || p.id,
                         name: p.Name || p.name,
                         brand: p.Brand || p.brand || '',
-                        price: p.Price || p.price,
+                        price: hasSale ? salePrice : origPrice,
                         image,
                         rating: Math.floor(Math.random() * 2) + 4,
                         reviews: Math.floor(Math.random() * 200) + 20,
-                        badge: ['sale', '', 'new', 'hot', ''][Math.floor(Math.random() * 5)]
+                        badge: hasSale ? 'sale' : '',
+                        oldPrice: hasSale ? origPrice : null,
+                        pct: hasSale ? '-' + discPct + '%' : ''
                     };
                 });
 

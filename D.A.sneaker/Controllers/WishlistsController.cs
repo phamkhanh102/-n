@@ -32,15 +32,16 @@ namespace D.A.sneaker.Controllers
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var data = await _context.Wishlists
-                .Where(x => x.UserId == userId)
+                .Include(x => x.Product)
+                .Where(x => x.UserId == userId && x.Product != null)
                 .Select(x => new
                 {
                     x.Id,
                     x.ProductId,
-                    ProductName  = x.Product.Name,
-                    ProductBrand = x.Product.Brand,
-                    ProductPrice = x.Product.Price,
-                    ProductImg   = x.Product.MainImage
+                    ProductName  = x.Product != null ? x.Product.Name : "",
+                    ProductBrand = x.Product != null ? x.Product.Brand : "",
+                    ProductPrice = x.Product != null ? x.Product.Price : 0,
+                    ProductImg   = x.Product != null ? x.Product.MainImage : ""
                 })
                 .ToListAsync();
 
@@ -55,7 +56,7 @@ namespace D.A.sneaker.Controllers
                     Brand     = x.ProductBrand ?? "",
                     Price     = x.ProductPrice,
                     MainImage = string.IsNullOrEmpty(x.ProductImg) ? ""
-                              : x.ProductImg.StartsWith("http") ? x.ProductImg
+                              : (x.ProductImg.StartsWith("http") || x.ProductImg.StartsWith("/")) ? x.ProductImg
                               : "/images/" + x.ProductImg
                 }
             }).ToList();

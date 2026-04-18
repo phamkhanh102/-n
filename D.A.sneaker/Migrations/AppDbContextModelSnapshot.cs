@@ -254,20 +254,52 @@ namespace D.A.sneaker.Migrations
                     b.HasIndex("ProductId");
 
                     b.ToTable("ProductImages", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ImageUrl = "Nike/af1-1.jpg",
-                            ProductId = 1
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ImageUrl = "Adidas/AdidasMensRunFalcon5.jpg",
-                            ProductId = 2
-                        });
+            modelBuilder.Entity("D.A.sneaker.Models.Promotion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("BannerImage")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("DiscountAmount")
+                        .HasColumnType("decimal(12,2)");
+
+                    b.Property<int>("DiscountPercent")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductIds")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Promotions", (string)null);
                 });
 
             modelBuilder.Entity("D.A.sneaker.Models.Review", b =>
@@ -382,10 +414,10 @@ namespace D.A.sneaker.Migrations
                         new
                         {
                             Id = 999,
-                            CreatedAt = new DateTime(2026, 3, 21, 14, 22, 32, 17, DateTimeKind.Local).AddTicks(5567),
+                            CreatedAt = new DateTime(2026, 4, 9, 23, 37, 0, 960, DateTimeKind.Local).AddTicks(4525),
                             Email = "admin@gmail.com",
                             Name = "Admin",
-                            Password = "$2a$11$FvYfpa3OcDPgDIczONvBhujFx4c4SEZbGfiwYwPUMH4qVpmZeB1hK",
+                            Password = "$2a$11$6PF17ojtfXwy7bBFd3H6burdyx2fhjs1EjAdO6ym6smNLFzm8mYK2",
                             Role = "Admin",
                             Status = true
                         });
@@ -524,6 +556,9 @@ namespace D.A.sneaker.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("CostPrice")
+                        .HasColumnType("decimal(12,2)");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -553,34 +588,6 @@ namespace D.A.sneaker.Migrations
                     b.HasIndex("CategoryId");
 
                     b.ToTable("Products", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Brand = "Nike",
-                            CategoryId = 2,
-                            Description = "Classic Nike sneaker",
-                            IsActive = true,
-                            MainImage = "Nike/nike-af1.jpg",
-                            Name = "Nike Air Force 1",
-                            Price = 3200000m,
-                            Rating = 0.0,
-                            SoldCount = 0
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Brand = "Adidas",
-                            CategoryId = 1,
-                            Description = "Lightweight running shoes",
-                            IsActive = true,
-                            MainImage = "Adidas/AdidasMensRunFalcon5.jpg",
-                            Name = "Adidas Run Falcon 5",
-                            Price = 2100000m,
-                            Rating = 0.0,
-                            SoldCount = 0
-                        });
                 });
 
             modelBuilder.Entity("ProductVariant", b =>

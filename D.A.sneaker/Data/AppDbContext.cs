@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using D.A.sneaker.Models;
 
 namespace D.A.sneaker.Data
@@ -24,6 +24,7 @@ namespace D.A.sneaker.Data
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>().HasData(
@@ -88,9 +89,14 @@ namespace D.A.sneaker.Data
             modelBuilder.Entity<Wishlist>().ToTable("Wishlists");
 
             modelBuilder.Entity<Review>().ToTable("Reviews");
+            modelBuilder.Entity<Promotion>().ToTable("Promotions");
             // ===== DECIMAL FIX =====
             modelBuilder.Entity<Product>()
                 .Property(p => p.Price)
+                .HasColumnType("decimal(12,2)");
+
+            modelBuilder.Entity<Product>()
+                .Property(p => p.CostPrice)
                 .HasColumnType("decimal(12,2)");
 
             modelBuilder.Entity<Order>()
@@ -107,6 +113,10 @@ namespace D.A.sneaker.Data
 
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
+                .HasColumnType("decimal(12,2)");
+
+            modelBuilder.Entity<Promotion>()
+                .Property(p => p.DiscountAmount)
                 .HasColumnType("decimal(12,2)");
         }
         public DbSet<D.A.sneaker.Models.Category> Category { get; set; } = default!;

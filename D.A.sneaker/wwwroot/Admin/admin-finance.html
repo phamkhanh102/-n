@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tài chính – Admin SPARK</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f0f2f5;--card:#fff;--sidebar:#0f172a;--sw:260px;--text:#1e293b;--muted:#64748b;--border:#e2e8f0;--pr:#3b82f6;--prd:#1d4ed8;--ok:#10b981;--warn:#f59e0b;--err:#ef4444;--pur:#8b5cf6;--r:16px;--sh:0 2px 12px rgba(0,0,0,.06)}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:14px}
+
+/* SIDEBAR — matches admin-orders */
+.sidebar{width:var(--sw);background:var(--sidebar);color:#fff;display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100}
+.sb-logo{padding:24px 22px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+.sb-logo-t{font-size:26px;font-weight:800;letter-spacing:-1px}.sb-logo-t span{color:#facc15}
+.sb-logo-s{font-size:11px;color:rgba(255,255,255,.35);margin-top:2px}
+.sb-nav{flex:1;padding:12px 10px;overflow-y:auto}
+.sb-sec{font-size:10px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:1.2px;padding:18px 14px 6px;text-transform:uppercase}
+.sb-item{display:flex;align-items:center;gap:11px;padding:11px 14px;border-radius:10px;cursor:pointer;transition:all .2s;color:rgba(255,255,255,.55);font-size:13.5px;font-weight:500;border:none;background:none;width:100%;text-align:left;text-decoration:none}
+.sb-item:hover{background:rgba(255,255,255,.08);color:#fff;transform:translateX(2px)}
+.sb-item.active{background:linear-gradient(135deg,rgba(59,130,246,.25),rgba(139,92,246,.15));color:#93c5fd;font-weight:600;box-shadow:inset 3px 0 0 #3b82f6}
+.sb-item .ic{width:18px;height:18px;flex-shrink:0;opacity:.65}.sb-item.active .ic{opacity:1}
+.sb-user{padding:16px 14px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:11px}
+.sb-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#8b5cf6);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
+.sb-un{font-size:13px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:120px}.sb-ur{font-size:11px;color:rgba(255,255,255,.4)}
+.sb-out{background:none;border:none;color:rgba(255,255,255,.4);cursor:pointer;padding:5px;border-radius:6px;margin-left:auto;transition:all .2s}.sb-out:hover{color:#ef4444;background:rgba(239,68,68,.1)}
+
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.topbar-t{font-size:18px;font-weight:800;background:linear-gradient(135deg,#1e293b,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.topbar-r{display:flex;align-items:center;gap:10px}
+.btn{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn-out{background:none;border:1px solid var(--border);color:var(--text)}.btn-out:hover{background:var(--bg);transform:translateY(-1px)}
+.fi-sel{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--card);cursor:pointer;outline:none;font-family:inherit}
+.content{padding:28px;flex:1}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* STAT CARDS */
+.sg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.sc{background:var(--card);border-radius:var(--r);padding:20px;display:flex;align-items:center;gap:16px;box-shadow:var(--sh);border:1px solid var(--border);animation:fi .3s ease;transition:transform .2s,box-shadow .2s}
+.sc:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.1)}
+.si{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.si.b{background:linear-gradient(135deg,#eff6ff,#dbeafe)}.si.g{background:linear-gradient(135deg,#f0fdf4,#dcfce7)}.si.o{background:linear-gradient(135deg,#fffbeb,#fef3c7)}.si.p{background:linear-gradient(135deg,#faf5ff,#f3e8ff)}
+.sl{font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px;text-transform:uppercase;letter-spacing:.3px}
+.sv{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.sd{font-size:11px;font-weight:700;margin-top:3px;display:flex;align-items:center;gap:3px}
+.sd.up{color:#10b981}.sd.down{color:#ef4444}
+
+/* CARD */
+.card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:20px;overflow:hidden;animation:fi .3s ease}
+.ch{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ch h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cb{padding:22px}
+
+/* CHART */
+.chart-container{display:flex;align-items:flex-end;gap:3px;height:240px;padding:12px 0}
+.chart-group{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.chart-bars{display:flex;gap:4px;align-items:flex-end;height:190px;width:100%}
+.chart-bar{flex:1;border-radius:6px 6px 0 0;min-width:10px;position:relative;transition:height .6s cubic-bezier(.4,0,.2,1);cursor:pointer}
+.chart-bar:hover{opacity:.85;transform:scaleY(1.02);transform-origin:bottom}
+.chart-bar.rev{background:linear-gradient(180deg,#3b82f6,#60a5fa)}
+.chart-bar.cost{background:linear-gradient(180deg,#f59e0b,#fbbf24)}
+.chart-bar.profit{background:linear-gradient(180deg,#10b981,#34d399)}
+.chart-label{font-size:11px;color:var(--muted);font-weight:600;text-align:center}
+.chart-value{font-size:9px;color:var(--text);font-weight:700;text-align:center;position:absolute;top:-18px;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--card);padding:1px 4px;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.legend{display:flex;gap:20px;margin-top:14px;justify-content:center;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:var(--muted)}
+.legend-dot{width:12px;height:12px;border-radius:4px}
+
+/* TABLE */
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8fafc;padding:11px 14px;text-align:left;font-weight:600;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:12px 14px;border-bottom:1px solid var(--border);vertical-align:middle}tr:last-child td{border-bottom:none}tr:hover td{background:#f8fafc;transition:background .15s}
+.badge{display:inline-flex;align-items:center;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+.b-g{background:#dcfce7;color:#15803d}.b-r{background:#fee2e2;color:#b91c1c}.b-o{background:#fef9c3;color:#a16207}
+.t-nm{font-weight:600;max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}.empty-i{font-size:40px;margin-bottom:12px}
+#toast{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
+.ti{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fi .25s ease}.ti.ok{background:#10b981}.ti.er{background:#ef4444}
+@media(max-width:900px){.sg{grid-template-columns:1fr 1fr}.sidebar{transform:translateX(-100%)}.main{margin-left:0}}
+@media(max-width:480px){.sg{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<aside class="sidebar" id="sidebar">
+  <div class="sb-logo"><div class="sb-logo-t">SPAR<span>K</span></div><div class="sb-logo-s">Bảng điều khiển</div></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Tổng quan</div>
+    <a class="sb-item" href="/Admin/admin.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <div class="sb-sec">Quản lý</div>
+    <a class="sb-item" href="/Admin/admin-products.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Sản phẩm</a>
+    <a class="sb-item" href="/Admin/admin-orders.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>Đơn hàng</a>
+    <a class="sb-item role-need" data-roles="Admin" href="/Admin/admin-users.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Người dùng</a>
+    <a class="sb-item role-need" data-roles="Admin,Staff" href="/Admin/admin-reviews.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>Đánh giá</a>
+    <a class="sb-item" href="/Admin/admin-promotions.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Khuyến mãi</a>
+    <div class="sb-sec">Báo cáo</div>
+    <a class="sb-item active" href="/Admin/admin-finance.html"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>Tài chính</a>
+  </nav>
+  <div class="sb-user"><div class="sb-av" id="sbAv">A</div><div style="flex:1;min-width:0"><div class="sb-un" id="sbNm">Admin</div><div class="sb-ur" id="sbRl">Quản trị viên</div></div><button class="sb-out" onclick="doLogout()" title="Đăng xuất"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button></div>
+</aside>
+
+<div class="main">
+<header class="topbar">
+  <span class="topbar-t">Báo cáo tài chính</span>
+  <div class="topbar-r">
+    <span id="topD" style="font-size:12px;color:var(--muted)"></span>
+    <select class="fi-sel" id="fPeriod" onchange="loadFinance()">
+      <option value="3">3 tháng</option><option value="6" selected>6 tháng</option><option value="12">12 tháng</option>
+    </select>
+    <a href="/page/shop.html" target="_blank" class="btn">🌐 Website</a>
+  </div>
+</header>
+<div class="content">
+
+  <!-- STAT CARDS -->
+  <div class="sg">
+    <div class="sc"><div class="si b">💰</div><div><div class="sl">Tổng doanh thu</div><div class="sv" id="fRev">—</div></div></div>
+    <div class="sc"><div class="si o">📦</div><div><div class="sl">Tổng giá nhập</div><div class="sv" id="fCost">—</div></div></div>
+    <div class="sc"><div class="si g">📈</div><div><div class="sl">Lợi nhuận</div><div class="sv" id="fProfit">—</div><div class="sd up" id="fMargin">—</div></div></div>
+    <div class="sc"><div class="si p">📊</div><div><div class="sl">Biên lợi nhuận</div><div class="sv" id="fMarginPct">—</div></div></div>
+  </div>
+
+  <!-- MONTHLY CHART -->
+  <div class="card">
+    <div class="ch"><h3>📊 Doanh thu & Chi phí theo tháng</h3></div>
+    <div class="cb">
+      <div class="chart-container" id="monthlyChart">
+        <div class="empty"><div class="empty-i">📊</div><p>Đang tải...</p></div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div>Doanh thu</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div>Chi phí</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Lợi nhuận</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCT PROFIT TABLE -->
+  <div class="card">
+    <div class="ch"><h3>👟 Lợi nhuận theo sản phẩm</h3></div>
+    <div class="tw"><table>
+      <thead><tr><th>#</th><th>Sản phẩm</th><th>Đã bán</th><th>Doanh thu</th><th>Giá nhập</th><th>Lợi nhuận</th><th>Biên LN</th></tr></thead>
+      <tbody id="profitTb"><tr><td colspan="7" style="text-align:center;padding:32px;color:var(--muted)">Đang tải...</td></tr></tbody>
+    </table></div>
+  </div>
+
+</div></div>
+<div id="toast"></div>
+
+<script>
+const TOKEN=localStorage.getItem('token')||'';const USER=JSON.parse(localStorage.getItem('user')||'null');
+if(!TOKEN||!USER)location.href='/page/login.html';
+const ROLE=USER?.role||USER?.Role||'';
+if(ROLE!=='Admin')location.href='/Admin/admin.html';
+const roleLabels={Admin:'Quản trị viên',Staff:'Nhân viên',Cashier:'Thu ngân'};
+document.getElementById('sbNm').textContent=USER?.name||'Admin';
+document.getElementById('sbAv').textContent=(USER?.name||'A').charAt(0).toUpperCase();
+document.getElementById('sbRl').textContent=roleLabels[ROLE]||ROLE;
+document.getElementById('topD').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+document.querySelectorAll('.role-need').forEach(el=>{if(!(el.dataset.roles||'').split(',').includes(ROLE))el.style.display='none';});
+function toast(msg,type='ok'){const w=document.getElementById('toast');const el=document.createElement('div');el.className=`ti ${type}`;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),3500);}
+function doLogout(){if(!confirm('Đăng xuất?'))return;localStorage.removeItem('token');localStorage.removeItem('user');location.href='/page/login.html';}
+const H=()=>({'Content-Type':'application/json','Authorization':`Bearer ${TOKEN}`});
+const fm=n=>Number(n||0).toLocaleString('vi-VN')+'đ';
+const fmShort=n=>{const v=Number(n||0);if(v>=1e9)return(v/1e9).toFixed(1)+'tỷ';if(v>=1e6)return(v/1e6).toFixed(1)+'tr';if(v>=1e3)return(v/1e3).toFixed(0)+'k';return v.toString();};
+const monthNames=['','Th1','Th2','Th3','Th4','Th5','Th6','Th7','Th8','Th9','Th10','Th11','Th12'];
+
+async function loadFinance(){
+  const months=document.getElementById('fPeriod').value;
+  try{
+    const res=await fetch(`/api/admin/finance?months=${months}`,{headers:H()});
+    if(!res.ok){toast('Không có quyền','er');return}
+    const d=await res.json();
+
+    // Stat cards
+    document.getElementById('fRev').textContent=fm(d.totalRevenue);
+    document.getElementById('fCost').textContent=fm(d.totalCost);
+    document.getElementById('fProfit').textContent=fm(d.totalProfit);
+    const margin=d.margin||0;
+    document.getElementById('fMarginPct').textContent=margin+'%';
+    const mEl=document.getElementById('fMargin');
+    mEl.textContent=d.totalProfit>=0?'↑ Có lãi':'↓ Lỗ';
+    mEl.className=d.totalProfit>=0?'sd up':'sd down';
+
+    // Monthly chart
+    renderMonthlyChart(d.monthlyData||[], d.monthlyCost||[]);
+
+    // Product profit table
+    renderProfitTable(d.productProfit||[]);
+  }catch(e){toast('Lỗi tải dữ liệu tài chính','er');console.error(e);}
+}
+
+function renderMonthlyChart(monthlyData, monthlyCost){
+  const container=document.getElementById('monthlyChart');
+  if(!monthlyData.length){container.innerHTML='<div class="empty"><div class="empty-i">📊</div><p>Chưa có dữ liệu doanh thu</p></div>';return;}
+
+  // Merge data
+  const merged=monthlyData.map(m=>{
+    const costEntry=monthlyCost.find(c=>c.year===m.year&&c.month===m.month);
+    const cost=costEntry?costEntry.cost:0;
+    return{...m, cost, profit:m.revenue-cost};
+  });
+
+  const maxVal=Math.max(...merged.map(m=>Math.max(m.revenue,m.cost,Math.abs(m.profit))),1);
+
+  container.innerHTML=merged.map(m=>{
+    const revH=Math.max(6,Math.round((m.revenue/maxVal)*175));
+    const costH=Math.max(6,Math.round((m.cost/maxVal)*175));
+    const profitH=Math.max(6,Math.round((Math.abs(m.profit)/maxVal)*175));
+    return`<div class="chart-group">
+      <div class="chart-bars">
+        <div class="chart-bar rev" style="height:${revH}px" title="Doanh thu: ${fm(m.revenue)}"><span class="chart-value">${fmShort(m.revenue)}</span></div>
+        <div class="chart-bar cost" style="height:${costH}px" title="Chi phí: ${fm(m.cost)}"></div>
+        <div class="chart-bar profit" style="height:${profitH}px" title="Lợi nhuận: ${fm(m.profit)}"></div>
+      </div>
+      <div class="chart-label">${monthNames[m.month]}<br>${m.year}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderProfitTable(products){
+  const tb=document.getElementById('profitTb');
+  if(!products.length){tb.innerHTML='<tr><td colspan="7"><div class="empty"><div class="empty-i">👟</div><p>Chưa có dữ liệu bán hàng</p></div></td></tr>';return;}
+  tb.innerHTML=products.map((p,i)=>{
+    const profit=p.revenue-p.cost;
+    const margin=p.revenue>0?((profit/p.revenue)*100).toFixed(1):0;
+    const isProfit=profit>=0;
+    return`<tr>
+      <td><b>${i+1}</b></td>
+      <td><div class="t-nm">${p.name||'—'}</div></td>
+      <td>${p.sold} sp</td>
+      <td><b>${fm(p.revenue)}</b></td>
+      <td>${fm(p.cost)}</td>
+      <td><span class="badge ${isProfit?'b-g':'b-r'}">${isProfit?'↑':'↓'} ${fm(Math.abs(profit))}</span></td>
+      <td><span class="badge ${margin>30?'b-g':margin>10?'b-o':'b-r'}">${margin}%</span></td>
+    </tr>`;
+  }).join('');
+}
+
+loadFinance();
+</script>
+</body></html>

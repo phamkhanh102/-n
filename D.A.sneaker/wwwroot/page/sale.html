@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK – Khuyến mãi & Sale</title>
+    <meta name="description"
+        content="Săn deal hời tại SPARK – Giảm giá cực sốc cho giày sneaker chính hãng Nike, Adidas, Puma và nhiều hơn nữa.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--bg, #f5f5f5);
+            color: var(--text, #111);
+            padding-top: 110px;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ===== SALE HERO ===== */
+        .sale-hero {
+            background: linear-gradient(135deg, #1a0000 0%, #4a0e0e 30%, #7f1d1d 60%, #991b1b 100%);
+            color: white;
+            padding: 72px 20px 64px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sale-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(239, 68, 68, .2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(250, 204, 21, .15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .sale-hero::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .15), transparent);
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .sale-hero .fire-icon {
+            font-size: 48px;
+            display: block;
+            margin-bottom: 16px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.15);
+            }
+        }
+
+        .sale-hero h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(44px, 8vw, 72px);
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #fff 40%, #fbbf24 70%, #ef4444);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .sale-hero p {
+            color: rgba(255, 255, 255, .7);
+            font-size: 16px;
+            max-width: 500px;
+            margin: 0 auto 28px;
+            line-height: 1.6;
+        }
+
+        /* Countdown */
+        .countdown-row {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .cd-box {
+            background: rgba(255, 255, 255, .1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 12px;
+            padding: 14px 18px;
+            min-width: 72px;
+            text-align: center;
+        }
+
+        .cd-num {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 32px;
+            font-weight: 900;
+            color: #fbbf24;
+            line-height: 1;
+        }
+
+        .cd-label {
+            font-size: 10px;
+            color: rgba(255, 255, 255, .5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .cd-title {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .5);
+            margin-top: 8px;
+        }
+
+        /* ===== PROMO BANNERS ===== */
+        .promo-banners {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin: 32px auto;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .promo-banner {
+            background: linear-gradient(135deg, #7f1d1d, #991b1b, #b91c1c);
+            border-radius: 16px;
+            padding: 28px 24px;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+            transition: transform .3s, box-shadow .3s;
+            cursor: default;
+        }
+
+        .promo-banner:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 48px rgba(0, 0, 0, .2);
+        }
+
+        .promo-banner::before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, .06);
+            border-radius: 50%;
+        }
+
+        .promo-banner h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .promo-banner .promo-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .7);
+            margin-bottom: 10px;
+        }
+
+        .promo-banner .promo-discount {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 255, 255, .15);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .promo-banner .promo-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .5);
+            margin-top: 10px;
+        }
+
+        /* ===== SALE PRODUCTS ===== */
+        .sale-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .sale-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .sale-section-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--text, #111);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sale-count {
+            font-size: 13px;
+            color: var(--muted, #6b7280);
+            font-weight: 500;
+            font-family: 'Barlow', sans-serif;
+        }
+
+        .sale-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .sale-card {
+            background: var(--card, #fff);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 1px solid var(--border, #ebebeb);
+            transition: transform .35s cubic-bezier(.4, 0, .2, 1), box-shadow .35s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .sale-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 48px rgba(0, 0, 0, .12);
+        }
+
+        .sale-card-img {
+            position: relative;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            height: 220px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .sale-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+        }
+
+        .sale-card:hover .sale-card-img img {
+            transform: scale(1.08);
+        }
+
+        /* Sale badge */
+        .sale-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 8px;
+            z-index: 2;
+            letter-spacing: .3px;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, .4);
+        }
+
+        /* Promo tag */
+        .promo-tag {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, .7);
+            backdrop-filter: blur(8px);
+            color: #fbbf24;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            z-index: 2;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sale-card-body {
+            padding: 14px 16px 6px;
+        }
+
+        .sale-card-brand {
+            font-size: 11px;
+            color: var(--muted, #9ca3af);
+            text-transform: uppercase;
+            letter-spacing: .6px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .sale-card-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text, #111);
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .sale-card-stars {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            margin-bottom: 10px;
+        }
+
+        .star {
+            color: #facc15;
+            font-size: 12px;
+        }
+
+        .star.off {
+            color: #e5e7eb;
+        }
+
+        .rating-count {
+            font-size: 11px;
+            color: var(--muted, #9ca3af);
+            margin-left: 5px;
+        }
+
+        .sale-card-prices {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 4px;
+        }
+
+        .sale-price {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ef4444;
+            letter-spacing: -.5px;
+        }
+
+        .original-price {
+            font-size: 13px;
+            color: #d1d5db;
+            text-decoration: line-through;
+        }
+
+        .save-amount {
+            font-size: 11px;
+            color: #16a34a;
+            font-weight: 700;
+            background: #f0fdf4;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        /* Add to cart */
+        .sale-add-btn {
+            display: block;
+            width: calc(100% - 32px);
+            margin: 8px 16px 16px;
+            padding: 10px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all .3s cubic-bezier(.4, 0, .2, 1);
+            letter-spacing: .2px;
+        }
+
+        .sale-card:hover .sale-add-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .sale-add-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 4px 14px rgba(239, 68, 68, .35);
+        }
+
+        /* Timer strip */
+        .timer-strip {
+            background: linear-gradient(135deg, #fef2f2, #fff1f2);
+            border: 1px solid #fecaca;
+            border-radius: 10px;
+            padding: 10px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b91c1c;
+            margin-bottom: 10px;
+        }
+
+        /* Empty */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: var(--muted, #9ca3af);
+        }
+
+        .empty-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: var(--input, #f3f4f6);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 44px;
+        }
+
+        .empty-state h3 {
+            font-size: 22px;
+            color: var(--text, #374151);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            max-width: 360px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 28px;
+            background: #111;
+            color: #fff;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            transition: background .2s;
+        }
+
+        .empty-state a:hover {
+            background: #374151;
+        }
+
+        /* Skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, var(--skeleton-start, #eee) 25%, var(--skeleton-end, #f5f5f5) 50%, var(--skeleton-start, #eee) 75%);
+            background-size: 400% 100%;
+            animation: shimmer 1.4s infinite;
+            border-radius: 14px;
+            height: 340px;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0 50%;
+            }
+        }
+
+        /* Footer */
+        .footer-wrap {
+            background: #0a0a0a;
+            color: #ccc;
+            margin-top: 60px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .sale-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .countdown-row {
+                gap: 8px;
+            }
+
+            .cd-box {
+                padding: 10px 14px;
+                min-width: 60px;
+            }
+
+            .cd-num {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .sale-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .promo-banners {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HEADER (injected by layout.js) -->
+    <div id="header"></div>
+
+    <!-- SALE HERO -->
+    <section class="sale-hero">
+        <div class="hero-inner">
+            <h1>MEGA SALE</h1>
+            <p>Giảm giá cực sốc cho giày sneaker chính hãng. Số lượng có hạn – nhanh tay kẻo lỡ!</p>
+            <div class="countdown-row" id="countdown">
+                <div class="cd-box">
+                    <div class="cd-num" id="cdDays">00</div>
+                    <div class="cd-label">Ngày</div>
+                </div>
+                <div class="cd-box">
+                    <div class="cd-num" id="cdHours">00</div>
+                    <div class="cd-label">Giờ</div>
+                </div>
+                <div class="cd-box">
+                    <div class="cd-num" id="cdMins">00</div>
+                    <div class="cd-label">Phút</div>
+                </div>
+                <div class="cd-box">
+                    <div class="cd-num" id="cdSecs">00</div>
+                    <div class="cd-label">Giây</div>
+                </div>
+            </div>
+            <div class="cd-title" id="cdTitle">Kết thúc sớm nhất</div>
+        </div>
+    </section>
+
+    <!-- PROMO BANNERS -->
+    <div class="promo-banners" id="promoBanners"></div>
+
+    <!-- SALE PRODUCTS -->
+    <section class="sale-section">
+        <div class="sale-section-header">
+            <div>
+                <div class="sale-section-title">🏷️ Sản phẩm đang giảm giá</div>
+                <div class="sale-count" id="saleCount"></div>
+            </div>
+        </div>
+        <div class="sale-grid" id="saleGrid">
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+            <div class="skeleton"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER (injected by layout.js) -->
+    <div id="footer"></div>
+
+    <script src="/js/layout.js"></script>
+    <script>
+        const fm = n => Number(n || 0).toLocaleString('vi-VN') + 'đ';
+
+        function renderStars(rating) {
+            const full = Math.floor(rating || 0);
+            const half = (rating % 1) >= 0.5 ? 1 : 0;
+            let html = '';
+            for (let i = 0; i < full; i++) html += '<span class="star">★</span>';
+            if (half) html += '<span class="star">★</span>';
+            for (let i = full + half; i < 5; i++) html += '<span class="star off">★</span>';
+            return html;
+        }
+
+        // Countdown timer
+        let countdownEnd = null;
+        function updateCountdown() {
+            if (!countdownEnd) return;
+            const now = new Date();
+            const diff = countdownEnd - now;
+            if (diff <= 0) {
+                document.getElementById('cdDays').textContent = '00';
+                document.getElementById('cdHours').textContent = '00';
+                document.getElementById('cdMins').textContent = '00';
+                document.getElementById('cdSecs').textContent = '00';
+                document.getElementById('cdTitle').textContent = 'Đã kết thúc!';
+                return;
+            }
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+            document.getElementById('cdDays').textContent = String(days).padStart(2, '0');
+            document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
+            document.getElementById('cdMins').textContent = String(mins).padStart(2, '0');
+            document.getElementById('cdSecs').textContent = String(secs).padStart(2, '0');
+        }
+
+        async function loadSale() {
+            try {
+                const res = await fetch('/api/promotions/sale-products');
+                const d = await res.json();
+                const promos = d.promotions || [];
+                const products = d.products || [];
+
+                // Find nearest ending promo for countdown
+                if (promos.length) {
+                    const nearest = promos.reduce((a, b) => new Date(a.endDate) < new Date(b.endDate) ? a : b);
+                    countdownEnd = new Date(nearest.endDate || nearest.EndDate);
+                    const titleEl = document.getElementById('cdTitle');
+                    titleEl.textContent = `⏰ ${nearest.name || nearest.Name} kết thúc sau`;
+                    updateCountdown();
+                    setInterval(updateCountdown, 1000);
+                }
+
+                // Render promo banners
+                const bannersEl = document.getElementById('promoBanners');
+                if (promos.length) {
+                    bannersEl.innerHTML = promos.map(p => {
+                        const discount = p.discountPercent || p.DiscountPercent || 0;
+                        const discountAmt = p.discountAmount || p.DiscountAmount || 0;
+                        const end = new Date(p.endDate || p.EndDate);
+                        const banner = p.bannerImage || p.BannerImage || '';
+                        const style = banner ? `background:linear-gradient(135deg,rgba(127,29,29,.85),rgba(153,27,27,.85)),url('${banner}') center/cover` : '';
+                        return `<div class="promo-banner" ${style ? `style="${style}"` : ''}>
+                    <h3>${p.name || p.Name}</h3>
+                    <div class="promo-desc">${p.description || p.Description || ''}</div>
+                    <div class="promo-discount">
+                        🔥 ${discount > 0 ? `Giảm ${discount}%` : `Giảm ${fm(discountAmt)}`}
+                    </div>
+                    <div class="promo-time">Đến ${end.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+                </div>`;
+                    }).join('');
+                } else {
+                    bannersEl.style.display = 'none';
+                }
+
+                // Render sale products
+                const grid = document.getElementById('saleGrid');
+                const countEl = document.getElementById('saleCount');
+
+                if (!products.length) {
+                    grid.innerHTML = `<div style="grid-column:1/-1">
+                <div class="empty-state">
+                    <div class="empty-icon">🏷️</div>
+                    <h3>Chưa có sản phẩm sale</h3>
+                    <p>Hiện tại chưa có chương trình khuyến mãi nào đang diễn ra. Hãy quay lại sau nhé!</p>
+                    <a href="/page/products.html">🛒 Xem tất cả sản phẩm</a>
+                </div>
+            </div>`;
+                    countEl.textContent = '';
+                    return;
+                }
+
+                countEl.textContent = `${products.length} sản phẩm đang giảm giá`;
+
+                grid.innerHTML = products.map(p => {
+                    const pid = p.id || p.Id;
+                    const saved = p.originalPrice - p.salePrice;
+                    return `<div class="sale-card" onclick="location.href='/page/product-detail.html?id=${pid}'">
+                <div class="sale-card-img">
+                    <img src="${p.mainImage || '/images/placeholder.jpg'}" onerror="this.src='/images/placeholder.jpg'" alt="${p.name}">
+                    <div class="sale-badge">-${p.discountPercent}%</div>
+                    <div class="promo-tag">🔥 ${p.promoName}</div>
+                </div>
+                <div class="sale-card-body">
+                    <div class="sale-card-brand">${p.brand}</div>
+                    <div class="sale-card-name">${p.name}</div>
+                    <div class="sale-card-stars">
+                        ${renderStars(p.rating)}
+                        <span class="rating-count">(${p.reviewCount || 0})</span>
+                    </div>
+                    <div class="sale-card-prices">
+                        <span class="sale-price">${fm(p.salePrice)}</span>
+                        <span class="original-price">${fm(p.originalPrice)}</span>
+                    </div>
+                    <div class="save-amount" style="display:inline-flex;margin-top:4px">Tiết kiệm ${fm(saved)}</div>
+                </div>
+                <button class="sale-add-btn" onclick="event.stopPropagation();location.href='/page/product-detail.html?id=${pid}'">
+                    🛒 Xem & Mua ngay
+                </button>
+            </div>`;
+                }).join('');
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('saleGrid').innerHTML = `<div style="grid-column:1/-1">
+            <div class="empty-state">
+                <div class="empty-icon">⚠️</div>
+                <h3>Lỗi tải dữ liệu</h3>
+                <p>Không thể kết nối đến server. Vui lòng thử lại sau.</p>
+            </div>
+        </div>`;
+            }
+        }
+
+        loadSale();
+    </script>
+</body>
+
+</html>

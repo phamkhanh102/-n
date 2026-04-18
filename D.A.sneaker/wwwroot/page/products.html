@@ -1175,6 +1175,7 @@
         let filtered = [];
         let currentPage = 1;
         const PAGE_SIZE = 8;
+        let variantsCache = {}; // id → [{Size, Color, Stock}]
 
         const filters = { brand: '', priceMin: 0, priceMax: Infinity, size: '', sort: '' };
 
@@ -1195,11 +1196,18 @@
                     } else {
                         image = '/images/' + raw;
                     }
+
+                    // Xác định badge và giá sale từ API
+                    const hasSale = p.SalePrice && p.SalePrice < p.Price;
                     return {
                         id: p.Id, name: p.Name, brand: p.Brand || '',
-                        price: p.Price, image, rating: Math.floor(Math.random() * 2) + 4,
-                        badge: ['sale', '', 'new', 'hot', ''][Math.floor(Math.random() * 5)],
-                        oldPrice: null,
+                        price: hasSale ? p.SalePrice : p.Price,
+                        originalPrice: hasSale ? p.Price : null,
+                        image, rating: Math.floor(Math.random() * 2) + 4,
+                        badge: hasSale ? 'sale' : '',
+                        oldPrice: hasSale ? p.Price : null,
+                        discountPercent: p.DiscountPercent || 0,
+                        promoName: p.PromoName || '',
                         reviews: Math.floor(Math.random() * 200) + 20
                     };
                 });
@@ -1209,11 +1217,31 @@
                     allProducts = allProducts.filter(p =>
                         p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
                 }
+
+                // Pre-fetch variants for all products (for size filtering)
+                await preloadVariants(allProducts.map(p => p.id));
             } catch {
                 allProducts = SAMPLE;
             }
             applyFilters();
             updateCartCount();
+        }
+
+        async function preloadVariants(ids) {
+            // Fetch variants in parallel (batch of detail calls)
+            const promises = ids.map(async id => {
+                try {
+                    const res = await fetch(`/api/products/${id}`);
+                    if (!res.ok) return;
+                    const d = await res.json();
+                    variantsCache[id] = (d.Variants || d.variants || []).map(v => ({
+                        Size: String(v.Size ?? v.size ?? ''),
+                        Color: v.Color ?? v.color ?? '',
+                        Stock: v.Stock ?? v.stock ?? 0
+                    }));
+                } catch { /* skip */ }
+            });
+            await Promise.all(promises);
         }
 
         function applyFilters() {
@@ -1225,6 +1253,15 @@
             if (pf) {
                 const [mn, mx] = pf.split('-').map(Number);
                 data = data.filter(p => p.price >= mn && p.price <= mx);
+            }
+
+            // ── SIZE FILTER ──────────────────────────────────────
+            if (filters.size) {
+                data = data.filter(p => {
+                    const variants = variantsCache[p.id];
+                    if (!variants || !variants.length) return false; // Không có variant → loại bỏ
+                    return variants.some(v => v.Size === filters.size && v.Stock > 0);
+                });
             }
 
             const sf = document.getElementById('sortFilter').value;

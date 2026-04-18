@@ -862,26 +862,25 @@
                     <div class="form-grid-2">
                         <div class="form-group">
                             <label>Tỉnh / Thành phố *</label>
-                            <select id="cCity">
+                            <select id="cCity" onchange="onProvinceChange(this.value)">
                                 <option value="">-- Chọn tỉnh/thành --</option>
-                                <option>Hà Nội</option>
-                                <option>TP. Hồ Chí Minh</option>
-                                <option>Đà Nẵng</option>
-                                <option>Cần Thơ</option>
-                                <option>Hải Phòng</option>
-                                <option>Nha Trang</option>
-                                <option>Huế</option>
-                                <option>Bình Dương</option>
-                                <option>Đồng Nai</option>
-                                <option>Khác</option>
                             </select>
                             <div class="field-error" id="errCity">Vui lòng chọn tỉnh/thành</div>
                         </div>
                         <div class="form-group">
                             <label>Quận / Huyện *</label>
-                            <input type="text" id="cDistrict" placeholder="Quận 1">
-                            <div class="field-error" id="errDistrict">Vui lòng nhập quận/huyện</div>
+                            <select id="cDistrict" onchange="onDistrictChange(this.value)">
+                                <option value="">-- Chọn quận/huyện --</option>
+                            </select>
+                            <div class="field-error" id="errDistrict">Vui lòng chọn quận/huyện</div>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Phường / Xã *</label>
+                        <select id="cWard">
+                            <option value="">-- Chọn phường/xã --</option>
+                        </select>
+                        <div class="field-error" id="errWard">Vui lòng chọn phường/xã</div>
                     </div>
                     <div class="form-group">
                         <label>Ghi chú cho đơn hàng</label>
@@ -1055,27 +1054,54 @@
 
     <script src="/js/layout.js"></script>
     <script>
+        // ── Auth check: checkout yêu cầu đăng nhập ──
+        const TOKEN = localStorage.getItem('token') || '';
+        if (!TOKEN) {
+            alert('Vui lòng đăng nhập để thanh toán!');
+            location.href = '/page/login.html?redirect=' + encodeURIComponent('/page/checkout.html');
+        }
+
         const SHIPPING = 30000;
         let payMethod = 'cod';
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
         // ── Auto-fill from saved profile ─────────────────────────
         (function autoFill() {
-            const nm = localStorage.getItem('name') || '';
-            const em = localStorage.getItem('email') || '';
-            const ph = localStorage.getItem('userPhone') || '';
-            const addr = localStorage.getItem('userAddress') || '';
+            // Đọc từ userProfile (mới) hoặc các key riêng lẻ (cũ)
+            const profile = JSON.parse(localStorage.getItem('userProfile') || '{}');
+            const nm   = localStorage.getItem('name')       || profile.name     || '';
+            const em   = localStorage.getItem('email')      || '';
+            const ph   = localStorage.getItem('userPhone')  || profile.phone    || '';
+            const addr = localStorage.getItem('userAddress')|| profile.address  || '';
+            const cityCode = localStorage.getItem('userCityCode')     || profile.cityCode     || '';
+            const distCode = localStorage.getItem('userDistrictCode') || profile.districtCode || '';
+            const wardCode = localStorage.getItem('userWardCode')     || profile.wardCode     || '';
 
-            if (nm) document.getElementById('cName').value = nm;
-            if (em) document.getElementById('cEmail').value = em;
-            if (ph) document.getElementById('cPhone').value = ph;
+            if (nm)   document.getElementById('cName').value  = nm;
+            if (em)   document.getElementById('cEmail').value = em;
+            if (ph)   document.getElementById('cPhone').value = ph;
             if (addr) document.getElementById('cAddress').value = addr;
 
-            // Show auto-fill notice if any data was found
+            // Restore Province → District → Ward dropdowns nếu có code
+            if (cityCode) {
+                const tryCitySelect = () => {
+                    const citySel = document.getElementById('cCity');
+                    const opt = citySel.querySelector(`option[value="${cityCode}"]`);
+                    if (opt) {
+                        citySel.value = cityCode;
+                        onProvinceChange(cityCode, distCode, wardCode);
+                    } else {
+                        setTimeout(tryCitySelect, 200);
+                    }
+                };
+                tryCitySelect();
+            }
+
+            // Show auto-fill notice
             if (nm || ph || addr) {
                 const tip = document.createElement('div');
                 tip.style.cssText = 'background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;font-size:12px;color:#1d4ed8;margin-bottom:16px;display:flex;align-items:center;gap:8px;';
-                tip.innerHTML = '<span>&#128204;</span> Da tu dong dien thong tin tu ho so cua ban. <a href="/page/account.html" style="color:#1d4ed8;font-weight:700;text-decoration:underline">Chinh sua</a>';
+                tip.innerHTML = '<span>📌</span> Đã tự động điền thông tin từ hồ sơ của bạn. <a href="/page/account.html" style="color:#1d4ed8;font-weight:700;text-decoration:underline">Chỉnh sửa</a>';
                 const firstCard = document.querySelector('.section-card-body');
                 if (firstCard) firstCard.prepend(tip);
             }
@@ -1099,8 +1125,11 @@
             }
 
             let subtotal = 0;
+            let totalSavings = 0;
             items.innerHTML = cart.map(p => {
                 subtotal += p.price * p.qty;
+                const hasSale = p.originalPrice && p.originalPrice > p.price;
+                if (hasSale) totalSavings += (p.originalPrice - p.price) * p.qty;
                 return `
 <div class="order-item">
   <div class="order-item-img">
@@ -1110,11 +1139,22 @@
   </div>
   <div class="order-item-info">
     <div class="order-item-name">${p.name}</div>
-    <div class="order-item-meta">${[p.size ? 'Size ' + p.size : '', p.color || ''].filter(Boolean).join(' · ')}</div>
+    <div class="order-item-meta">${[p.size ? 'Size ' + p.size : '', p.color || ''].filter(Boolean).join(' · ')}${hasSale ? ' · 🏷️ Sale' : ''}</div>
   </div>
-  <div class="order-item-price">${(p.price * p.qty).toLocaleString('vi-VN')}đ</div>
+  <div style="text-align:right;flex-shrink:0">
+    <div class="order-item-price">${(p.price * p.qty).toLocaleString('vi-VN')}đ</div>
+    ${hasSale ? `<div style="font-size:11px;color:#d1d5db;text-decoration:line-through">${(p.originalPrice * p.qty).toLocaleString('vi-VN')}đ</div>` : ''}
+  </div>
 </div>`;
             }).join('');
+
+            // Hiện tổng tiết kiệm từ khuyến mãi
+            if (totalSavings > 0) {
+                items.innerHTML += `<div style="padding:8px 0;border-top:1px solid #f0f0f0;display:flex;justify-content:space-between;font-size:12px;color:#16a34a;font-weight:700">
+                    <span>🏷️ Tiết kiệm từ khuyến mãi</span>
+                    <span>-${totalSavings.toLocaleString('vi-VN')}đ</span>
+                </div>`;
+            }
 
             // ── Đọc coupon từ localStorage (được lưu từ cart.html) ──
             const couponData = JSON.parse(localStorage.getItem('appliedCoupon') || 'null');
@@ -1199,16 +1239,21 @@
             const phone = document.getElementById('cPhone').value.trim();
             const email = document.getElementById('cEmail').value.trim();
             const address = document.getElementById('cAddress').value.trim();
-            const city = document.getElementById('cCity').value;
-            const district = document.getElementById('cDistrict').value.trim();
+            const cityEl = document.getElementById('cCity');
+            const city = cityEl.options[cityEl.selectedIndex]?.text || '';
+            const distEl = document.getElementById('cDistrict');
+            const district = distEl.options[distEl.selectedIndex]?.text || '';
+            const wardEl = document.getElementById('cWard');
+            const ward = wardEl.options[wardEl.selectedIndex]?.text || '';
 
             let hasErr = false;
             if (!name) { fieldError('cName', 'errName'); hasErr = true; }
             if (!phone || !/^0\d{9}$/.test(phone.replace(/\s/g, ''))) { fieldError('cPhone', 'errPhone'); hasErr = true; }
             if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { fieldError('cEmail', 'errEmail'); hasErr = true; }
             if (!address) { fieldError('cAddress', 'errAddress'); hasErr = true; }
-            if (!city) { fieldError('cCity', 'errCity'); hasErr = true; }
-            if (!district) { fieldError('cDistrict', 'errDistrict'); hasErr = true; }
+            if (!cityEl.value) { fieldError('cCity', 'errCity'); hasErr = true; }
+            if (!distEl.value) { fieldError('cDistrict', 'errDistrict'); hasErr = true; }
+            if (!wardEl.value) { fieldError('cWard', 'errWard'); hasErr = true; }
             if (hasErr) { document.querySelector('.section-card').scrollIntoView({ behavior: 'smooth' }); return; }
             if (!cart.length) { alert('Giỏ hàng đang trống!'); return; }
 
@@ -1219,11 +1264,16 @@
             const token = localStorage.getItem('token');
 
             // ── Hàm hiển thị thành công ──
-            function onSuccess(orderId) {
+            function onSuccess(orderId, method) {
                 localStorage.removeItem('cart');
                 localStorage.removeItem('appliedCoupon');
                 const cc = document.getElementById('cartCount');
                 if (cc) { cc.textContent = '0'; cc.style.display = 'none'; }
+                // Nếu chuyển khoản → redirect sang trang QR
+                if (method === 'BANK') {
+                    location.href = '/page/payment-qr.html?orderId=' + orderId;
+                    return;
+                }
                 document.getElementById('successOrderId').textContent = '#SPARK-' + orderId;
                 document.getElementById('successOverlay').classList.add('show');
             }
@@ -1257,18 +1307,19 @@
                             customerName: name,
                             phone,
                             address,
-                            ward: '',
+                            ward,
                             district,
                             province: city,
                             discountAmount,
                             couponCode,
+                            paymentMethod: payMethod === 'bank' ? 'BANK' : payMethod === 'card' ? 'CARD' : 'COD',
                             items: cartItems.map(i => ({ variantId: i.variantId, quantity: i.qty || 1 }))
                         })
                     });
 
                     if (res.ok) {
                         const data = await res.json();
-                        onSuccess(data.id || data.Id || Date.now().toString().slice(-6));
+                        onSuccess(data.id || data.Id || Date.now().toString().slice(-6), data.paymentMethod || 'COD');
                         return;
                     }
 
@@ -1312,6 +1363,73 @@
         // Header cart count
         const cartEl = document.getElementById('cartCount');
         if (cartEl) cartEl.textContent = cart.reduce((s, i) => s + i.qty, 0);
+
+        // ── Vietnam Provinces API (cascading dropdowns) ──────────
+        const PROVINCES_API = 'https://provinces.open-api.vn/api';
+
+        async function loadProvinces() {
+            try {
+                const res = await fetch(`${PROVINCES_API}/p/`);
+                const data = await res.json();
+                const sel = document.getElementById('cCity');
+                data.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.code;
+                    opt.textContent = p.name;
+                    sel.appendChild(opt);
+                });
+            } catch (e) {
+                console.warn('Không tải được danh sách tỉnh/thành:', e);
+                // Fallback: cho phép nhập tay
+                const sel = document.getElementById('cCity');
+                ['Hà Nội','TP. Hồ Chí Minh','Đà Nẵng','Cần Thơ','Hải Phòng','Bình Dương','Đồng Nai','Khác'].forEach(n => {
+                    const opt = document.createElement('option');
+                    opt.value = n; opt.textContent = n;
+                    sel.appendChild(opt);
+                });
+            }
+        }
+
+        async function onProvinceChange(code, restoreDistCode, restoreWardCode) {
+            const distSel = document.getElementById('cDistrict');
+            const wardSel = document.getElementById('cWard');
+            distSel.innerHTML = '<option value="">-- Chọn quận/huyện --</option>';
+            wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+            if (!code) return;
+            try {
+                const res = await fetch(`${PROVINCES_API}/p/${code}?depth=2`);
+                const data = await res.json();
+                (data.districts || []).forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.code;
+                    opt.textContent = d.name;
+                    distSel.appendChild(opt);
+                });
+                if (restoreDistCode) {
+                    distSel.value = restoreDistCode;
+                    await onDistrictChange(restoreDistCode, restoreWardCode);
+                }
+            } catch (e) { console.warn('Lỗi tải quận/huyện:', e); }
+        }
+
+        async function onDistrictChange(code, restoreWardCode) {
+            const wardSel = document.getElementById('cWard');
+            wardSel.innerHTML = '<option value="">-- Chọn phường/xã --</option>';
+            if (!code) return;
+            try {
+                const res = await fetch(`${PROVINCES_API}/d/${code}?depth=2`);
+                const data = await res.json();
+                (data.wards || []).forEach(w => {
+                    const opt = document.createElement('option');
+                    opt.value = w.code;
+                    opt.textContent = w.name;
+                    wardSel.appendChild(opt);
+                });
+                if (restoreWardCode) wardSel.value = restoreWardCode;
+            } catch (e) { console.warn('Lỗi tải phường/xã:', e); }
+        }
+
+        loadProvinces();
     </script>
 </body>
 

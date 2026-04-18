@@ -622,7 +622,10 @@
                 showSuccess('✅ Đăng nhập thành công! Đang chuyển hướng...');
 
                 setTimeout(() => {
-                    if (data.role === 'Admin') location.href = '/page/admin.html';
+                    const params = new URLSearchParams(window.location.search);
+                    const redirectUrl = params.get('redirect');
+                    if (data.role === 'Admin') location.href = '/Admin/admin.html';
+                    else if (redirectUrl) location.href = redirectUrl;
                     else location.href = '/page/shop.html';
                 }, 800);
 

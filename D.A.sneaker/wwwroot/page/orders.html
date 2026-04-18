@@ -510,7 +510,8 @@
                                 price: i.Price || i.price || 0,
                                 qty: i.Quantity || i.quantity || 1,
                                 size: i.SizeNumber || i.sizeNumber || '',
-                                color: i.ColorName || i.colorName || ''
+                                color: i.ColorName || i.colorName || '',
+                                image: i.ProductImage || i.productImage || ''
                             }))
                         };
                     });
@@ -606,7 +607,10 @@
 
                 const itemsHTML = (order.items || []).map(p => `
                     <div class="order-item">
-                        <div class="order-item-img-placeholder">👟</div>
+                        ${p.image
+                            ? `<img class="order-item-img" src="${p.image}" alt="${p.name}" onerror="this.outerHTML='<div class=\\'order-item-img-placeholder\\'>👟</div>'">`
+                            : `<div class="order-item-img-placeholder">👟</div>`
+                        }
                         <div class="order-item-info">
                             <div class="order-item-name">${p.name}</div>
                             <div class="order-item-meta">Số lượng: ${p.qty || 1}${p.size ? ' · Size ' + p.size : ''}${p.color ? ' · ' + p.color : ''}</div>

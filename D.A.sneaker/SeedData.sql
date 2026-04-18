@@ -91,7 +91,7 @@ BEGIN
         'Nike',
         @CatRun,
         2850000,
-        'Nike Air Max Torch 4 với đệm khí Max Air giúp giảm chấn tối đa. Thiết kế năng động màu Dark Gray phù hợp chạy bộ và tập gym hàng ngày.',
+        N'Nike Air Max Torch 4 với đệm khí Max Air giúp giảm chấn tối đa. Thiết kế năng động màu Dark Gray phù hợp chạy bộ và tập gym hàng ngày.',
         'Nike/Nike Men''s Air Max Torch 4 Running Shoe Dark Gray.jpg',
         1, 87, 4.5
     );
@@ -123,7 +123,7 @@ BEGIN
         'Nike',
         @CatRun2,
         3200000,
-        'Phiên bản đặc biệt của Nike Air Max Torch 4 với điểm nhấn Metallic Gold sang trọng. Công nghệ Max Air tối ưu hiệu suất vận động.',
+        N'Phiên bản đặc biệt của Nike Air Max Torch 4 với điểm nhấn Metallic Gold sang trọng. Công nghệ Max Air tối ưu hiệu suất vận động.',
         'Nike/Nike Men''s Air Max Torch 4 Running Shoe Dark Gray metalic gold.jpg',
         1, 54, 4.7
     );
@@ -157,7 +157,7 @@ BEGIN
         'Nike',
         @CatTrain,
         2400000,
-        'Nike Flex Control TR3 thiết kế riêng cho tập gym cường độ cao. Đế multi-directional flex linh hoạt, mid-foot lockdown ổn định hoàn hảo.',
+        N'Nike Flex Control TR3 thiết kế riêng cho tập gym cường độ cao. Đế multi-directional flex linh hoạt, mid-foot lockdown ổn định hoàn hảo.',
         'Adidas/Nike Men''s Flex Control TR3 Sneaker.jpg',
         1, 133, 4.6
     );
@@ -195,7 +195,7 @@ BEGIN
         'Adidas',
         @CatCas2,
         1890000,
-        'Adidas Lite Racer Adapt 7.0 slip-on tiện lợi, không cần buộc dây. Đế CloudFoam siêu êm, lý tưởng cho những ngày dài đứng hoặc đi bộ.',
+        N'Adidas Lite Racer Adapt 7.0 slip-on tiện lợi, không cần buộc dây. Đế CloudFoam siêu êm, lý tưởng cho những ngày dài đứng hoặc đi bộ.',
         'Adidas/adidas Mens Lite Racer Adapt 7.0 Slip On Sneakers Shoes Casual - Grey.jpg',
         1, 201, 4.4
     );
@@ -226,7 +226,7 @@ BEGIN
         'Adidas',
         @CatLife,
         2700000,
-        'Huyền thoại Adidas Superstar với shell toe đặc trưng ra mắt năm 1969. Phong cách streetwear vượt thời gian, phối đồ cực kỳ linh hoạt.',
+        N'Huyền thoại Adidas Superstar với shell toe đặc trưng ra mắt năm 1969. Phong cách streetwear vượt thời gian, phối đồ cực kỳ linh hoạt.',
         'Adidas/adidas-superstar.jpg',
         1, 312, 4.8
     );
@@ -254,7 +254,7 @@ BEGIN
         'Puma',
         @CatRun10,
         1650000,
-        'PUMA Tazon 6 FM với EcoOrthoLite insole thân thiện môi trường giảm áp lực chân. Thiết kế classic màu đen phù hợp đi làm và chạy nhẹ.',
+        N'PUMA Tazon 6 FM với EcoOrthoLite insole thân thiện môi trường giảm áp lực chân. Thiết kế classic màu đen phù hợp đi làm và chạy nhẹ.',
         'Puma/PUMA Men''s Tazon 6 FM Shoes black.jpg',
         1, 168, 4.3
     );
