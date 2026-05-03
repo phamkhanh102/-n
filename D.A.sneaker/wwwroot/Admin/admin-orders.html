@@ -32,9 +32,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
 .topbar{background:var(--card);border-bottom:1px solid var(--border);padding:0 28px;height:64px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
 .topbar-t{font-size:18px;font-weight:800;background:linear-gradient(135deg,#1e293b,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .topbar-r{display:flex;align-items:center;gap:10px}
-.btn{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s}
+.btn{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
 .btn-out{background:none;border:1px solid var(--border);color:var(--text)}.btn-out:hover{background:var(--bg);transform:translateY(-1px)}
-.btn-pr{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.3)}.btn-pr:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(59,130,246,.4)}
+.btn-pr{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 2px 8px rgba(59,130,246,.3)}.btn-pr:hover{transform:translateY(-1px)}
+.btn-ok{background:linear-gradient(135deg,#10b981,#059669);color:#fff;box-shadow:0 2px 8px rgba(16,185,129,.3)}.btn-ok:hover{transform:translateY(-1px)}
+.btn-pur{background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:#fff;box-shadow:0 2px 8px rgba(139,92,246,.3)}.btn-pur:hover{transform:translateY(-1px)}
+.btn-sm{padding:5px 12px;font-size:12px;border-radius:8px}
 .content{padding:28px;flex:1}
 @keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 
@@ -50,17 +53,28 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);displ
 .sl{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px}
 .sv{font-size:22px;font-weight:800;margin:4px 0 2px;letter-spacing:-.5px}
 .sc-sub{font-size:11px;color:var(--muted)}
+
 /* CHART ROW */
 .ord-charts{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:22px}
-.chart-wrap{position:relative;height:200px;width:100%}
+.chart-wrap{position:relative;height:220px;width:100%}
+
+/* PERIOD BUTTONS */
+.period-btns{display:flex;gap:4px}
+.pb-period{padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .2s;font-family:'Inter',sans-serif}
+.pb-period:hover{border-color:#94a3b8;color:var(--text)}
+.pb-period.active{background:var(--pr);color:#fff;border-color:var(--pr)}
+
 @media(max-width:1100px){.sg{grid-template-columns:repeat(3,1fr)}.ord-charts{grid-template-columns:1fr}}
 
 /* CARD */
 .card{background:var(--card);border-radius:var(--r);border:1px solid var(--border);box-shadow:var(--sh);margin-bottom:18px;overflow:hidden;animation:fi .3s ease}
 .ch{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 .ch h3{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.ch-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.fi-sel{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--card);cursor:pointer;outline:none;font-family:inherit}
+.fi-sel{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--card);cursor:pointer;outline:none;font-family:'Inter',sans-serif}
+.si-input{padding:9px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;color:var(--text);background:var(--card);outline:none;font-family:'Inter',sans-serif;transition:border-color .2s}
+.si-input:focus{border-color:var(--pr)}
 
 /* TABLE */
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px}
@@ -71,19 +85,48 @@ td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle
 .bi{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
 .bi:hover{border-color:#94a3b8;transform:translateY(-1px)}.bi.er{background:var(--err);border-color:var(--err);color:#fff}
 .pg{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}.pg-b{display:flex;gap:5px}
-.pb{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;font-weight:500;transition:all .2s}
+.pb{padding:5px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font-size:12px;cursor:pointer;font-weight:500;transition:all .2s;font-family:'Inter',sans-serif}
 .pb:hover:not(:disabled){background:var(--pr);color:#fff;border-color:var(--pr)}.pb:disabled{opacity:.4;cursor:default}.pb.act{background:var(--pr);color:#fff;border-color:var(--pr)}
 .empty{text-align:center;padding:40px 20px;color:var(--muted)}.empty-i{font-size:40px;margin-bottom:10px}
 #toast{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:8px}
-.ti{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fi .25s ease}.ti.ok{background:#10b981}.ti.er{background:#ef4444}
-/* INLINE STATUS SELECT */
-.st-sel{padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;outline:none;font-family:inherit;background:var(--card);transition:all .2s}
+.ti{padding:12px 18px;border-radius:12px;font-size:13px;font-weight:600;color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fi .25s ease}.ti.ok{background:#10b981}.ti.er{background:#ef4444}.ti.inf{background:#3b82f6}
+.st-sel{padding:4px 8px;border-radius:8px;font-size:12px;font-weight:700;border:1.5px solid var(--border);cursor:pointer;outline:none;font-family:'Inter',sans-serif;background:var(--card);transition:all .2s}
 .st-sel.s-Pending{background:#f1f5f9;color:#475569;border-color:#cbd5e1}
 .st-sel.s-Confirmed{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
 .st-sel.s-Shipping{background:#fef9c3;color:#a16207;border-color:#fde68a}
 .st-sel.s-Completed{background:#dcfce7;color:#15803d;border-color:#86efac}
 .st-sel.s-Cancelled{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}
 .st-sel.s-Paid{background:#dcfce7;color:#15803d;border-color:#86efac}
+
+/* MODAL OVERLAY */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;padding:28px;max-width:500px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal h3{font-size:18px;font-weight:700;margin-bottom:8px}
+.modal-desc{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.import-result{margin-top:16px;padding:12px 16px;border-radius:10px;font-size:13px;display:none;line-height:1.6}
+.import-result.ok{background:#f0fdf4;border:1px solid #bbf7d0;color:#15803d}
+.import-result.er{background:#fef2f2;border:1px solid #fecaca;color:#dc2626}
+
+/* DETAIL MODAL */
+.detail-modal{background:#fff;border-radius:20px;padding:0;max-width:680px;width:95%;box-shadow:0 20px 60px rgba(0,0,0,.2);max-height:90vh;overflow:hidden;display:flex;flex-direction:column}
+.detail-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.detail-header h3{font-size:17px;font-weight:700}
+.detail-body{padding:24px;overflow-y:auto;flex:1}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.detail-item{background:#f8fafc;border-radius:10px;padding:12px 14px}
+.detail-item .di-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.detail-item .di-val{font-size:13px;font-weight:600;color:var(--text)}
+.items-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:4px}
+.items-table th{background:#f8fafc;padding:8px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.items-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.items-table tr:last-child td{border-bottom:none}
+.detail-footer{padding:16px 24px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.total-row{font-size:16px;font-weight:800;color:var(--ok)}
+.close-btn{background:none;border:1px solid var(--border);border-radius:10px;padding:8px 18px;cursor:pointer;font-weight:600;font-size:13px;font-family:'Inter',sans-serif;transition:all .2s}
+.close-btn:hover{background:var(--bg)}
+
 @media(max-width:900px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}}
 </style>
 </head>
@@ -108,6 +151,7 @@ td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle
 <div class="main">
 <header class="topbar"><span class="topbar-t">Quản lý đơn hàng</span><div class="topbar-r"><span id="topD" style="font-size:12px;color:var(--muted)"></span><a href="/page/shop.html" target="_blank" class="btn btn-out">🌐 Website</a></div></header>
 <div class="content">
+
   <!-- STAT CARDS -->
   <div class="sg" id="orderStats">
     <div class="sc"><div class="si b">📦</div><div class="sl">Tổng đơn hàng</div><div class="sv" id="stTotal">—</div><div class="sc-sub">Tất cả trạng thái</div></div>
@@ -116,10 +160,23 @@ td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle
     <div class="sc"><div class="si p">🚚</div><div class="sl">Đang giao</div><div class="sv" id="stShipping">—</div><div class="sc-sub">Trong quá trình</div></div>
     <div class="sc"><div class="si r">🚫</div><div class="sl">Đã huỷ</div><div class="sv" id="stCancelled">—</div><div class="sc-sub">Không thành công</div></div>
   </div>
-  <!-- CHARTS ROW -->
+
+  <!-- CHARTS -->
   <div class="ord-charts">
     <div class="card">
-      <div class="ch"><h3>📈 Doanh thu 7 ngày gần nhất</h3><span id="revBadge" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:#f0f9ff;color:#0369a1">Đang tải...</span></div>
+      <div class="ch">
+        <h3>📈 Doanh thu theo thời gian</h3>
+        <div class="ch-right">
+          <span id="revBadge" style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:#f0f9ff;color:#0369a1">Đang tải...</span>
+          <div class="period-btns" id="chartPeriodBtns">
+            <button class="pb-period active" onclick="setChartPeriod('7d')">7N</button>
+            <button class="pb-period" onclick="setChartPeriod('30d')">30N</button>
+            <button class="pb-period" onclick="setChartPeriod('3m')">3T</button>
+            <button class="pb-period" onclick="setChartPeriod('6m')">6T</button>
+            <button class="pb-period" onclick="setChartPeriod('1y')">1N</button>
+          </div>
+        </div>
+      </div>
       <div class="cb"><div class="chart-wrap"><canvas id="ordRevChart"></canvas></div></div>
     </div>
     <div class="card">
@@ -127,28 +184,72 @@ td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle
       <div class="cb"><div class="chart-wrap"><canvas id="ordStatusChart"></canvas></div></div>
     </div>
   </div>
+
+  <!-- ORDER TABLE -->
   <div class="card">
     <div class="ch">
       <h3>📦 Quản lý đơn hàng</h3>
       <div class="toolbar">
-        <input class="si-input" id="oSrch" placeholder="🔍 Khách hàng / Phone" oninput="deboLoad()" style="width:180px">
+        <input class="si-input" id="oSrch" placeholder="🔍 Khách hàng / Phone" oninput="deboLoad()" style="width:190px">
         <select class="fi-sel" id="oSt" onchange="loadO()">
           <option value="">Tất cả</option><option value="Pending">Chờ xử lý</option><option value="Confirmed">Xác nhận</option>
           <option value="Shipping">Đang giao</option><option value="Completed">Hoàn thành</option><option value="Cancelled">Đã huỷ</option>
         </select>
         <input type="date" class="fi-sel" id="oFrom" onchange="loadO()" title="Từ ngày">
         <input type="date" class="fi-sel" id="oTo" onchange="loadO()" title="Đến ngày">
-        <button class="btn btn-out" onclick="clearDateFilter()">&#x21ba; Xóa lọc</button>
-        <button class="btn btn-ok" onclick="exportExcel()">📥 Xuất Excel</button>
+        <button class="btn btn-out" onclick="clearDateFilter()">↺ Xóa lọc</button>
+        <button class="btn btn-ok" onclick="exportExcel()">📥 Xuất Excel chi tiết</button>
+        <button class="btn btn-pur" onclick="openImport()">📤 Import Excel</button>
       </div>
     </div>
     <div class="tw"><table>
-      <thead><tr><th>Mã</th><th>Khách hàng</th><th>SP</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày</th></tr></thead>
-      <tbody id="oTb"><tr><td colspan="6" style="text-align:center;padding:32px;color:var(--muted)">Đang tải...</td></tr></tbody>
+      <thead><tr><th>Mã</th><th>Khách hàng</th><th>SĐT</th><th>Sản phẩm</th><th>Phương thức TT</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày đặt</th><th>Chi tiết</th></tr></thead>
+      <tbody id="oTb"><tr><td colspan="9" style="text-align:center;padding:32px;color:var(--muted)">Đang tải...</td></tr></tbody>
     </table></div>
     <div class="pg" id="oPg"></div>
   </div>
 </div></div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <h3>📤 Import Excel cập nhật trạng thái</h3>
+    <div class="modal-desc">
+      File Excel cần có sheet <b>"Import Status"</b> với 2 cột: <b>Mã đơn</b> và <b>Trạng thái</b><br>
+      Các trạng thái hợp lệ: <code>Pending</code>, <code>Confirmed</code>, <code>Shipping</code>, <code>Completed</code>, <code>Cancelled</code><br><br>
+      💡 <em>Xuất Excel trước → sửa cột "Trạng thái (EN)" trong sheet "Import Status" → import lại để cập nhật CSDL.</em>
+    </div>
+    <input type="file" id="importFile" accept=".xlsx,.xls" style="width:100%;padding:10px;border:2px dashed var(--border);border-radius:10px;cursor:pointer">
+    <div class="import-result" id="importResult"></div>
+    <div class="modal-btns">
+      <button class="btn btn-out" onclick="closeImport()">Huỷ</button>
+      <button class="btn btn-pur" onclick="doImport()">📤 Import & Cập nhật CSDL</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="modal-overlay" id="detailModal">
+  <div class="detail-modal">
+    <div class="detail-header">
+      <h3 id="detailTitle">Chi tiết đơn hàng</h3>
+      <button class="close-btn" onclick="closeDetail()">✕ Đóng</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-grid" id="detailInfo"></div>
+      <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">📋 Sản phẩm trong đơn</div>
+      <div style="overflow-x:auto">
+        <table class="items-table" id="detailItems"></table>
+      </div>
+    </div>
+    <div class="detail-footer">
+      <div class="total-row" id="detailTotal"></div>
+      <div style="display:flex;gap:8px">
+        <button class="close-btn" onclick="closeDetail()">Đóng</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="toast"></div>
 <script>
@@ -156,16 +257,37 @@ const TOKEN=localStorage.getItem('token')||'';const USER=JSON.parse(localStorage
 if(!TOKEN||!USER)location.href='/page/login.html';
 const ROLE=USER?.role||USER?.Role||'';if(!['Admin','Staff','Cashier'].includes(ROLE))location.href='/page/account.html';
 const roleLabels={Admin:'Quản trị viên',Staff:'Nhân viên',Cashier:'Thu ngân'};
-document.getElementById('sbNm').textContent=USER?.name||'Admin';document.getElementById('sbAv').textContent=(USER?.name||'A').charAt(0).toUpperCase();
-document.getElementById('sbRl').textContent=roleLabels[ROLE]||ROLE;document.getElementById('topD').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
+document.getElementById('sbNm').textContent=USER?.name||'Admin';
+document.getElementById('sbAv').textContent=(USER?.name||'A').charAt(0).toUpperCase();
+document.getElementById('sbRl').textContent=roleLabels[ROLE]||ROLE;
+document.getElementById('topD').textContent=new Date().toLocaleDateString('vi-VN',{weekday:'long',day:'2-digit',month:'2-digit',year:'numeric'});
 document.querySelectorAll('.role-need').forEach(el=>{if(!(el.dataset.roles||'').split(',').includes(ROLE))el.style.display='none';});
+
 const H=()=>({'Content-Type':'application/json','Authorization':`Bearer ${TOKEN}`});
-const fm=n=>Number(n||0).toLocaleString('vi-VN')+'d';
-const fmShort=n=>{const v=Number(n||0);if(v>=1e9)return(v/1e9).toFixed(1)+' ty';if(v>=1e6)return(v/1e6).toFixed(1)+' tr';if(v>=1e3)return(v/1e3).toFixed(0)+'K';return v.toLocaleString('vi-VN');};
+const fm=n=>Number(n||0).toLocaleString('vi-VN')+'đ';
+const fmShort=n=>{const v=Number(n||0);if(v>=1e9)return(v/1e9).toFixed(1)+' tỷ';if(v>=1e6)return(v/1e6).toFixed(1)+' tr';if(v>=1e3)return(v/1e3).toFixed(0)+'K';return v.toLocaleString('vi-VN');};
+const fd=d=>d?new Date(d).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
+const fdt=d=>d?new Date(d).toLocaleString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+const STATUS_LABELS={Pending:'Chờ xử lý',Confirmed:'Xác nhận',Shipping:'Đang giao',Completed:'Hoàn thành',Cancelled:'Đã huỷ',Paid:'Đã TT'};
+const obadge=s=>{const cm={Pending:'b-gr',Confirmed:'b-b',Shipping:'b-o',Completed:'b-g',Cancelled:'b-r',Paid:'b-g'};return`<span class="badge ${cm[s]||'b-gr'}">${STATUS_LABELS[s]||s}</span>`;};
+function toast(msg,type='ok'){const w=document.getElementById('toast');const el=document.createElement('div');el.className=`ti ${type}`;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),4000);}
+function doLogout(){if(!confirm('Đăng xuất?'))return;localStorage.removeItem('token');localStorage.removeItem('user');location.href='/page/login.html';}
+
+// ── CHARTS ───────────────────────────────────────────────
 let revChartInst,statusChartInst;
-async function loadOrderStats(){
+let currentChartPeriod='7d';
+
+function setChartPeriod(p){
+  currentChartPeriod=p;
+  document.querySelectorAll('.pb-period').forEach(b=>b.classList.remove('active'));
+  const map={'7d':'7N','30d':'30N','3m':'3T','6m':'6T','1y':'1N'};
+  document.querySelectorAll('.pb-period').forEach(b=>{if(b.textContent===map[p])b.classList.add('active');});
+  loadOrderStats(p);
+}
+
+async function loadOrderStats(period='7d'){
   try{
-    const res=await fetch('/api/admin/dashboard',{headers:H()});if(!res.ok)return;
+    const res=await fetch(`/api/admin/dashboard?period=${period}`,{headers:H()});if(!res.ok)return;
     const d=await res.json();
     const byStatus={};
     (d.ordersByStatus||[]).forEach(s=>{byStatus[s.status]=s.count;});
@@ -175,32 +297,73 @@ async function loadOrderStats(){
     document.getElementById('stShipping').textContent=(byStatus['Shipping']||0).toLocaleString();
     document.getElementById('stCancelled').textContent=(byStatus['Cancelled']||0).toLocaleString();
     const daily=d.dailyChart||[];
+    const chartType=d.chartType||'daily';
+    const totalRev=daily.reduce(function(a,b){return a+(b.revenue||0);},0);
+    const periodLabels={'7d':'7 ngay','30d':'30 ngay','3m':'3 thang','6m':'6 thang','1y':'1 nam'};
+    document.getElementById('revBadge').textContent=fmShort(totalRev)+' ('+periodLabels[period]+')';
+
     const revCtx=document.getElementById('ordRevChart');
     if(revChartInst)revChartInst.destroy();
-    const totalRev=daily.reduce((a,b)=>a+(b.revenue||0),0);
-    document.getElementById('revBadge').textContent=fmShort(totalRev)+' tong';
-    revChartInst=new Chart(revCtx,{type:'bar',data:{labels:daily.map(d=>d.dayName||d.date),datasets:[{label:'Doanh thu',data:daily.map(d=>d.revenue||0),backgroundColor:'rgba(59,130,246,.7)',borderColor:'#3b82f6',borderWidth:1,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1e293b',padding:10,cornerRadius:8,callbacks:{label:c=>' '+fm(c.raw)}}},scales:{x:{grid:{display:false},ticks:{font:{family:'Inter',size:11},color:'#94a3b8'}},y:{grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Inter',size:11},color:'#94a3b8',callback:v=>fmShort(v)}}}}});
+    revChartInst=new Chart(revCtx,{
+      type:'bar',
+      data:{
+        labels:daily.map(function(d){return d.dayName||d.date;}),
+        datasets:[
+          {label:'Doanh thu',data:daily.map(function(d){return d.revenue||0;}),backgroundColor:'rgba(59,130,246,.7)',borderColor:'#3b82f6',borderWidth:1,borderRadius:chartType==='monthly'?8:5,borderSkipped:false,yAxisID:'y'},
+          {label:'So don',data:daily.map(function(d){return d.orders||0;}),type:'line',borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.06)',borderWidth:2,fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#10b981',pointBorderColor:'#fff',pointBorderWidth:2,yAxisID:'y1'}
+        ]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        interaction:{mode:'index',intersect:false},
+        plugins:{
+          legend:{display:true,position:'bottom',labels:{usePointStyle:true,padding:14,font:{family:'Inter',size:11,weight:'600'}}},
+          tooltip:{backgroundColor:'#1e293b',padding:10,cornerRadius:8}
+        },
+        scales:{
+          x:{grid:{display:false},ticks:{font:{family:'Inter',size:10},color:'#94a3b8'}},
+          y:{position:'left',grid:{color:'rgba(0,0,0,.04)'},ticks:{font:{family:'Inter',size:10},color:'#94a3b8',callback:function(v){return fmShort(v);}}},
+          y1:{position:'right',grid:{display:false},ticks:{font:{family:'Inter',size:10},color:'#10b981',stepSize:1}}
+        }
+      }
+    });
+
     const stData=d.ordersByStatus||[];
     const stCtx=document.getElementById('ordStatusChart');
     if(statusChartInst)statusChartInst.destroy();
     const stColors={Pending:'#94a3b8',Confirmed:'#3b82f6',Shipping:'#f59e0b',Completed:'#10b981',Cancelled:'#ef4444',Paid:'#22c55e'};
-    const stLabels={Pending:'Chờ xử lý',Confirmed:'Xác nhận',Shipping:'Đang giao',Completed:'Hoàn thành',Cancelled:'Đã huỷ',Paid:'Đã TT'};
-    statusChartInst=new Chart(stCtx,{type:'doughnut',data:{labels:stData.map(s=>stLabels[s.status]||s.status),datasets:[{data:stData.map(s=>s.count),backgroundColor:stData.map(s=>stColors[s.status]||'#94a3b8'),borderColor:'#fff',borderWidth:2,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom',labels:{usePointStyle:true,padding:10,font:{size:11,family:'Inter',weight:'600'},color:'#475569'}},tooltip:{backgroundColor:'#1e293b',padding:10,cornerRadius:8,titleFont:{family:'Inter',weight:'700'},bodyFont:{family:'Inter'}}}}});
+    statusChartInst=new Chart(stCtx,{
+      type:'doughnut',
+      data:{
+        labels:stData.map(function(s){return STATUS_LABELS[s.status]||s.status;}),
+        datasets:[{data:stData.map(function(s){return s.count;}),backgroundColor:stData.map(function(s){return stColors[s.status]||'#94a3b8';}),borderColor:'#fff',borderWidth:2,hoverOffset:6}]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,cutout:'62%',
+        plugins:{
+          legend:{position:'bottom',labels:{usePointStyle:true,padding:8,font:{size:11,family:'Inter',weight:'600'},color:'#475569'}},
+          tooltip:{backgroundColor:'#1e293b',padding:10,cornerRadius:8}
+        }
+      }
+    });
   }catch(e){console.error(e);}
 }
-loadOrderStats();
+loadOrderStats('7d');
 
-const fd=d=>d?new Date(d).toLocaleDateString('vi-VN',{day:'2-digit',month:'2-digit',year:'numeric'}):'—';
-const STATUS_LABELS={Pending:'Chờ xử lý',Confirmed:'Xác nhận',Shipping:'Đang giao',Completed:'Hoàn thành',Cancelled:'Đã huỷ',Paid:'Đã TT'};
-const obadge=s=>{const cm={Pending:'b-gr',Confirmed:'b-b',Shipping:'b-o',Completed:'b-g',Cancelled:'b-r',Paid:'b-g'};return`<span class="badge ${cm[s]||'b-gr'}">${STATUS_LABELS[s]||s}</span>`;};
-function toast(msg,type='ok'){const w=document.getElementById('toast');const el=document.createElement('div');el.className=`ti ${type}`;el.textContent=msg;w.appendChild(el);setTimeout(()=>el.remove(),3500);}
-function doLogout(){if(!confirm('Đăng xuất?'))return;localStorage.removeItem('token');localStorage.removeItem('user');location.href='/page/login.html';}
-function paginator(total,page,size,fn,elId){const pages=Math.ceil(total/size)||1;const el=document.getElementById(elId);if(!el)return;let h=`<span>${Math.min((page-1)*size+1,total)}–${Math.min(page*size,total)} / ${total}</span><div class="pg-b">`;h+=`<button class="pb" ${page<=1?'disabled':''} onclick="${fn}(${page-1})">‹</button>`;for(let i=Math.max(1,page-2);i<=Math.min(pages,page+2);i++)h+=`<button class="pb ${i===page?'act':''}" onclick="${fn}(${i})">${i}</button>`;h+=`<button class="pb" ${page>=pages?'disabled':''} onclick="${fn}(${page+1})">›</button></div>`;el.innerHTML=h;}
+// ── ORDER TABLE ───────────────────────────────────────────
+function paginator(total,page,size,fn,elId){
+  const pages=Math.ceil(total/size)||1;const el=document.getElementById(elId);if(!el)return;
+  let h=`<span>${Math.min((page-1)*size+1,total)}–${Math.min(page*size,total)} / ${total} đơn</span><div class="pg-b">`;
+  h+=`<button class="pb" ${page<=1?'disabled':''} onclick="${fn}(${page-1})">‹</button>`;
+  for(let i=Math.max(1,page-2);i<=Math.min(pages,page+2);i++)h+=`<button class="pb ${i===page?'act':''}" onclick="${fn}(${i})">${i}</button>`;
+  h+=`<button class="pb" ${page>=pages?'disabled':''} onclick="${fn}(${page+1})">›</button></div>`;
+  el.innerHTML=h;
+}
 function debo(fn,ms){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}}
 const deboLoad=debo(()=>loadO(),400);
 function clearDateFilter(){document.getElementById('oFrom').value='';document.getElementById('oTo').value='';loadO();}
 
-let oPg=1,allOrdersCache=[];
+let oPg=1;
 async function loadO(pg=oPg){
   oPg=pg;
   const st=document.getElementById('oSt')?.value||'';
@@ -210,12 +373,16 @@ async function loadO(pg=oPg){
   const canEdit=['Admin','Staff'].includes(ROLE);
   const q=new URLSearchParams({page:pg,size:20,...(st&&{status:st}),...(srch&&{search:srch}),...(from&&{fromDate:from}),...(to&&{toDate:to})});
   try{
-    const res=await fetch(`/api/admin/orders?${q}`,{headers:H()});if(!res.ok){toast('Không có quyền','er');return}
+    const res=await fetch(`/api/admin/orders?${q}`,{headers:H()});
+    if(!res.ok){toast('Không có quyền','er');return}
     const d=await res.json();const rows=d.orders||[];const tb=document.getElementById('oTb');
-    allOrdersCache=rows;
-    if(!rows.length){tb.innerHTML='<tr><td colspan="6"><div class="empty"><div class="empty-i">📦</div><p>Không có đơn hàng</p></div></td></tr>';return}
+    if(!rows.length){
+      tb.innerHTML='<tr><td colspan="9"><div class="empty"><div class="empty-i">📦</div><p>Không có đơn hàng nào</p></div></td></tr>';
+      paginator(0,1,20,'loadO','oPg');return
+    }
     tb.innerHTML=rows.map(o=>{
       const id=o.id||o.Id;const st2=o.status||o.Status;
+      const pmeth=o.paymentMethod||'COD';
       const stSel=canEdit?`<select class="st-sel s-${st2}" onchange="inlineUpdateStatus(${id},this)">
         <option value="Pending" ${st2==='Pending'?'selected':''}>Chờ xử lý</option>
         <option value="Confirmed" ${st2==='Confirmed'?'selected':''}>Xác nhận</option>
@@ -224,9 +391,15 @@ async function loadO(pg=oPg){
         <option value="Cancelled" ${st2==='Cancelled'?'selected':''}>Huỷ</option>
       </select>`:obadge(st2);
       return`<tr>
-        <td><b>#${id}</b></td><td>${o.customerName||'Khách'}<br><small style="color:var(--muted)">${o.phone||''}</small></td>
-        <td>${o.itemCount||1} sp</td><td><b>${fm(o.totalAmount||o.TotalAmount)}</b></td>
-        <td>${stSel}</td><td>${fd(o.createdAt||o.CreatedAt)}</td>
+        <td><b style="color:var(--pr)">#${id}</b></td>
+        <td><b>${o.customerName||'Khách'}</b></td>
+        <td style="color:var(--muted)">${o.phone||'—'}</td>
+        <td><span style="background:#f1f5f9;border-radius:6px;padding:3px 8px;font-size:12px;font-weight:600">${o.itemCount||0} SP</span></td>
+        <td><span style="font-size:12px;color:var(--muted)">${pmeth}</span></td>
+        <td><b style="color:var(--ok)">${fm(o.totalAmount||o.TotalAmount)}</b></td>
+        <td>${stSel}</td>
+        <td style="color:var(--muted)">${fd(o.createdAt||o.CreatedAt)}</td>
+        <td><button class="bi btn-sm" onclick="viewDetail(${id})">👁 Xem</button></td>
       </tr>`;
     }).join('');
     paginator(d.total,pg,20,'loadO','oPg');
@@ -234,45 +407,181 @@ async function loadO(pg=oPg){
 }
 
 async function inlineUpdateStatus(id,sel){
-  const st=sel.value;const prev=sel.className;
+  const st=sel.value;
   sel.className=`st-sel s-${st}`;
   try{
     const res=await fetch(`/api/admin/orders/${id}/status`,{method:'PUT',headers:H(),body:JSON.stringify({status:st})});
     const data=await res.json();
-    if(res.ok){toast(`✅ Đơn #${id} → ${STATUS_LABELS[st]||st}`);loadOrderStats();}
+    if(res.ok){toast(`✅ Đơn #${id} → ${STATUS_LABELS[st]||st}`);loadOrderStats(currentChartPeriod);}
     else{toast(data.error||'Lỗi cập nhật','er');loadO();}
   }catch{toast('Lỗi kết nối','er');loadO();}
 }
 
-// Export Excel
+// ── ORDER DETAIL MODAL ────────────────────────────────────
+async function viewDetail(id){
+  document.getElementById('detailModal').classList.add('show');
+  document.getElementById('detailTitle').textContent=`Chi tiết đơn #${id}`;
+  document.getElementById('detailInfo').innerHTML='<div style="color:var(--muted);padding:20px 0">⏳ Đang tải...</div>';
+  document.getElementById('detailItems').innerHTML='';
+  document.getElementById('detailTotal').textContent='';
+  try{
+    const res=await fetch(`/api/admin/orders/${id}`,{headers:H()});
+    if(!res.ok){toast('Không tải được chi tiết','er');return;}
+    const o=await res.json();
+    const addr=[o.address,o.ward,o.district,o.province].filter(Boolean).join(', ');
+    document.getElementById('detailInfo').innerHTML=`
+      <div class="detail-item"><div class="di-label">Khách hàng</div><div class="di-val">${o.customerName||'Khách'}</div></div>
+      <div class="detail-item"><div class="di-label">Số điện thoại</div><div class="di-val">${o.phone||'—'}</div></div>
+      <div class="detail-item" style="grid-column:1/-1"><div class="di-label">Địa chỉ giao hàng</div><div class="di-val">${addr||'—'}</div></div>
+      <div class="detail-item"><div class="di-label">Thanh toán</div><div class="di-val">${o.paymentMethod||'COD'}</div></div>
+      <div class="detail-item"><div class="di-label">Ngày đặt</div><div class="di-val">${fdt(o.createdAt)}</div></div>
+      <div class="detail-item"><div class="di-label">Trạng thái</div><div class="di-val">${STATUS_LABELS[o.status]||o.status}</div></div>
+      ${o.note?`<div class="detail-item" style="grid-column:1/-1"><div class="di-label">Ghi chú</div><div class="di-val">${o.note}</div></div>`:''}
+    `;
+    const items=o.items||[];
+    document.getElementById('detailItems').innerHTML=`
+      <thead><tr><th>#</th><th>Sản phẩm</th><th>Màu sắc</th><th>Size</th><th>SL</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+      <tbody>${items.map((item,i)=>`
+        <tr>
+          <td style="color:var(--muted)">${i+1}</td>
+          <td><b>${item.productName||'—'}</b></td>
+          <td>${item.colorName||'—'}</td>
+          <td><span style="background:#eff6ff;color:#1d4ed8;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700">EU ${item.sizeNumber||'—'}</span></td>
+          <td><b>${item.quantity}</b></td>
+          <td style="color:var(--muted)">${fm(item.price)}</td>
+          <td><b style="color:var(--ok)">${fm(item.subtotal)}</b></td>
+        </tr>
+      `).join('')}</tbody>
+    `;
+    document.getElementById('detailTotal').textContent=`💰 Tổng cộng: ${fm(o.totalAmount)}`;
+  }catch(e){console.error(e);toast('Lỗi tải chi tiết','er');}
+}
+function closeDetail(){document.getElementById('detailModal').classList.remove('show');}
+document.getElementById('detailModal').addEventListener('click',e=>{if(e.target===document.getElementById('detailModal'))closeDetail();});
+
+// ── EXPORT EXCEL CHI TIẾT (3 SHEETS) ─────────────────────
 async function exportExcel(){
-  // Tải tất cả đơn hàng (page 1, size 9999)
   const st=document.getElementById('oSt')?.value||'';
   const srch=document.getElementById('oSrch')?.value||'';
   const from=document.getElementById('oFrom')?.value||'';
   const to=document.getElementById('oTo')?.value||'';
-  toast('⏳ Đang xuất Excel...');
+  toast('⏳ Đang xuất Excel chi tiết...','inf');
   try{
-    const q=new URLSearchParams({page:1,size:9999,...(st&&{status:st}),...(srch&&{search:srch}),...(from&&{fromDate:from}),...(to&&{toDate:to})});
-    const res=await fetch(`/api/admin/orders?${q}`,{headers:H()});
+    const q=new URLSearchParams({...(st&&{status:st}),...(srch&&{search:srch}),...(from&&{fromDate:from}),...(to&&{toDate:to})});
+    const res=await fetch(`/api/admin/orders/export?${q}`,{headers:H()});
+    if(!res.ok){toast('Lỗi kết nối API','er');return;}
     const d=await res.json();
-    const rows=(d.orders||[]).map(o=>({
-      'Mã đơn':`#${o.id||o.Id}`,
-      'Khách hàng':o.customerName||'Khách',
-      'Số điện thoại':o.phone||'',
-      'Số sản phẩm':o.itemCount||0,
-      'Tổng tiền':o.totalAmount||o.TotalAmount||0,
-      'Trạng thái':STATUS_LABELS[o.status||o.Status]||(o.status||o.Status),
-      'Ngày tạo':fd(o.createdAt||o.CreatedAt),
-      'Địa chỉ':(o.address||'')+(o.province?', '+(o.province):'')
+    const orders=d.orders||[];
+
+    // ── SHEET 1: Tổng quan đơn hàng ──
+    const sheet1=orders.map(o=>({
+      'Mã đơn': o.id||o.Id,
+      'Khách hàng': o.customerName||'Khách',
+      'Số điện thoại': o.phone||'',
+      'Địa chỉ': [o.address,o.district,o.province].filter(Boolean).join(', '),
+      'Phương thức TT': o.paymentMethod||'COD',
+      'Số sản phẩm': o.itemCount||0,
+      'Tổng tiền (VND)': Number(o.totalAmount||0),
+      'Trạng thái (VI)': STATUS_LABELS[o.status||o.Status]||(o.status||o.Status),
+      'Trạng thái (EN)': o.status||o.Status||'',
+      'Ghi chú': o.note||'',
+      'Ngày đặt': fd(o.createdAt||o.CreatedAt)
     }));
-    const ws=XLSX.utils.json_to_sheet(rows);
+
+    // ── SHEET 2: Chi tiết sản phẩm từng đơn ──
+    const sheet2=[];
+    orders.forEach(o=>{
+      (o.items||[]).forEach(item=>{
+        sheet2.push({
+          'Mã đơn': o.id||o.Id,
+          'Khách hàng': o.customerName||'Khách',
+          'Tên sản phẩm': item.productName||'',
+          'Màu sắc': item.colorName||'',
+          'Size (EU)': item.sizeNumber||0,
+          'Số lượng': item.quantity||0,
+          'Đơn giá (VND)': Number(item.price||0),
+          'Thành tiền (VND)': Number(item.subtotal||0),
+          'Trạng thái đơn': STATUS_LABELS[o.status||o.Status]||(o.status||o.Status),
+          'Ngày đặt': fd(o.createdAt||o.CreatedAt)
+        });
+      });
+    });
+
+    // ── SHEET 3: Template import (dùng để cập nhật trạng thái) ──
+    const sheet3=orders.map(o=>({
+      'Mã đơn': o.id||o.Id,
+      'Trạng thái': o.status||o.Status||''
+    }));
+
     const wb=XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb,ws,'Đơn hàng');
-    XLSX.writeFile(wb,`don-hang-${new Date().toISOString().slice(0,10)}.xlsx`);
-    toast('✅ Xuất Excel thành công!');
-  }catch{toast('Lỗi xuất Excel','er');}
+
+    // Sheet 1
+    const ws1=XLSX.utils.json_to_sheet(sheet1);
+    ws1['!cols']=[{wch:9},{wch:22},{wch:14},{wch:40},{wch:14},{wch:12},{wch:16},{wch:16},{wch:14},{wch:20},{wch:12}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Đơn hàng');
+
+    // Sheet 2
+    const ws2=XLSX.utils.json_to_sheet(sheet2.length?sheet2:[{'Mã đơn':'(Không có dữ liệu)'}]);
+    ws2['!cols']=[{wch:9},{wch:22},{wch:28},{wch:12},{wch:10},{wch:10},{wch:16},{wch:16},{wch:16},{wch:12}];
+    XLSX.utils.book_append_sheet(wb,ws2,'Chi tiết sản phẩm');
+
+    // Sheet 3 (Import template)
+    const ws3=XLSX.utils.json_to_sheet(sheet3);
+    ws3['!cols']=[{wch:9},{wch:14}];
+    XLSX.utils.book_append_sheet(wb,ws3,'Import Status');
+
+    const fname=`don-hang-${new Date().toISOString().slice(0,10)}.xlsx`;
+    XLSX.writeFile(wb,fname);
+    toast(`✅ Xuất ${orders.length} đơn – 3 sheets thành công!`);
+  }catch(e){console.error(e);toast('Lỗi xuất Excel','er');}
 }
+
+// ── IMPORT EXCEL – CẬP NHẬT CSDL ─────────────────────────
+function openImport(){document.getElementById('importModal').classList.add('show');document.getElementById('importResult').style.display='none';}
+function closeImport(){document.getElementById('importModal').classList.remove('show');document.getElementById('importFile').value='';}
+document.getElementById('importModal').addEventListener('click',e=>{if(e.target===document.getElementById('importModal'))closeImport();});
+
+async function doImport(){
+  const file=document.getElementById('importFile').files[0];
+  if(!file){toast('Chọn file Excel trước','er');return;}
+  const el=document.getElementById('importResult');
+  el.style.display='none';
+
+  try{
+    const ab=await file.arrayBuffer();
+    const wb=XLSX.read(ab,{type:'array'});
+    // Ưu tiên sheet "Import Status"
+    const sheetName=wb.SheetNames.includes('Import Status')?'Import Status':wb.SheetNames[0];
+    const ws=wb.Sheets[sheetName];
+    const rows=XLSX.utils.sheet_to_json(ws);
+
+    if(!rows.length){toast('File rỗng hoặc không đúng định dạng','er');return;}
+
+    // Chuẩn hoá: tìm cột Mã đơn và Trạng thái
+    const payload=rows.map(r=>{
+      const id=parseInt(r['Mã đơn']||r['ma don']||r['id']||r['Id']||0);
+      const status=String(r['Trạng thái']||r['trang thai']||r['Status']||r['status']||'').trim();
+      return{orderId:id,status};
+    }).filter(r=>r.orderId>0&&r.status);
+
+    if(!payload.length){toast('Không tìm thấy dữ liệu hợp lệ trong file','er');return;}
+
+    toast(`⏳ Đang import ${payload.length} dòng và cập nhật CSDL...`,'inf');
+    const res=await fetch('/api/admin/orders/import-status',{method:'POST',headers:H(),body:JSON.stringify(payload)});
+    const result=await res.json();
+
+    el.style.display='block';
+    el.className=`import-result ${res.ok?'ok':'er'}`;
+    el.innerHTML=`<b>${result.message}</b>${result.errorMessages?.length?'<br>Chi tiết lỗi:<br>'+result.errorMessages.slice(0,5).map(m=>`• ${m}`).join('<br>'):''}`;
+    if(res.ok){
+      toast(`✅ Import hoàn tất: ${result.updated} đơn được cập nhật CSDL`);
+      loadO();loadOrderStats(currentChartPeriod);
+    }else{
+      toast(result.error||'Lỗi import','er');
+    }
+  }catch(e){console.error(e);toast('Lỗi đọc file Excel','er');}
+}
+
 loadO();
 </script>
 </body></html>

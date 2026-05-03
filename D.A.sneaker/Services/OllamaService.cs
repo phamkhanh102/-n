@@ -17,6 +17,9 @@ namespace D.A.sneaker.Services
         Policy,         // hỏi chính sách đổi trả / vận chuyển
         SmallTalk,      // hỏi thăm nhân viên, cảm ơn...
         OffTopic,       // câu hỏi ngoài lề hoàn toàn
+        CareTips,       // chăm sóc / vệ sinh / bảo quản giày
+        StyleGuide,     // phối đồ / style / fashion
+        BudgetGuide,    // tư vấn theo ngân sách
         General         // hỏi chung về shop / sản phẩm
     }
 
@@ -26,38 +29,79 @@ namespace D.A.sneaker.Services
 
         // ── Kiến thức cứng của shop ──────────────────────────
         private const string SHOP_KNOWLEDGE = @"
-THÔNG TIN CỬA HÀNG SPARK SNEAKER:
-- Tên shop: SPARK – Cửa hàng giày sneaker chính hãng
-- Địa chỉ: 123 Đường Lê Lợi, TP. Hồ Chí Minh
-- Hotline: 1800 1234 (miễn phí)
+THONG TIN CUA HANG SPARK SNEAKER:
+- Ten shop: SPARK - Cua hang giay sneaker chinh hang
+- Dia chi: 123 Duong Le Loi, TP. Ho Chi Minh
+- Hotline: 1800 1234 (mien phi)
 - Email: support@sparksneaker.vn
-- Giờ mở cửa: 8:00 – 21:00 hàng ngày
+- Gio mo cua: 8:00 - 21:00 hang ngay
 
-CHÍNH SÁCH:
-- Miễn phí vận chuyển cho đơn từ 500.000đ
-- Đổi size miễn phí trong 30 ngày kể từ ngày nhận hàng
-- Hoàn tiền 100% nếu hàng lỗi do nhà sản xuất
-- Giao hàng 1-2 ngày TP.HCM / Hà Nội, 2-4 ngày tỉnh thành khác
+CHINH SACH CUA HANG:
+- Mien phi van chuyen cho don tu 500.000d
+- Doi size mien phi trong 30 ngay ke tu ngay nhan hang
+- Hoan tien 100% neu hang loi do nha san xuat
+- Giao hang 1-2 ngay TP.HCM / Ha Noi, 2-4 ngay tinh thanh khac
+- Thanh toan: Tien mat, chuyen khoan, Momo, ZaloPay, VNPay, COD
+- Doi tra trong 7 ngay neu loi san xuat, giay chua qua su dung
 
-MÃ GIẢM GIÁ HIỆN CÓ:
-- SPARK10 → Giảm 10% toàn đơn
-- SPARK20 → Giảm 20% toàn đơn
-- SPARK30 → Giảm 30% toàn đơn
-- SPARK50 → Giảm 50% toàn đơn
-- FREESHIP → Miễn phí vận chuyển
-- VIPDAY → Giảm 40% dành cho khách VIP
-- FLASH30 → Flash Sale giảm 30%
-- NEWYEAR → Giảm 25% dịp năm mới
-(Nhập mã ở trang Giỏ Hàng)
+MA GIAM GIA HIEN CO:
+- SPARK10 -> Giam 10% toan don
+- SPARK20 -> Giam 20% toan don
+- SPARK30 -> Giam 30% toan don
+- SPARK50 -> Giam 50% toan don
+- SPARK70 -> Giam 70% - Sieu sale
+- FREESHIP -> Mien phi van chuyen
+- VIPDAY -> Giam 40% danh cho khach VIP
+- FLASH30 -> Flash Sale giam 30%
+- NEWYEAR -> Giam 25% dip nam moi
+- DEMO99 -> Giam 99% (demo)
+(Nhap ma o trang Gio Hang khi thanh toan)
 
-BẢNG SIZE GIÀY (EU – cm):
+BANG SIZE GIAY (EU - cm):
 EU 36 = 22.5cm | EU 37 = 23cm | EU 38 = 23.5cm | EU 39 = 24cm
 EU 40 = 24.5cm | EU 41 = 25cm | EU 42 = 26cm   | EU 43 = 27cm
 EU 44 = 27.5cm | EU 45 = 28cm
-Mẹo chọn size: đo chiều dài bàn chân, cộng thêm 0.5–1cm rồi tra bảng.
+Meo chon size: do chieu dai ban chan, cong them 0.5-1cm roi tra bang.
 
-THƯƠNG HIỆU BÁN TẠI SHOP:
-Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno
+THUONG HIEU BAN TAI SHOP:
+Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno, ASICS, Reebok
+
+HUONG DAN CHON GIAY THEO MUC DICH:
+1. GIAY CHAY BO: Nike Pegasus, Adidas Ultraboost, ASICS Gel-Kayano, New Balance Fresh Foam 1080
+   - Can chu y: de day, luoi thoang khi, trong luong nhe
+2. GIAY TAP GYM: Nike Metcon, Adidas Powerlift, Puma Fuse
+   - Can chu y: de cung, dinh hinh tot, de phang cho nang ta
+3. GIAY STREETWEAR/DI HOC: Nike Air Force 1, Adidas Samba, Converse Chuck Taylor, Vans Old Skool, NB 574
+4. GIAY BONG RO: Air Jordan 1/3/4/11, Nike LeBron, Adidas Harden
+5. GIAY DI LAM: Nike Air Max 90 Flyknit, New Balance 327/997
+
+NGAN SACH VA PHAN KHUC GIA:
+- Duoi 800k: Puma co ban, Adidas Runfalcon, Vans Old Skool
+- 800k-1.5tr: Nike Downshifter, Converse Chuck Taylor, Adidas Galaxy
+- 1.5-2.5tr: Nike Pegasus, Adidas Samba, New Balance 574
+- 2.5-4tr: Nike Air Force 1, Adidas Ultraboost, NB Fresh Foam 1080
+- Tren 4tr: Nike Air Max, Jordan 1, Yeezy 350
+
+MEO PHOI DO:
+- Giay trang (AF1, Stan Smith): Phoi duoc moi loai outfit
+- Giay toi mau (Jordan Bred, Dunk Dark): Streetwear, jeans rach
+- Giay nau/be (NB 574, Vans): Thu dong, oversize hoodie
+- Giay mau neon: Set do den tang phan noi bat
+- Mot set outfit chi nen 1 mau noi bat
+
+CAM SOC VA BAO QUAN GIAY:
+- Giay vai/luoi: Nuoc xa phong loang, bai chai mem, phoi mat (khong phoi nang)
+- Giay da: Xi duong da, lau kho roi danh bong, tranh nuoc
+- Giay trang: Magic eraser hoac kem danh rang cha nhe
+- Xu ly mui: Rac baking soda qua dem
+- Bao quan: Nhoi giay bao giu dang, tranh ep chong
+- Thay lot trong moi 6-12 thang
+
+PHAN BIET GIAY THAT/GIA:
+- Kiem tra tem chong gia va QR code tren nap hop
+- Giay that: Khau chi deu, logo sac net, cam co trong luong
+- De giay that khong mui hoa chat
+- Tat ca giay tai SPARK la 100% chinh hang, co hoa don, bao hanh
 ";
 
         // ── Từ khóa off-topic (ngoài lề) ─────────────────────
@@ -88,8 +132,12 @@ Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno
         // ── Từ khóa liên quan giày / shop ────────────────────
         private static readonly string[] ShoeKeywords = {
             "giày","sneaker","nike","adidas","new balance","puma","converse","vans","jordan","yeezy",
-            "skechers","mizuno","size","cỡ","đế","da","vải","lưới","cao cổ","thấp cổ",
+            "skechers","mizuno","asics","reebok","size","cỡ","đế","da","vải","lưới","cao cổ","thấp cổ",
             "chạy bộ","tập gym","đi chơi","đi học","thể thao","dạo phố","bóng rổ",
+            "chăm sóc","bảo quản","rửa giày","làm sạch","mùi giày","vệ sinh","magic eraser",
+            "phối đồ","style","streetwear","outfit","fashion","mix","phong cách",
+            "thật","giả","chính hãng","fake","rep","auth","kiểm tra",
+            "ngân sách","rẻ","giá tốt","dưới","tầm giá","chi phí","bao nhiêu tiền",
             "mua","đặt hàng","giá","bao nhiêu","còn hàng","stock","màu","black","white","đen","trắng",
             "đổi size","đổi trả","bảo hành","vận chuyển","ship","giao hàng","thanh toán","cod",
             "mã giảm giá","khuyến mãi","sale","giảm giá","coupon","voucher",
@@ -126,6 +174,24 @@ Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno
             if (q.Contains("mã") || q.Contains("khuyến mãi") || q.Contains("sale") || q.Contains("giảm giá") ||
                 q.Contains("voucher") || q.Contains("coupon") || q.Contains("ưu đãi") || q.Contains("flash sale"))
                 return ChatIntent.Promotion;
+
+            // 4b. Ngân sách / giá tầm
+            if (q.Contains("ngân sách") || q.Contains("tầm giá") || q.Contains("bao nhiêu tiền") ||
+                q.Contains("dưới 1 triệu") || q.Contains("dưới 2 triệu") || q.Contains("dưới 500") ||
+                q.Contains("rẻ nhất") || q.Contains("giá rẻ") || q.Contains("giá tốt"))
+                return ChatIntent.BudgetGuide;
+
+            // 4c. Chăm sóc / vệ sinh giày
+            if (q.Contains("chăm sóc") || q.Contains("vệ sinh") || q.Contains("rửa giày") ||
+                q.Contains("làm sạch") || q.Contains("mùi giày") || q.Contains("bảo quản") ||
+                q.Contains("phơi") || q.Contains("magic eraser") || q.Contains("đánh giày"))
+                return ChatIntent.CareTips;
+
+            // 4d. Phối đồ / style
+            if (q.Contains("phối") || q.Contains("style") || q.Contains("outfit") ||
+                q.Contains("mix") || q.Contains("mặc gì") || q.Contains("phong cách") ||
+                q.Contains("streetwear") || q.Contains("fashion"))
+                return ChatIntent.StyleGuide;
 
             // 5. Hỏi chính sách
             if (q.Contains("đổi trả") || q.Contains("hoàn tiền") || q.Contains("bảo hành") ||
@@ -171,21 +237,28 @@ Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno
 
                 case ChatIntent.SizeGuide:
                     return "📏 **Bảng size giày tại SPARK:**\n\n" +
-                           "| EU | Chiều dài chân |\n|---|---|\n" +
-                           "| 36 | 22.5 cm |\n| 37 | 23 cm |\n| 38 | 23.5 cm |\n| 39 | 24 cm |\n" +
-                           "| 40 | 24.5 cm |\n| 41 | 25 cm |\n| 42 | 26 cm |\n| 43 | 27 cm |\n| 44 | 27.5 cm |\n| 45 | 28 cm |\n\n" +
-                           "💡 **Mẹo:** Đo chiều dài bàn chân từ gót đến ngón dài nhất, cộng thêm 0.5–1 cm rồi tra bảng trên nhé!";
+                           "▸ EU 36 → 22.5 cm\n" +
+                           "▸ EU 37 → 23.0 cm\n" +
+                           "▸ EU 38 → 23.5 cm\n" +
+                           "▸ EU 39 → 24.0 cm\n" +
+                           "▸ EU 40 → 24.5 cm\n" +
+                           "▸ EU 41 → 25.0 cm\n" +
+                           "▸ EU 42 → 26.0 cm\n" +
+                           "▸ EU 43 → 27.0 cm\n" +
+                           "▸ EU 44 → 27.5 cm | EU 45 → 28.0 cm\n\n" +
+                           "💡 **Mẹo:** Đo từ gót đến ngón dài nhất, cộng thêm **0.5–1 cm** rồi tra bảng nhé!";
 
                 case ChatIntent.Promotion:
-                    return "🎉 **Mã giảm giá hiện có tại SPARK:**\n\n" +
-                           "| Mã | Ưu đãi |\n|---|---|\n" +
-                           "| `SPARK10` | Giảm 10% toàn đơn |\n" +
-                           "| `SPARK20` | Giảm 20% toàn đơn |\n" +
-                           "| `SPARK30` | Giảm 30% toàn đơn |\n" +
-                           "| `SPARK50` | Giảm 50% toàn đơn |\n" +
-                           "| `VIPDAY` | Giảm 40% – Khách VIP |\n" +
-                           "| `FLASH30` | Flash Sale giảm 30% |\n" +
-                           "| `FREESHIP` | Miễn phí vận chuyển |\n\n" +
+                    return "🎉 **Mã giảm giá hot tại SPARK:**\n\n" +
+                           "🏷️ `SPARK10` → Giảm **10%** toàn đơn\n" +
+                           "🏷️ `SPARK20` → Giảm **20%** toàn đơn\n" +
+                           "🏷️ `SPARK30` → Giảm **30%** toàn đơn\n" +
+                           "🏷️ `SPARK50` → Giảm **50%** toàn đơn\n" +
+                           "🏷️ `SPARK70` → Giảm **70%** – Siêu sale\n" +
+                           "🏷️ `VIPDAY`  → Giảm **40%** – Khách VIP\n" +
+                           "🏷️ `FLASH30` → Flash Sale **-30%**\n" +
+                           "🏷️ `FREESHIP`→ **Miễn phí** vận chuyển\n" +
+                           "🏷️ `DEMO99`  → Giảm **99%** – Demo\n\n" +
                            "👉 Nhập mã ở **trang Giỏ Hàng** khi thanh toán nhé!";
 
                 case ChatIntent.Policy:
@@ -204,6 +277,34 @@ Nike, Adidas, New Balance, Puma, Converse, Vans, Jordan, Yeezy, Skechers, Mizuno
                         "Mình xin phép không trả lời câu đó nhé, vì mình chỉ chuyên tư vấn giày tại SPARK. Bạn cần tư vấn gì về sneaker không?"
                     };
                     return offReplies[Random.Shared.Next(offReplies.Length)];
+
+                case ChatIntent.CareTips:
+                    return "🧴 **Chăm sóc giày đúng cách:**\n\n" +
+                           "▸ **Giày vải/lưới:** Pha nước xà phòng loãng, chà nhẹ bằng bàn chải mềm, phơi mát\n" +
+                           "▸ **Giày da:** Dùng xi dưỡng da, lau khô rồi đánh bóng, tránh nước và nhiệt\n" +
+                           "▸ **Giày trắng:** Magic eraser hoặc kem đánh răng chà nhẹ – sạch như mới!\n" +
+                           "▸ **Xử lý mùi:** Rắc baking soda qua đêm, đổ ra sáng hôm sau\n" +
+                           "▸ **Bảo quản dáng:** Nhồi giấy báo khi không dùng, không ép chồng giày\n" +
+                           "▸ **Phơi:** Phơi mát, tránh nắng trực tiếp làm vàng vải\n\n" +
+                           "💡 Thay lót trong mỗi **6–12 tháng** giúp giày luôn êm ái!";
+
+                case ChatIntent.StyleGuide:
+                    return "👟 **Mẹo phối đồ với sneaker:**\n\n" +
+                           "▸ **Giày trắng** (AF1, Stan Smith): Phối được mọi outfit – jeans, váy, âu phục\n" +
+                           "▸ **Giày tối màu** (Jordan Bred, Dunk Dark): Streetwear, jeans rách, bomber jacket\n" +
+                           "▸ **Giày nâu/be** (NB 574, Vans): Thu đông, oversize hoodie, cargo pants\n" +
+                           "▸ **Giày màu rực** (Nike neon, Adidas bright): Set đồ đen – tăng phần nổi bật\n" +
+                           "▸ **Giày thể thao** cho gym: Kết hợp tracksuit hoặc shorts co giãn\n\n" +
+                           "🎨 **Quy tắc vàng:** 1 set outfit chỉ nên **1 màu nổi bật**, còn lại tone trung tính nhé!";
+
+                case ChatIntent.BudgetGuide:
+                    return "💰 **Gợi ý giày theo ngân sách:**\n\n" +
+                           "▸ **Dưới 800k:** Puma cơ bản, Adidas Runfalcon, Vans Old Skool\n" +
+                           "▸ **800k – 1.5 triệu:** Nike Downshifter, Converse Chuck Taylor, Adidas Galaxy\n" +
+                           "▸ **1.5 – 2.5 triệu:** Nike Pegasus, Adidas Samba, New Balance 574\n" +
+                           "▸ **2.5 – 4 triệu:** Nike Air Force 1, Adidas Ultraboost, NB Fresh Foam 1080\n" +
+                           "▸ **Trên 4 triệu:** Nike Air Max, Jordan 1, Yeezy 350\n\n" +
+                           "🏷️ Dùng mã `SPARK30` giảm ngay **30%** – hoặc hỏi mình để chọn mẫu cụ thể nhé!";
 
                 default:
                     return null; // → gọi AI

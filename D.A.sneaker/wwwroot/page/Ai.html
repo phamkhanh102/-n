@@ -1,603 +1,831 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPARK AI – Tư vấn giày thông minh</title>
-    <meta name="description" content="Trợ lý AI SPARK giúp bạn tư vấn chọn giày, kiểm tra size, xem khuyến mãi và hỗ trợ đặt hàng 24/7.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SPARK AI – Tư Vấn Giày Thông Minh</title>
+  <meta name="description" content="Trợ lý AI SPARK giúp bạn tư vấn chọn giày, size, khuyến mãi 24/7.">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Barlow+Condensed:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/theme.css">
+  <link rel="stylesheet" href="/css/Header.css">
 
-        :root {
-            --bg:       #f8fafc;
-            --surface:  #ffffff;
-            --border:   #e2e8f0;
-            --text:     #0f172a;
-            --muted:    #64748b;
-            --brand:    #6366f1;
-            --brand2:   #8b5cf6;
-            --sky:      #0ea5e9;
-            --green:    #22c55e;
-            --radius:   16px;
-        }
-        html.dark {
-            --bg:      #0f172a;
-            --surface: #1e293b;
-            --border:  #334155;
-            --text:    #f1f5f9;
-            --muted:   #94a3b8;
-        }
+  <!--
+    TRICK: layout.js kiểm tra `document.getElementById('spark-ai-css')` trước khi inject AI.css.
+    Đặt <style id="spark-ai-css"> ở đây để layout.js BỎ QUA việc inject AI.css.
+    Không có AI.css → floating widget không có style → display:none hoạt động hoàn toàn.
+  -->
+  <style id="spark-ai-css">
+    /* Floating widget disabled on this page – full-page chat only */
+    #sparkFloatGroup, #sparkAiPanel, .spark-float-group, .spark-ai-panel,
+    #sparkAiBtn, .spark-ai-btn, [id^="sparkAi"], [class^="spark-ai"],
+    [class^="spark-float"] {
+      display: none !important;
+      visibility: hidden !important;
+      width: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
 
-        /* ── Shared header ─────────────────────────────── */
-        #header { position: sticky; top: 0; z-index: 100; }
+  <style>
+    /* ═══════════════════════════════════════════════════
+       RESET & TOKENS
+    ═══════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        /* ── Page layout ────────────────────────────────── */
-        .ai-page {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 0;
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 24px 20px;
-            gap: 20px;
-        }
+    :root {
+      --bg:      #f1f5f9;
+      --surface: #ffffff;
+      --border:  #e2e8f0;
+      --text:    #0f172a;
+      --muted:   #64748b;
+      --brand:   #6366f1;
+      --brand2:  #8b5cf6;
+      --sky:     #0ea5e9;
+      --emerald: #10b981;
+      --r:       14px;
+      --shadow:  0 4px 20px rgba(0,0,0,.08);
+    }
+    html.dark {
+      --bg:      #0a0f1e;
+      --surface: #111827;
+      --border:  #1f2d45;
+      --text:    #f1f5f9;
+      --muted:   #94a3b8;
+      --shadow:  0 4px 24px rgba(0,0,0,.45);
+    }
 
-        /* ── Sidebar ─────────────────────────────────────── */
-        .ai-sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+    html, body { height: 100%; overflow: hidden; }
 
-        .sidebar-card {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 18px;
-        }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      transition: background .3s, color .3s;
+    }
 
-        .sidebar-card h3 {
-            font-size: 12px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: .6px;
-            color: var(--muted);
-            margin-bottom: 12px;
-        }
+    /* ── Ẩn floating widget trên trang AI (tránh trùng) ─ */
+    #sparkFloatGroup, #sparkAiPanel, .spark-float-group, .spark-ai-panel,
+    #sparkAiBtn, .spark-ai-btn {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+      opacity: 0 !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
 
-        .quick-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-        }
+    /* ── Ẩn website header — AI page là standalone app ─── */
+    #header, #site-header { display: none !important; }
 
-        .quick-tile {
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 10px 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text);
-            cursor: pointer;
-            text-align: center;
-            transition: all .2s;
-            line-height: 1.4;
-        }
-        .quick-tile:hover {
-            border-color: var(--brand);
-            color: var(--brand);
-            background: rgba(99,102,241,.06);
-        }
+    /* ── Page wrapper ─────────────────────────────────── */
+    .ai-page {
+      flex: 1;
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      max-width: 1280px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px 16px;
+      overflow: hidden;
+    }
 
-        .coupon-list { display: flex; flex-direction: column; gap: 6px; }
-        .coupon-chip {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg); border: 1px dashed var(--border);
-            border-radius: 8px; padding: 6px 10px;
-            font-size: 12px; cursor: pointer; transition: all .2s;
-        }
-        .coupon-chip:hover { border-color: var(--green); }
-        .coupon-code { font-weight: 800; font-family: monospace; color: var(--brand); font-size: 13px; }
-        .coupon-desc { color: var(--muted); font-size: 11px; }
+    /* ════════════════════════════════════════════════════
+       SIDEBAR
+    ════════════════════════════════════════════════════ */
+    .ai-sidebar {
+      display: flex; flex-direction: column; gap: 14px;
+      overflow-y: auto; min-height: 0;
+      padding-bottom: 8px;
+    }
+    .ai-sidebar::-webkit-scrollbar { width: 4px; }
+    .ai-sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
 
-        /* ── Main chat ─────────────────────────────────── */
-        .chat-main {
-            display: flex;
-            flex-direction: column;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            overflow: hidden;
-            height: calc(100vh - 120px);
-            min-height: 500px;
-        }
+    .sb-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 16px;
+      box-shadow: var(--shadow);
+    }
+    .sb-title {
+      font-size: 10px; font-weight: 800;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: var(--muted); margin-bottom: 12px;
+    }
 
-        /* CHAT HEADER */
-        .chat-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border);
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            color: #fff;
-        }
-        .chat-avatar {
-            width: 42px; height: 42px;
-            background: rgba(255,255,255,.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; flex-shrink: 0;
-        }
-        .chat-header-info h2 { font-size: 16px; font-weight: 700; }
-        .chat-header-info p  { font-size: 12px; opacity: .8; margin-top: 2px; }
-        .status-dot {
-            width: 8px; height: 8px; border-radius: 50%;
-            background: #4ade80; display: inline-block; margin-right: 5px;
-            animation: blink 2s infinite;
-        }
-        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+    /* ── BRAND HOVER CARDS ──────────────────────────────── */
+    .brand-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
 
-        .chat-header-actions { margin-left: auto; display: flex; gap: 8px; }
-        .hdr-action-btn {
-            background: rgba(255,255,255,.15); border: none; color: #fff;
-            width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
-            font-size: 15px; display: flex; align-items: center; justify-content: center;
-            transition: background .2s;
-        }
-        .hdr-action-btn:hover { background: rgba(255,255,255,.28); }
+    .brand-card {
+      position: relative;
+      border-radius: 10px;
+      padding: 12px 10px;
+      cursor: pointer;
+      overflow: hidden;
+      border: 1.5px solid transparent;
+      transition: transform .22s, box-shadow .22s, border-color .22s;
+      text-align: center;
+    }
+    .brand-card:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(0,0,0,.18); }
 
-        /* MESSAGES */
-        .chat-messages {
-            flex: 1; overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; gap: 12px;
-            scroll-behavior: smooth;
-        }
-        .chat-messages::-webkit-scrollbar { width: 5px; }
-        .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    .brand-card .bc-logo {
+      font-size: 22px; display: block; margin-bottom: 5px;
+    }
+    .brand-card .bc-name {
+      font-size: 11px; font-weight: 800; letter-spacing: .4px;
+      text-transform: uppercase; color: #fff;
+    }
+    .brand-card .bc-sub {
+      font-size: 9px; color: rgba(255,255,255,.75); margin-top: 2px;
+    }
 
-        .msg-row { display: flex; gap: 10px; align-items: flex-end; }
-        .msg-row.user { flex-direction: row-reverse; }
+    /* Hover tooltip – product preview */
+    .brand-card::after {
+      content: attr(data-tip);
+      position: absolute;
+      left: 50%; bottom: calc(100% + 8px);
+      transform: translateX(-50%) translateY(6px);
+      background: #1e293b; color: #fff;
+      font-size: 11px; font-weight: 600;
+      padding: 6px 10px; border-radius: 8px;
+      white-space: nowrap; pointer-events: none;
+      opacity: 0; transition: opacity .2s, transform .2s;
+      z-index: 50;
+    }
+    .brand-card:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        .msg-avatar {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            display: flex; align-items: center; justify-content: center;
-            font-size: 16px; flex-shrink: 0;
-            color: #fff; font-weight: 700; font-size: 13px;
-        }
-        .msg-avatar.user-av {
-            background: linear-gradient(135deg, var(--sky), #0284c7);
-        }
+    /* Brand colors */
+    .bc-nike    { background: linear-gradient(135deg, #111, #3a3a3a); border-color: #555; }
+    .bc-adidas  { background: linear-gradient(135deg, #1a1a2e, #3dbb5c); border-color: #3dbb5c; }
+    .bc-puma    { background: linear-gradient(135deg, #b91c1c, #ef4444); border-color: #ef4444; }
+    .bc-new-bal { background: linear-gradient(135deg, #0047ab, #1d4ed8); border-color: #3b82f6; }
+    .bc-converse{ background: linear-gradient(135deg, #1e3a8a, #2563eb); border-color: #60a5fa; }
+    .bc-vans    { background: linear-gradient(135deg, #1c1c1e, #dc2626); border-color: #dc2626; }
+    .bc-jordan  { background: linear-gradient(135deg, #7c0000, #ce1141); border-color: #f87171; }
+    .bc-asics   { background: linear-gradient(135deg, #0f4c8a, #2563eb); border-color: #93c5fd; }
 
-        .msg-bubble {
-            max-width: 72%;
-            padding: 12px 16px;
-            border-radius: 18px 18px 18px 4px;
-            font-size: 14px;
-            line-height: 1.65;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            color: var(--text);
-        }
-        .msg-row.user .msg-bubble {
-            background: linear-gradient(135deg, var(--sky), #0284c7);
-            color: #fff;
-            border-radius: 18px 18px 4px 18px;
-            border: none;
-        }
-        .msg-bubble b { font-weight: 700; }
-        .msg-bubble code {
-            background: rgba(99,102,241,.1);
-            padding: 1px 5px; border-radius: 4px;
-            font-size: 12px; font-family: monospace;
-        }
-        .msg-time {
-            font-size: 10px; color: var(--muted);
-            margin-top: 4px; text-align: right;
-        }
-        .msg-row.user .msg-time { text-align: left; }
+    /* ── QUICK TILES ──────────────────────────────────── */
+    .quick-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    }
+    .quick-tile {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 9px 6px;
+      font-size: 11px; font-weight: 600; color: var(--text);
+      cursor: pointer; text-align: center; line-height: 1.4;
+      transition: all .18s;
+    }
+    .quick-tile:hover {
+      border-color: var(--brand); color: var(--brand);
+      background: rgba(99,102,241,.06); transform: scale(1.02);
+    }
 
-        /* TYPING */
-        .typing-dots { display: flex; gap: 4px; padding: 4px 0; }
-        .typing-dots span {
-            width: 7px; height: 7px; border-radius: 50%;
-            background: var(--brand); opacity: .6;
-            animation: typingBounce 1.2s infinite;
-        }
-        .typing-dots span:nth-child(2) { animation-delay: .2s; }
-        .typing-dots span:nth-child(3) { animation-delay: .4s; }
-        @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+    /* ── COUPON LIST ─────────────────────────────────── */
+    .coupon-list { display: flex; flex-direction: column; gap: 6px; }
+    .coupon-chip {
+      display: flex; justify-content: space-between; align-items: center;
+      background: var(--bg); border: 1.5px dashed var(--border);
+      border-radius: 8px; padding: 7px 10px; cursor: pointer;
+      transition: all .18s;
+    }
+    .coupon-chip:hover { border-color: var(--emerald); background: rgba(16,185,129,.05); }
+    .coupon-code { font-weight: 900; font-family: monospace; color: var(--brand); font-size: 13px; }
+    .coupon-badge {
+      font-size: 10px; font-weight: 700; padding: 2px 7px;
+      border-radius: 20px; background: rgba(16,185,129,.15); color: var(--emerald);
+    }
 
-        /* PRODUCT CARDS */
-        .product-cards-row {
-            display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px;
-        }
-        .prod-card-link {
-            display: flex; flex-direction: column;
-            width: 130px; border-radius: 12px; overflow: hidden;
-            border: 1px solid var(--border); background: var(--surface);
-            text-decoration: none; color: var(--text);
-            transition: transform .2s, box-shadow .2s;
-        }
-        .prod-card-link:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,.1); }
-        .prod-card-link img {
-            width: 100%; height: 90px; object-fit: cover;
-            background: var(--bg);
-        }
-        .prod-card-body { padding: 8px; }
-        .prod-card-name { font-size: 11px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
-        .prod-card-price { font-size: 12px; font-weight: 800; color: var(--brand); }
+    /* ── SHOP INFO ─────────────────────────────────── */
+    .shop-info-row {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; padding: 4px 0; color: var(--text);
+    }
+    .shop-info-row .si-icon { font-size: 14px; flex-shrink: 0; }
 
-        /* INPUT ROW */
-        .chat-input-area {
-            padding: 14px 16px;
-            border-top: 1px solid var(--border);
-            background: var(--surface);
-        }
-        .chat-input-row {
-            display: flex; gap: 10px; align-items: center;
-        }
-        .chat-input {
-            flex: 1; padding: 12px 16px;
-            background: var(--bg); border: 1.5px solid var(--border);
-            border-radius: 12px; font-size: 14px; color: var(--text);
-            outline: none; transition: border-color .2s; font-family: inherit;
-        }
-        .chat-input:focus { border-color: var(--brand); }
-        .chat-input::placeholder { color: var(--muted); }
-        .send-btn {
-            width: 44px; height: 44px; border-radius: 12px;
-            background: linear-gradient(135deg, var(--brand), var(--brand2));
-            border: none; color: #fff; cursor: pointer;
-            display: flex; align-items: center; justify-content: center;
-            transition: opacity .2s; flex-shrink: 0;
-        }
-        .send-btn:hover { opacity: .85; }
-        .send-btn:disabled { opacity: .45; cursor: not-allowed; }
+    /* ════════════════════════════════════════════════════
+       MAIN CHAT
+    ════════════════════════════════════════════════════ */
+    .chat-main {
+      display: flex; flex-direction: column;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      min-height: 0;
+    }
 
-        /* INTENT TAG */
-        .intent-tag {
-            display: inline-block;
-            font-size: 10px; font-weight: 700; padding: 2px 7px;
-            border-radius: 10px; margin-bottom: 4px;
-            text-transform: uppercase; letter-spacing: .5px;
-        }
-        .intent-ProductSearch { background: #dbeafe; color: #1d4ed8; }
-        .intent-OffTopic      { background: #fef3c7; color: #92400e; }
-        .intent-Promotion     { background: #dcfce7; color: #166534; }
-        .intent-SizeGuide     { background: #f3e8ff; color: #7c3aed; }
-        .intent-Policy        { background: #e0f2fe; color: #0369a1; }
+    /* CHAT HEADER */
+    .chat-hdr {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #4f46e5, #7c3aed, #0ea5e9);
+      color: #fff; flex-shrink: 0;
+    }
+    .chat-hdr-avatar {
+      width: 44px; height: 44px;
+      background: rgba(255,255,255,.2); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+      box-shadow: 0 0 0 3px rgba(255,255,255,.15);
+    }
+    .chat-hdr-info h2 { font-size: 15px; font-weight: 800; letter-spacing: .2px; }
+    .chat-hdr-info p  { font-size: 11px; opacity: .8; display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+    .status-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80; flex-shrink: 0;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.35} }
+    .chat-hdr-actions { margin-left: auto; display: flex; gap: 6px; }
+    .hdr-btn {
+      background: rgba(255,255,255,.15); border: none; color: #fff;
+      width: 32px; height: 32px; border-radius: 50%; cursor: pointer;
+      font-size: 14px; display: flex; align-items: center; justify-content: center;
+      transition: background .2s; text-decoration: none;
+    }
+    .hdr-btn:hover { background: rgba(255,255,255,.3); }
 
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .ai-page { grid-template-columns: 1fr; }
-            .ai-sidebar { display: none; }
-            .chat-main { height: calc(100vh - 80px); border-radius: 0; }
-        }
-    </style>
+    /* AI TYPING HEADER STATUS */
+    #hdrStatus { transition: opacity .3s; }
+
+    /* MESSAGES AREA */
+    .chat-msgs {
+      flex: 1; overflow-y: auto; padding: 18px 16px;
+      display: flex; flex-direction: column; gap: 14px;
+      scroll-behavior: smooth;
+    }
+    .chat-msgs::-webkit-scrollbar { width: 4px; }
+    .chat-msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 8px; }
+
+    /* Message rows */
+    .msg-row { display: flex; gap: 8px; align-items: flex-end; max-width: 100%; }
+    .msg-row.user { flex-direction: row-reverse; }
+
+    .msg-av {
+      width: 30px; height: 30px; border-radius: 50%; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; color: #fff; font-weight: 700; font-size: 12px;
+      box-shadow: 0 2px 8px rgba(99,102,241,.3);
+    }
+    .msg-av.user-av {
+      background: linear-gradient(135deg, var(--sky), #0284c7);
+      box-shadow: 0 2px 8px rgba(14,165,233,.3);
+    }
+
+    .msg-wrap { display: flex; flex-direction: column; max-width: 74%; }
+    .msg-row.user .msg-wrap { align-items: flex-end; }
+
+    .msg-bubble {
+      padding: 11px 15px;
+      border-radius: 18px 18px 18px 4px;
+      font-size: 13.5px;
+      line-height: 1.68;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      word-break: break-word;
+    }
+    .msg-row.user .msg-bubble {
+      background: linear-gradient(135deg, var(--sky), #0284c7);
+      color: #fff; border: none;
+      border-radius: 18px 18px 4px 18px;
+      box-shadow: 0 4px 14px rgba(14,165,233,.3);
+    }
+    .msg-bubble b { font-weight: 700; }
+    .msg-bubble code {
+      background: rgba(99,102,241,.12);
+      padding: 1px 5px; border-radius: 4px;
+      font-family: monospace; font-size: 12px;
+    }
+    .msg-meta {
+      font-size: 10px; color: var(--muted); margin-top: 3px; padding: 0 4px;
+    }
+
+    /* Intent tag */
+    .intent-tag {
+      display: inline-flex; align-items: center; gap: 3px;
+      font-size: 9.5px; font-weight: 700; padding: 2px 7px;
+      border-radius: 20px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: .4px;
+    }
+    .i-ProductSearch { background: #dbeafe; color: #1d4ed8; }
+    .i-OffTopic      { background: #fef9c3; color: #854d0e; }
+    .i-Promotion     { background: #dcfce7; color: #166534; }
+    .i-SizeGuide     { background: #f3e8ff; color: #7c3aed; }
+    .i-Policy        { background: #e0f2fe; color: #0369a1; }
+    .i-Greeting      { background: #fce7f3; color: #9d174d; }
+
+    /* TYPING dots */
+    .typing-dots { display: flex; gap: 5px; padding: 6px 4px; }
+    .typing-dots span {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--brand); opacity: .55;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-dots span:nth-child(2) { animation-delay: .2s; }
+    .typing-dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px)} }
+
+    /* PRODUCT CARDS */
+    .prod-cards-wrap { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+    .prod-card-link {
+      display: flex; flex-direction: column;
+      width: 120px; border-radius: 10px; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border);
+      text-decoration: none; color: var(--text);
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: var(--shadow);
+    }
+    .prod-card-link:hover { transform: translateY(-4px); box-shadow: 0 10px 24px rgba(0,0,0,.12); }
+    .prod-card-link img { width: 100%; height: 80px; object-fit: cover; background: var(--bg); }
+    .prod-card-body { padding: 7px 8px; }
+    .prod-card-name  { font-size: 10.5px; font-weight: 700; line-height: 1.3; margin-bottom: 3px; }
+    .prod-card-price { font-size: 11px; font-weight: 800; color: var(--brand); }
+
+    /* INPUT */
+    .chat-input-area {
+      padding: 12px 14px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .chat-input-row { display: flex; gap: 8px; align-items: center; }
+    .chat-input {
+      flex: 1; padding: 11px 15px;
+      background: var(--bg); border: 1.5px solid var(--border);
+      border-radius: 12px; font-size: 13.5px; color: var(--text);
+      outline: none; transition: border-color .2s; font-family: inherit;
+    }
+    .chat-input:focus { border-color: var(--brand);  box-shadow: 0 0 0 3px rgba(99,102,241,.12); }
+    .chat-input::placeholder { color: var(--muted); }
+    .chat-input:disabled { opacity: .5; }
+    .send-btn {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--brand), var(--brand2));
+      border: none; color: #fff; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: opacity .2s, transform .15s;
+      box-shadow: 0 4px 12px rgba(99,102,241,.35);
+    }
+    .send-btn:hover:not(:disabled) { opacity: .88; transform: scale(1.05); }
+    .send-btn:disabled { opacity: .4; cursor: not-allowed; transform: none; }
+
+    /* Welcome message */
+    .welcome-chips {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px;
+    }
+    .welcome-chip {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all .18s; color: var(--brand);
+    }
+    .welcome-chip:hover { background: rgba(99,102,241,.1); border-color: var(--brand); }
+
+    /* ── RESPONSIVE ──────────────────────────────────── */
+    @media (max-width: 900px) {
+      .ai-page { grid-template-columns: 1fr; padding: 8px; gap: 8px; overflow-y: auto; }
+      .ai-sidebar { display: none; }
+      .chat-main { min-height: 80vh; border-radius: 10px; }
+    }
+  </style>
 </head>
 <body>
-    <div id="header"></div>
+  <!-- Shared header from layout.js -->
+  <div id="header"></div>
 
-    <div class="ai-page">
+  <div class="ai-page">
 
-        <!-- ── SIDEBAR ─────────────────────────────────── -->
-        <aside class="ai-sidebar">
+    <!-- ══════════════ SIDEBAR ══════════════ -->
+    <aside class="ai-sidebar">
 
-            <div class="sidebar-card">
-                <h3>💬 Hỏi nhanh</h3>
-                <div class="quick-grid">
-                    <button class="quick-tile" onclick="quickSend('Bảng size giày SPARK')">📏 Size giày</button>
-                    <button class="quick-tile" onclick="quickSend('Mã giảm giá hiện có')">🎟️ Mã KM</button>
-                    <button class="quick-tile" onclick="quickSend('Chính sách đổi trả')">🔄 Đổi trả</button>
-                    <button class="quick-tile" onclick="quickSend('Giày Nike chạy bộ')">👟 Nike run</button>
-                    <button class="quick-tile" onclick="quickSend('Giày Adidas thời trang')">🟢 Adidas</button>
-                    <button class="quick-tile" onclick="quickSend('Tư vấn giày dưới 2 triệu')">💰 Dưới 2M</button>
-                    <button class="quick-tile" onclick="quickSend('Giày tập gym')">💪 Gym</button>
-                    <button class="quick-tile" onclick="quickSend('Giày đi học casual')">🎒 Đi học</button>
-                </div>
-            </div>
-
-            <div class="sidebar-card">
-                <h3>🎟️ Mã giảm giá</h3>
-                <div class="coupon-list">
-                    <div class="coupon-chip" onclick="quickSend('Mã SPARK50 có dùng được không?')">
-                        <span class="coupon-code">SPARK50</span>
-                        <span class="coupon-desc">Giảm 50%</span>
-                    </div>
-                    <div class="coupon-chip" onclick="quickSend('Mã SPARK30 có dùng được không?')">
-                        <span class="coupon-code">SPARK30</span>
-                        <span class="coupon-desc">Giảm 30%</span>
-                    </div>
-                    <div class="coupon-chip" onclick="quickSend('Mã VIPDAY có dùng được không?')">
-                        <span class="coupon-code">VIPDAY</span>
-                        <span class="coupon-desc">VIP 40%</span>
-                    </div>
-                    <div class="coupon-chip" onclick="quickSend('Mã FREESHIP có dùng được không?')">
-                        <span class="coupon-code">FREESHIP</span>
-                        <span class="coupon-desc">Miễn ship</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="sidebar-card">
-                <h3>📌 Thông tin shop</h3>
-                <div style="font-size:12px;color:var(--muted);line-height:1.8">
-                    📍 123 Lê Lợi, TP.HCM<br>
-                    📞 Hotline: <b style="color:var(--text)">1800 1234</b><br>
-                    ⏰ 8:00 – 21:00 hàng ngày<br>
-                    ✉️ support@sparksneaker.vn
-                </div>
-            </div>
-
-        </aside>
-
-        <!-- ── MAIN CHAT ────────────────────────────────── -->
-        <div class="chat-main">
-
-            <!-- Header -->
-            <div class="chat-header">
-                <div class="chat-avatar">🤖</div>
-                <div class="chat-header-info">
-                    <h2>SPARK AI Tư Vấn</h2>
-                    <p><span class="status-dot"></span>Đang hoạt động · Powered by Ollama</p>
-                </div>
-                <div class="chat-header-actions">
-                    <button class="hdr-action-btn" title="Xóa lịch sử" onclick="clearChat()">🗑</button>
-                    <a href="/page/shop.html" class="hdr-action-btn" title="Về trang chủ" style="text-decoration:none;display:flex;align-items:center;justify-content:center">🏠</a>
-                </div>
-            </div>
-
-            <!-- Messages -->
-            <div class="chat-messages" id="chatMessages"></div>
-
-            <!-- Input -->
-            <div class="chat-input-area">
-                <div class="chat-input-row">
-                    <input id="chatInput" class="chat-input"
-                        placeholder="Hỏi về Nike, Adidas, size giày, mã giảm giá..."
-                        maxlength="400" autocomplete="off">
-                    <button class="send-btn" id="sendBtn" onclick="sendChat()">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
-                            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-
+      <!-- BRANDS -->
+      <div class="sb-card">
+        <div class="sb-title">👟 Khám phá thương hiệu</div>
+        <div class="brand-grid">
+          <div class="brand-card bc-nike"
+            data-tip="Just Do It"
+            onclick="quickSend('Giày Nike đang có gì hot?')">
+            <span class="bc-logo">⚡</span>
+            <div class="bc-name">Nike</div>
+            <div class="bc-sub">Just Do It</div>
+          </div>
+          <div class="brand-card bc-adidas"
+            data-tip="Impossible is Nothing"
+            onclick="quickSend('Tư vấn giày Adidas')">
+            <span class="bc-logo">🟢</span>
+            <div class="bc-name">Adidas</div>
+            <div class="bc-sub">Originals & Sport</div>
+          </div>
+          <div class="brand-card bc-puma"
+            data-tip="Forever Faster"
+            onclick="quickSend('Giày Puma nào đang sale?')">
+            <span class="bc-logo">🐆</span>
+            <div class="bc-name">Puma</div>
+            <div class="bc-sub">Forever Faster</div>
+          </div>
+          <div class="brand-card bc-jordan"
+            data-tip="Huyền thoại Nike"
+            onclick="quickSend('Giày Air Jordan có size nào?')">
+            <span class="bc-logo">🏀</span>
+            <div class="bc-name">Jordan</div>
+            <div class="bc-sub">Air Jordan Legend</div>
+          </div>
+          <div class="brand-card bc-new-bal"
+            data-tip="Êm, bền, thời trang"
+            onclick="quickSend('Tư vấn giày New Balance chạy bộ')">
+            <span class="bc-logo">🔵</span>
+            <div class="bc-name">New Balance</div>
+            <div class="bc-sub">Made to Move</div>
+          </div>
+          <div class="brand-card bc-converse"
+            data-tip="Classic & Retro"
+            onclick="quickSend('Giày Converse Chuck Taylor')">
+            <span class="bc-logo">⭐</span>
+            <div class="bc-name">Converse</div>
+            <div class="bc-sub">Classic Chuck</div>
+          </div>
+          <div class="brand-card bc-vans"
+            data-tip="Off The Wall"
+            onclick="quickSend('Giày Vans cho đi học')">
+            <span class="bc-logo">🏄</span>
+            <div class="bc-name">Vans</div>
+            <div class="bc-sub">Off The Wall</div>
+          </div>
+          <div class="brand-card bc-asics"
+            data-tip="Chạy chuyên nghiệp"
+            onclick="quickSend('Giày ASICS chạy marathon')">
+            <span class="bc-logo">🏃</span>
+            <div class="bc-name">ASICS</div>
+            <div class="bc-sub">Sound Mind Body</div>
+          </div>
         </div>
+      </div>
+
+      <!-- QUICK ACTIONS -->
+      <div class="sb-card">
+        <div class="sb-title">⚡ Hỏi nhanh</div>
+        <div class="quick-grid">
+          <button class="quick-tile" onclick="quickSend('Bảng size giày chuẩn')">📏 Bảng size</button>
+          <button class="quick-tile" onclick="quickSend('Mã giảm giá hiện có')">🎟️ Mã KM</button>
+          <button class="quick-tile" onclick="quickSend('Chính sách đổi trả')">🔄 Đổi trả</button>
+          <button class="quick-tile" onclick="quickSend('Giày chạy bộ tốt nhất')">🏃 Chạy bộ</button>
+          <button class="quick-tile" onclick="quickSend('Tôi muốn mua giày ngân sách dưới 2 triệu')">💰 Dưới 2M</button>
+          <button class="quick-tile" onclick="quickSend('Cách phối đồ với giày sneaker')">👗 Phối đồ</button>
+          <button class="quick-tile" onclick="quickSend('Cách chăm sóc giày lưới')">🧴 Chăm sóc</button>
+          <button class="quick-tile" onclick="quickSend('Phân biệt giày thật giả')">🔍 Giày thật?</button>
+        </div>
+      </div>
+
+      <!-- COUPONS -->
+      <div class="sb-card">
+        <div class="sb-title">🎟️ Mã giảm giá hot</div>
+        <div class="coupon-list">
+          <div class="coupon-chip" onclick="quickSend('Mã SPARK70 dùng như thế nào?')">
+            <span class="coupon-code">SPARK70</span>
+            <span class="coupon-badge">Giảm 70%</span>
+          </div>
+          <div class="coupon-chip" onclick="quickSend('Mã VIPDAY dùng như thế nào?')">
+            <span class="coupon-code">VIPDAY</span>
+            <span class="coupon-badge">Giảm 40%</span>
+          </div>
+          <div class="coupon-chip" onclick="quickSend('Mã FREESHIP dùng như thế nào?')">
+            <span class="coupon-code">FREESHIP</span>
+            <span class="coupon-badge">Free ship</span>
+          </div>
+          <div class="coupon-chip" onclick="quickSend('Mã DEMO99 dùng như thế nào?')">
+            <span class="coupon-code">DEMO99</span>
+            <span class="coupon-badge">Giảm 99%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- SHOP INFO -->
+      <div class="sb-card">
+        <div class="sb-title">📌 Thông tin cửa hàng</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div class="shop-info-row"><span class="si-icon">📍</span> 123 Lê Lợi, Q.1, TP.HCM</div>
+          <div class="shop-info-row"><span class="si-icon">📞</span> Hotline: <b style="margin-left:4px;color:var(--brand)">1800 1234</b></div>
+          <div class="shop-info-row"><span class="si-icon">⏰</span> 08:00 – 21:00 hàng ngày</div>
+          <div class="shop-info-row"><span class="si-icon">✉️</span> support@sparksneaker.vn</div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- ══════════════ CHAT MAIN ══════════════ -->
+    <div class="chat-main">
+
+      <!-- Chat Header -->
+      <div class="chat-hdr">
+        <div class="chat-hdr-avatar">🤖</div>
+        <div class="chat-hdr-info">
+          <h2>SPARK AI Tư Vấn Giày</h2>
+          <p id="hdrStatus">
+            <span class="status-dot"></span>
+            Đang hoạt động · qwen2.5:7b
+          </p>
+        </div>
+        <div class="chat-hdr-actions">
+          <button class="hdr-btn" title="Xóa lịch sử" onclick="clearChat()">🗑</button>
+          <a href="/page/shop.html" class="hdr-btn" title="Trang chủ">🏠</a>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="chat-msgs" id="chatMsgs"></div>
+
+      <!-- Input -->
+      <div class="chat-input-area">
+        <div class="chat-input-row">
+          <input id="chatIn" class="chat-input"
+            placeholder="Hỏi về Nike, Adidas, size giày, mã giảm giá..."
+            maxlength="400" autocomplete="off">
+          <button class="send-btn" id="sendBtn" onclick="doSend()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+      </div>
     </div>
 
-    <script src="/js/layout.js"></script>
-    <script>
-        // ── State ─────────────────────────────────────────
-        const messagesEl = document.getElementById('chatMessages');
-        const inputEl    = document.getElementById('chatInput');
-        const sendBtnEl  = document.getElementById('sendBtn');
+  </div><!-- /.ai-page -->
 
-        // ── Render helpers ────────────────────────────────
-        function mdToHtml(text) {
-            return text
-                .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-                .replace(/`([^`]+)`/g, '<code>$1</code>')
-                .replace(/\n/g, '<br>');
-        }
+  <script src="/js/layout.js?v=20260429"></script>
+  <script>
+  // ════════════════════════════════════════════════════
+  //  SPARK AI – Trang chat đầy đủ
+  // ════════════════════════════════════════════════════
+  const msgsEl  = document.getElementById('chatMsgs');
+  const inputEl = document.getElementById('chatIn');
+  const sendEl  = document.getElementById('sendBtn');
+  const statusEl= document.getElementById('hdrStatus');
 
-        function timeNow() {
-            return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-        }
+  // ── Helpers ────────────────────────────────────────
+  function mdToHtml(t) {
+    return t
+      // **bold**
+      .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+      // `code` → coupon badge chip
+      .replace(/`([^`]+)`/g,
+        '<span style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;' +
+        'padding:2px 9px;border-radius:20px;font-family:monospace;font-size:12px;font-weight:800;' +
+        'letter-spacing:.5px;margin:0 2px">$1</span>')
+      // ▸ bullets → styled dot
+      .replace(/▸ /g,
+        '<span style="color:#6366f1;font-weight:700;margin-right:4px">▸</span> ')
+      // 🏷️ prefix lines → add spacing
+      .replace(/\n🏷️/g, '<br>🏷️')
+      // line breaks
+      .replace(/\n/g, '<br>');
+  }
+  function now() {
+    return new Date().toLocaleTimeString('vi-VN', { hour:'2-digit', minute:'2-digit' });
+  }
+  function getUserInitial() {
+    const u = JSON.parse(localStorage.getItem('user') || '{}');
+    const n = u?.name || localStorage.getItem('name') || 'U';
+    return n.charAt(0).toUpperCase();
+  }
 
-        function addMsg(html, type = 'bot', intent = '') {
-            const isBot = type === 'bot';
-            const row = document.createElement('div');
-            row.className = `msg-row ${type}`;
+  // ── Intent labels & classes ─────────────────────────
+  const INTENT_META = {
+    ProductSearch: { label: '👟 Sản phẩm',      cls: 'i-ProductSearch' },
+    SizeGuide:     { label: '📏 Size',            cls: 'i-SizeGuide' },
+    Promotion:     { label: '🎟️ Khuyến mãi',     cls: 'i-Promotion' },
+    Policy:        { label: '📋 Chính sách',      cls: 'i-Policy' },
+    OffTopic:      { label: '🚫 Ngoài chủ đề',   cls: 'i-OffTopic' },
+    Greeting:      { label: '👋 Chào hỏi',        cls: 'i-Greeting' },
+    CareTips:      { label: '🧴 Chăm sóc giày',  cls: 'i-SizeGuide' },
+    StyleGuide:    { label: '👗 Phối đồ',         cls: 'i-Promotion' },
+    BudgetGuide:   { label: '💰 Ngân sách',       cls: 'i-Policy' },
+    OrderStatus:   { label: '📦 Đơn hàng',        cls: 'i-Policy' },
+    SmallTalk:     { label: '😊 Trò chuyện',      cls: 'i-Greeting' },
+  };
 
-            const avEl = document.createElement('div');
-            avEl.className = `msg-avatar${isBot ? '' : ' user-av'}`;
-            avEl.textContent = isBot ? '🤖' : getUserInitial();
 
-            const bubble = document.createElement('div');
-            bubble.className = 'msg-bubble';
+  // ── Render message ─────────────────────────────────
+  function addMsg(html, type = 'bot', intent = '', doScroll = true) {
+    const row  = document.createElement('div');
+    row.className = `msg-row ${type}`;
 
-            if (intent && intent !== 'General') {
-                const tag = document.createElement('div');
-                tag.className = `intent-tag intent-${intent}`;
-                tag.textContent = intentLabel(intent);
-                bubble.appendChild(tag);
-            }
-            const content = document.createElement('div');
-            content.innerHTML = html;
-            bubble.appendChild(content);
+    const av = document.createElement('div');
+    av.className = type === 'user' ? 'msg-av user-av' : 'msg-av';
+    av.textContent = type === 'user' ? getUserInitial() : '🤖';
 
-            const timeEl = document.createElement('div');
-            timeEl.className = 'msg-time';
-            timeEl.textContent = timeNow();
-            bubble.appendChild(timeEl);
+    const wrap   = document.createElement('div');
+    wrap.className = 'msg-wrap';
 
-            row.appendChild(avEl);
-            row.appendChild(bubble);
-            messagesEl.appendChild(row);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-            return row;
-        }
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
 
-        function intentLabel(intent) {
-            const map = {
-                ProductSearch: '👟 Sản phẩm',
-                SizeGuide:     '📏 Size',
-                Promotion:     '🎟️ Khuyến mãi',
-                Policy:        '📋 Chính sách',
-                OffTopic:      '🚫 Ngoài chủ đề',
-                OrderStatus:   '📦 Đơn hàng',
-            };
-            return map[intent] || intent;
-        }
+    // Intent tag (only for bot, only if known)
+    if (type === 'bot' && intent && INTENT_META[intent]) {
+      const tag = document.createElement('div');
+      tag.className = `intent-tag ${INTENT_META[intent].cls}`;
+      tag.textContent = INTENT_META[intent].label;
+      bubble.appendChild(tag);
+    }
+    const body = document.createElement('div');
+    body.innerHTML = html;
+    bubble.appendChild(body);
+    wrap.appendChild(bubble);
 
-        function getUserInitial() {
-            const user = JSON.parse(localStorage.getItem('user') || '{}');
-            const n = user?.name || localStorage.getItem('name') || 'U';
-            return n.charAt(0).toUpperCase();
-        }
+    const meta = document.createElement('div');
+    meta.className = 'msg-meta';
+    meta.textContent = now();
+    wrap.appendChild(meta);
 
-        function showTyping() {
-            const row = document.createElement('div');
-            row.className = 'msg-row bot';
-            row.id = 'typingRow';
-            row.innerHTML = `
-                <div class="msg-avatar">🤖</div>
-                <div class="msg-bubble">
-                    <div class="typing-dots"><span></span><span></span><span></span></div>
-                </div>`;
-            messagesEl.appendChild(row);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        }
-        function removeTyping() {
-            document.getElementById('typingRow')?.remove();
-        }
+    row.appendChild(av);
+    row.appendChild(wrap);
+    msgsEl.appendChild(row);
+    if (doScroll) msgsEl.scrollTop = msgsEl.scrollHeight;
+    return row;
+  }
 
-        // ── Product cards ─────────────────────────────────
-        function renderProductCards(products) {
-            if (!products?.length) return;
-            const row = document.createElement('div');
-            row.className = 'msg-row bot';
-            const av = document.createElement('div');
-            av.className = 'msg-avatar';
-            av.textContent = '🤖';
+  // ── Typing indicator ───────────────────────────────
+  function showTyping() {
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+    row.id = 'typingRow';
+    row.innerHTML = `
+      <div class="msg-av">🤖</div>
+      <div class="msg-wrap">
+        <div class="msg-bubble">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+        </div>
+      </div>`;
+    msgsEl.appendChild(row);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
+  function removeTyping() { document.getElementById('typingRow')?.remove(); }
 
-            const bubble = document.createElement('div');
-            bubble.className = 'msg-bubble';
-            bubble.innerHTML = `<div style="font-weight:700;margin-bottom:8px">Đây là các mẫu phù hợp 👟</div>`;
+  // ── Product cards ──────────────────────────────────
+  function renderProducts(products) {
+    if (!products?.length) return;
+    const row  = document.createElement('div');
+    row.className = 'msg-row bot';
+    const av   = document.createElement('div');
+    av.className = 'msg-av';
+    av.textContent = '🤖';
 
-            const cards = document.createElement('div');
-            cards.className = 'product-cards-row';
-            products.slice(0, 4).forEach(p => {
-                const name  = p.Name  ?? p.name  ?? 'Sản phẩm';
-                const price = p.Price ?? p.price ?? 0;
-                const id    = p.Id    ?? p.id    ?? '';
-                const img   = (() => {
-                    const r = p.MainImage ?? p.mainImage ?? p.ImageUrl ?? p.imageUrl ?? '';
-                    return r.startsWith('http') ? r : (r ? '/' + r.replace(/^\//, '') : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80');
-                })();
-                const a = document.createElement('a');
-                a.className = 'prod-card-link';
-                a.href = `/page/product-detail.html?id=${id}`;
-                a.innerHTML = `
-                    <img src="${img}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80'">
-                    <div class="prod-card-body">
-                        <div class="prod-card-name">${name}</div>
-                        <div class="prod-card-price">${Number(price).toLocaleString('vi-VN')}đ</div>
-                    </div>`;
-                cards.appendChild(a);
-            });
-            bubble.appendChild(cards);
-            row.appendChild(av);
-            row.appendChild(bubble);
-            messagesEl.appendChild(row);
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        }
+    const wrap   = document.createElement('div');
+    wrap.className = 'msg-wrap';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = `<b>Đây là các mẫu phù hợp cho bạn 👟</b>`;
 
-        // ── API call ──────────────────────────────────────
-        async function callAPI(text) {
-            const token = localStorage.getItem('token') || '';
-            const headers = { 'Content-Type': 'application/json' };
-            if (token) headers['Authorization'] = `Bearer ${token}`;
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers,
-                body: JSON.stringify(text)
-            });
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            return res.json();
-        }
+    const cards = document.createElement('div');
+    cards.className = 'prod-cards-wrap';
 
-        // ── Send ──────────────────────────────────────────
-        async function sendChat() {
-            const text = inputEl.value.trim();
-            if (!text || sendBtnEl.disabled) return;
+    products.slice(0, 5).forEach(p => {
+      const name  = p.Name  ?? p.name  ?? 'Sản phẩm';
+      const price = p.Price ?? p.price ?? 0;
+      const id    = p.Id    ?? p.id    ?? '';
+      const rawImg= p.MainImage ?? p.mainImage ?? p.ImageUrl ?? p.imageUrl ?? '';
+      const img   = rawImg.startsWith('http') ? rawImg
+                  : rawImg ? '/' + rawImg.replace(/^\//, '')
+                  : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80';
+      const a = document.createElement('a');
+      a.className = 'prod-card-link';
+      a.href = `/page/product-detail.html?id=${id}`;
+      a.innerHTML = `
+        <img src="${img}" alt="${name}"
+          onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&q=80'">
+        <div class="prod-card-body">
+          <div class="prod-card-name">${name}</div>
+          <div class="prod-card-price">${Number(price).toLocaleString('vi-VN')}đ</div>
+        </div>`;
+      cards.appendChild(a);
+    });
+    bubble.appendChild(cards);
+    wrap.appendChild(bubble);
+    row.appendChild(av);
+    row.appendChild(wrap);
+    msgsEl.appendChild(row);
+    msgsEl.scrollTop = msgsEl.scrollHeight;
+  }
 
-            addMsg(text, 'user');
-            inputEl.value = '';
-            inputEl.disabled = true;
-            sendBtnEl.disabled = true;
+  // ── API call ───────────────────────────────────────
+  async function callAPI(text, signal) {
+    const token = localStorage.getItem('token') || '';
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch('/api/chat', { method:'POST', headers, body: JSON.stringify(text), signal });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return res.json();
+  }
 
-            showTyping();
+  // ── Send ──────────────────────────────────────────
+  async function doSend() {
+    const text = inputEl.value.trim();
+    if (!text || sendEl.disabled) return;
 
-            const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 50000);
+    addMsg(text, 'user');
+    inputEl.value = '';
+    setLoading(true);
+    showTyping();
+    if (statusEl) statusEl.innerHTML = `<span class="status-dot" style="background:#facc15"></span> Đang suy nghĩ...`;
 
-            try {
-                const data = await callAPI(text);
-                clearTimeout(timer);
-                removeTyping();
+    const ctrl  = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 50000);
 
-                const intent = data.intent || 'General';
+    try {
+      const data = await callAPI(text, ctrl.signal);
+      clearTimeout(timer);
+      removeTyping();
 
-                if (data.type === 'products' && data.data?.length) {
-                    addMsg(data.message || `Tìm thấy ${data.data.length} sản phẩm phù hợp! 👟`, 'bot', intent);
-                    renderProductCards(data.data);
-                } else {
-                    const reply = (data.message || '').trim() || 'Bạn có thể mô tả rõ hơn không ạ?';
-                    addMsg(mdToHtml(reply), 'bot', intent);
-                }
-            } catch (err) {
-                clearTimeout(timer);
-                removeTyping();
-                const msg = err.name === 'AbortError'
-                    ? '😅 AI đang xử lý hơi lâu, bạn thử hỏi lại nhé! Hoặc gọi <b>1800 1234</b>.'
-                    : '⚠️ Không kết nối được AI lúc này. Vui lòng thử lại sau.';
-                addMsg(msg, 'bot');
-            } finally {
-                inputEl.disabled = false;
-                sendBtnEl.disabled = false;
-                inputEl.focus();
-            }
-        }
+      const intent = data.intent || 'General';
 
-        function quickSend(text) {
-            inputEl.value = text;
-            sendChat();
-        }
+      if (data.type === 'products' && data.data?.length) {
+        addMsg(data.message || `Tìm thấy <b>${data.data.length}</b> sản phẩm! 👟`, 'bot', intent);
+        renderProducts(data.data);
+      } else {
+        const reply = (data.message || '').trim() || 'Bạn có thể mô tả rõ hơn không ạ?';
+        addMsg(mdToHtml(reply), 'bot', intent);
+      }
+    } catch(err) {
+      clearTimeout(timer);
+      removeTyping();
+      const msg = err.name === 'AbortError'
+        ? '😅 AI đang xử lý hơi lâu, thử hỏi lại nhé! Hoặc gọi <b>1800 1234</b> được hỗ trợ ngay.'
+        : '⚠️ Không kết nối được AI. Vui lòng thử lại sau ít phút.';
+      addMsg(msg, 'bot');
+    } finally {
+      setLoading(false);
+      if (statusEl) statusEl.innerHTML = `<span class="status-dot"></span> Đang hoạt động · qwen2.5:7b`;
+    }
+  }
 
-        function clearChat() {
-            if (!confirm('Xóa toàn bộ lịch sử chat?')) return;
-            messagesEl.innerHTML = '';
-            showWelcome();
-        }
+  function setLoading(on) {
+    inputEl.disabled = on;
+    sendEl.disabled  = on;
+    if (!on) inputEl.focus();
+  }
 
-        // ── Welcome message ───────────────────────────────
-        function showWelcome() {
-            addMsg(
-                'Xin chào! 👋 Mình là <b>SPARK AI</b>, trợ lý tư vấn giày thông minh.<br>' +
-                'Bạn có thể hỏi mình về:<br>' +
-                '• Chọn giày theo hãng, mục đích, ngân sách<br>' +
-                '• Bảng size, chính sách đổi trả, vận chuyển<br>' +
-                '• Mã giảm giá đang có<br>' +
-                'Hãy bắt đầu nhé! 😊',
-                'bot'
-            );
-        }
+  function quickSend(text) {
+    inputEl.value = text;
+    doSend();
+  }
 
-        // ── Init ─────────────────────────────────────────
-        inputEl.addEventListener('keydown', e => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); }
-        });
+  function clearChat() {
+    if (!confirm('Xóa toàn bộ lịch sử chat?')) return;
+    msgsEl.innerHTML = '';
+    showWelcome();
+  }
 
-        showWelcome();
-    </script>
+  // ── Welcome ────────────────────────────────────────
+  function showWelcome() {
+    const row = document.createElement('div');
+    row.className = 'msg-row bot';
+    const av = document.createElement('div');
+    av.className = 'msg-av'; av.textContent = '🤖';
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = `
+      Xin chào! 👋 Mình là <b>SPARK AI</b>, trợ lý tư vấn giày thông minh.<br>
+      Mình có thể giúp bạn:<br>
+      • Chọn giày theo hãng, mục đích, ngân sách<br>
+      • Tra bảng size, chính sách đổi trả<br>
+      • Xem khuyến mãi và dùng mã giảm giá<br><br>
+      <b>Hỏi mình hoặc nhấn nhanh bên dưới nhé! 😊</b>
+      <div class="welcome-chips">
+        <button class="welcome-chip" onclick="quickSend('Nike Air Max hot nhất')">👟 Nike hot</button>
+        <button class="welcome-chip" onclick="quickSend('Giày chạy bộ tốt nhất')">🏃 Chạy bộ</button>
+        <button class="welcome-chip" onclick="quickSend('Mã giảm giá hiện có')">🎟️ Mã KM</button>
+        <button class="welcome-chip" onclick="quickSend('Bảng size giày')">📏 Bảng size</button>
+      </div>`;
+    wrap.appendChild(bubble);
+    row.appendChild(av);
+    row.appendChild(wrap);
+    msgsEl.appendChild(row);
+  }
+
+  // ── Keyboard ─────────────────────────────────────
+  inputEl.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); }
+  });
+
+  // ── Init ──────────────────────────────────────────
+  showWelcome();
+  </script>
 </body>
 </html>

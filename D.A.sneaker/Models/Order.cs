@@ -1,4 +1,4 @@
-﻿using D.A.sneaker.Models;
+using D.A.sneaker.Models;
 
 public class Order
 {
@@ -17,6 +17,9 @@ public class Order
     public decimal TotalAmount { get; set; }
 
     public string Status { get; set; }
+
+    public string? PaymentMethod { get; set; }
+    public string? Note { get; set; }
 
     public Payment? Payment { get; set; }
 

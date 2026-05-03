@@ -28,8 +28,9 @@ namespace D.A.sneaker.Controllers
 
         // ── DASHBOARD ─────────────────────────────────────────────
         // Ai cũng xem được dashboard
+        // period: 7d (7 ngày), 30d (30 ngày), 3m (3 tháng), 6m (6 tháng), 1y (1 năm)
         [HttpGet("dashboard")]
-        public async Task<IActionResult> Dashboard()
+        public async Task<IActionResult> Dashboard([FromQuery] string period = "7d")
         {
             var totalOrders   = await _context.Orders.CountAsync();
             var totalUsers    = await _context.Users.CountAsync();
@@ -38,7 +39,7 @@ namespace D.A.sneaker.Controllers
                 .Where(o => o.Status == "Completed" || o.Status == "Paid")
                 .SumAsync(o => (decimal?)o.TotalAmount) ?? 0;
 
-            // Tính lợi nhuận: doanh thu - giá nhập
+            // Tính lợi nhuận
             var completedItems = await _context.OrderItems
                 .Include(i => i.Variant).ThenInclude(v => v.Product)
                 .Where(i => i.Order.Status == "Completed" || i.Order.Status == "Paid")
@@ -47,32 +48,60 @@ namespace D.A.sneaker.Controllers
             var profit = revenue - totalCost;
             var profitMargin = revenue > 0 ? Math.Round((double)(profit / revenue) * 100, 1) : 0;
 
-            // Đơn giao thành công
             var totalDelivery = await _context.Orders
                 .CountAsync(o => o.Status == "Completed" || o.Status == "Paid" || o.Status == "Shipping");
 
-            // Khách hàng mới (tháng này)
             var startOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             var newCustomers = await _context.Users
                 .CountAsync(u => u.CreatedAt >= startOfMonth);
 
-            // Doanh thu 7 ngày gần nhất
-            var last7Days = DateTime.Now.Date.AddDays(-6);
-            var dailyRevenue = await _context.Orders
-                .Where(o => (o.Status == "Completed" || o.Status == "Paid") && o.CreatedAt >= last7Days)
-                .GroupBy(o => o.CreatedAt.Date)
-                .Select(g => new { date = g.Key, revenue = g.Sum(o => o.TotalAmount), orders = g.Count() })
-                .OrderBy(x => x.date)
-                .ToListAsync();
+            // ── PERIOD CHART ─────────────────────────────
+            List<object> dailyChart = new();
+            string chartType = "daily"; // or "monthly"
 
-            // Fill đủ 7 ngày (kể cả ngày không có đơn)
-            var dailyChart = new List<object>();
-            for (int i = 0; i < 7; i++)
+            if (period == "7d" || period == "30d")
             {
-                var d = last7Days.AddDays(i);
-                var entry = dailyRevenue.FirstOrDefault(x => x.date == d);
-                dailyChart.Add(new { date = d.ToString("dd/MM"), dayName = d.ToString("ddd"), revenue = entry?.revenue ?? 0, orders = entry?.orders ?? 0 });
+                int days = period == "30d" ? 30 : 7;
+                var startDate = DateTime.Now.Date.AddDays(-(days - 1));
+                var raw = await _context.Orders
+                    .Where(o => (o.Status == "Completed" || o.Status == "Paid") && o.CreatedAt >= startDate)
+                    .GroupBy(o => o.CreatedAt.Date)
+                    .Select(g => new { date = g.Key, revenue = g.Sum(o => o.TotalAmount), orders = g.Count() })
+                    .OrderBy(x => x.date).ToListAsync();
+
+                for (int i = 0; i < days; i++)
+                {
+                    var d = startDate.AddDays(i);
+                    var entry = raw.FirstOrDefault(x => x.date == d);
+                    string label = days <= 7 ? d.ToString("ddd") : d.ToString("dd/MM");
+                    dailyChart.Add(new { date = d.ToString("dd/MM"), dayName = label, revenue = entry?.revenue ?? 0, orders = entry?.orders ?? 0 });
+                }
+                chartType = "daily";
             }
+            else
+            {
+                int months = period == "3m" ? 3 : period == "1y" ? 12 : 6;
+                var startDate = DateTime.Now.Date.AddMonths(-months + 1);
+                startDate = new DateTime(startDate.Year, startDate.Month, 1);
+
+                var raw = await _context.Orders
+                    .Where(o => (o.Status == "Completed" || o.Status == "Paid") && o.CreatedAt >= startDate)
+                    .GroupBy(o => new { o.CreatedAt.Year, o.CreatedAt.Month })
+                    .Select(g => new { g.Key.Year, g.Key.Month, revenue = g.Sum(o => o.TotalAmount), orders = g.Count() })
+                    .OrderBy(x => x.Year).ThenBy(x => x.Month).ToListAsync();
+
+                for (int i = 0; i < months; i++)
+                {
+                    var d = startDate.AddMonths(i);
+                    var entry = raw.FirstOrDefault(x => x.Year == d.Year && x.Month == d.Month);
+                    var monthLabel = d.ToString("MM/yyyy");
+                    dailyChart.Add(new { date = monthLabel, dayName = monthLabel, revenue = entry?.revenue ?? 0, orders = entry?.orders ?? 0 });
+                }
+                chartType = "monthly";
+            }
+
+            // Revenue in period (for badge)
+            var periodRevenue = dailyChart.Sum(x => (decimal)((dynamic)x).revenue);
 
             // Doanh thu theo brand (top 5)
             var brandRevenue = await _context.OrderItems
@@ -102,10 +131,135 @@ namespace D.A.sneaker.Controllers
                 .Select(g => new { status = g.Key, count = g.Count() })
                 .ToListAsync();
 
-            return Ok(new { totalOrders, totalUsers, totalProducts, revenue, totalCost, profit, profitMargin, totalDelivery, newCustomers, dailyChart, brandRevenue, recentOrders, topProducts, ordersByStatus });
+            return Ok(new { totalOrders, totalUsers, totalProducts, revenue, totalCost, profit, profitMargin, totalDelivery, newCustomers, dailyChart, chartType, periodRevenue, brandRevenue, recentOrders, topProducts, ordersByStatus, period });
         }
 
-        // ── UPLOAD IMAGE (single) ────────────────────────────────
+        // ── IMPORT ORDER STATUS FROM EXCEL DATA ────────────────────
+        [HttpPost("orders/import-status")]
+        public async Task<IActionResult> ImportOrderStatus([FromBody] List<ImportOrderStatusDto> rows)
+        {
+            if (!HasRole("Admin", "Staff")) return Forbid();
+            if (rows == null || !rows.Any())
+                return BadRequest(new { error = "Không có dữ liệu import" });
+
+            var validStatuses = new[] { "Pending", "Confirmed", "Shipping", "Completed", "Cancelled" };
+            int updated = 0, skipped = 0, errors = 0;
+            var errorMessages = new List<string>();
+
+            foreach (var row in rows)
+            {
+                if (row.OrderId <= 0) { errors++; errorMessages.Add($"ID không hợp lệ: {row.OrderId}"); continue; }
+                if (!validStatuses.Contains(row.Status)) { errors++; errorMessages.Add($"Đơn #{row.OrderId}: trạng thái '{row.Status}' không hợp lệ"); continue; }
+
+                var order = await _context.Orders.FindAsync(row.OrderId);
+                if (order == null) { skipped++; errorMessages.Add($"Đơn #{row.OrderId}: không tìm thấy"); continue; }
+
+                if (order.Status == row.Status) { skipped++; continue; }
+                order.Status = row.Status;
+                updated++;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { updated, skipped, errors, errorMessages, message = $"Import hoàn tất: {updated} cập nhật, {skipped} bỏ qua, {errors} lỗi" });
+        }
+
+        // ── SEED TEST ORDERS (dev only) ────────────────────────────
+        [HttpPost("seed-orders")]
+        public async Task<IActionResult> SeedOrders([FromQuery] int count = 10)
+        {
+            if (!HasRole("Admin")) return Forbid();
+            count = Math.Min(count, 50);
+
+            // Lấy danh sách variants có stock > 0
+            var variants = await _context.ProductVariants
+                .Include(v => v.Product).Include(v => v.Color).Include(v => v.Size)
+                .Where(v => v.Stock > 0 && v.Product != null && v.Product.IsActive)
+                .ToListAsync();
+
+            if (!variants.Any())
+                return BadRequest(new { error = "Không có variant nào có sẵn trong kho" });
+
+            // Lấy customer đầu tiên có sẵn
+            var customer = await _context.Customers.FirstOrDefaultAsync();
+            if (customer == null)
+                return BadRequest(new { error = "Không có customer nào trong DB" });
+
+            var customers = new[]
+            {
+                new { name = "Nguyễn Văn An",   phone = "0901111111", address = "12 Lê Lợi, Q1",           district = "Quận 1",  province = "Hồ Chí Minh" },
+                new { name = "Trần Thị Bình",   phone = "0902222222", address = "45 Nguyễn Huệ, Q1",       district = "Quận 1",  province = "Hồ Chí Minh" },
+                new { name = "Lê Minh Cường",   phone = "0903333333", address = "78 Đinh Tiên Hoàng",     district = "Quận 1",  province = "Hồ Chí Minh" },
+                new { name = "Phạm Thị Dung",   phone = "0904444444", address = "23 Hai Bà Trưng, Q3",    district = "Quận 3",  province = "Hồ Chí Minh" },
+                new { name = "Hoàng Văn Em",    phone = "0905555555", address = "56 Võ Văn Tần, Q3",      district = "Quận 3",  province = "Hồ Chí Minh" },
+                new { name = "Vũ Thị Phương",   phone = "0906666666", address = "89 Cách Mạng Tháng 8",   district = "Quận 10", province = "Hồ Chí Minh" },
+                new { name = "Đặng Quang Hùng", phone = "0907777777", address = "34 Trần Hưng Đạo, Q5",   district = "Quận 5",  province = "Hồ Chí Minh" },
+                new { name = "Bùi Thị Lan",     phone = "0908888888", address = "67 Lý Thường Kiệt, Q10", district = "Quận 10", province = "Hồ Chí Minh" },
+                new { name = "Ngô Văn Khoa",    phone = "0909999999", address = "100 Điện Biên Phủ, Q3",  district = "Quận 3",  province = "Hà Nội" },
+                new { name = "Dương Thị Mai",   phone = "0901234567", address = "15 Pasteur, Q1",         district = "Quận 1",  province = "Hồ Chí Minh" },
+            };
+
+            var statuses = new[] { "Pending", "Confirmed", "Shipping", "Completed", "Completed", "Cancelled" };
+            var payMethods = new[] { "COD", "COD", "COD", "Bank Transfer", "Momo" };
+            var rng = new Random();
+            var created = new List<object>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var ci = customers[i % customers.Length];
+                var variant = variants[rng.Next(variants.Count)];
+                var qty = rng.Next(1, 4);
+                var price = variant.Product!.Price;
+                var total = price * qty;
+
+                var daysAgo = rng.Next(0, 60); // random trong 60 ngày qua
+                var orderDate = DateTime.Now.AddDays(-daysAgo).AddHours(-rng.Next(0, 23)).AddMinutes(-rng.Next(0, 59));
+
+                var order = new Order
+                {
+                    CustomerId   = customer.Id,
+                    CustomerName = ci.name,
+                    Phone        = ci.phone,
+                    Address      = ci.address,
+                    District     = ci.district,
+                    Province     = ci.province,
+                    TotalAmount  = total,
+                    Status       = statuses[rng.Next(statuses.Length)],
+                    PaymentMethod= payMethods[rng.Next(payMethods.Length)],
+                    Note         = $"Đơn test #{i + 1}",
+                    CreatedAt    = orderDate,
+                };
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync(); // để có order.Id
+
+                var item = new OrderItem
+                {
+                    OrderId     = order.Id,
+                    VariantId   = variant.Id,
+                    ProductName = variant.Product.Name,
+                    ColorName   = variant.Color?.Name ?? "",
+                    SizeNumber  = variant.Size?.Number ?? 0,
+                    Quantity    = qty,
+                    Price       = price
+                };
+                _context.OrderItems.Add(item);
+
+                // Giảm stock nếu đơn Completed
+                if (order.Status is "Completed" or "Shipping" or "Confirmed")
+                {
+                    variant.Stock = Math.Max(0, variant.Stock - qty);
+                    if (order.Status == "Completed")
+                        variant.Product.SoldCount += qty;
+                }
+
+                await _context.SaveChangesAsync();
+                created.Add(new { id = order.Id, customer = ci.name, status = order.Status, total, date = orderDate.ToString("dd/MM/yyyy") });
+            }
+
+            return Ok(new { message = $"Đã tạo {created.Count} đơn hàng test", orders = created });
+        }
+
+
         [HttpPost("upload-image")]
         public async Task<IActionResult> UploadImage(IFormFile file)
         {
@@ -431,12 +585,80 @@ namespace D.A.sneaker.Controllers
                 .Skip((page - 1) * size).Take(size)
                 .Select(o => new {
                     o.Id, o.Status, o.TotalAmount, o.CreatedAt,
-                    o.Address, o.Province, o.Phone,
+                    o.Address, o.District, o.Province, o.Phone,
+                    o.PaymentMethod, o.Note,
                     itemCount = o.Items.Count,
                     customerName = o.CustomerName ?? "Khách"
                 }).ToListAsync();
 
             return Ok(new { total, page, size, orders });
+        }
+
+        // ── ORDER DETAIL (with items) ─────────────────────────────
+        [HttpGet("orders/{id}")]
+        public async Task<IActionResult> GetOrderDetail(int id)
+        {
+            if (!HasRole("Admin", "Staff", "Cashier")) return Forbid();
+            var order = await _context.Orders
+                .Include(o => o.Items)
+                    .ThenInclude(i => i.Variant)
+                    .ThenInclude(v => v!.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+            if (order == null) return NotFound(new { error = "Không tìm thấy đơn hàng" });
+
+            return Ok(new {
+                order.Id, order.Status, order.TotalAmount, order.CreatedAt,
+                order.Address, order.Ward, order.District, order.Province,
+                order.Phone, order.PaymentMethod, order.Note,
+                customerName = order.CustomerName ?? "Khách",
+                items = order.Items.Select(i => new {
+                    i.Id,
+                    i.ProductName,
+                    i.ColorName,
+                    i.SizeNumber,
+                    i.Quantity,
+                    i.Price,
+                    subtotal = i.Price * i.Quantity
+                }).ToList()
+            });
+        }
+
+        // ── EXPORT ALL ORDERS WITH ITEMS (for Excel) ──────────────
+        [HttpGet("orders/export")]
+        public async Task<IActionResult> ExportOrders(
+            [FromQuery] string? status,
+            [FromQuery] string? fromDate,
+            [FromQuery] string? toDate,
+            [FromQuery] string? search)
+        {
+            if (!HasRole("Admin", "Staff")) return Forbid();
+
+            var query = _context.Orders.Include(o => o.Items).AsQueryable();
+            if (!string.IsNullOrEmpty(status)) query = query.Where(o => o.Status == status);
+            if (!string.IsNullOrEmpty(search))
+                query = query.Where(o => (o.CustomerName != null && o.CustomerName.Contains(search))
+                    || (o.Phone != null && o.Phone.Contains(search)));
+            if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out var fd))
+                query = query.Where(o => o.CreatedAt.Date >= fd.Date);
+            if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out var td))
+                query = query.Where(o => o.CreatedAt.Date <= td.Date);
+
+            var orders = await query
+                .OrderByDescending(o => o.CreatedAt)
+                .Select(o => new {
+                    o.Id, o.Status, o.TotalAmount, o.CreatedAt,
+                    o.Address, o.District, o.Province, o.Phone,
+                    o.PaymentMethod, o.Note,
+                    itemCount = o.Items.Count,
+                    customerName = o.CustomerName ?? "Khách",
+                    items = o.Items.Select(i => new {
+                        i.ProductName, i.ColorName, i.SizeNumber,
+                        i.Quantity, i.Price,
+                        subtotal = i.Price * i.Quantity
+                    }).ToList()
+                }).ToListAsync();
+
+            return Ok(new { total = orders.Count, orders });
         }
 
         // Admin, Staff cập nhật trạng thái đơn
@@ -725,7 +947,13 @@ namespace D.A.sneaker.Controllers
     }
 
     // ── DTOs ─────────────────────────────────────────────────────
+    public class ImportOrderStatusDto
+    {
+        public int    OrderId { get; set; }
+        public string Status  { get; set; } = "";
+    }
     public class UpdateStatusDto     { public string Status { get; set; } = ""; }
+
     public class UpdateUserStatusDto { public bool   Active { get; set; } }
     public class UpdateRoleDto       { public string Role   { get; set; } = ""; }
     public class ResetPasswordDto    { public string NewPassword { get; set; } = ""; }

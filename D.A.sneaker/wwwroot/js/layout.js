@@ -1,14 +1,14 @@
 // ── Global SVG placeholder generator (replaces via.placeholder.com) ──
 // Usage: _placeholderSvg(300, 200, 'Sneaker') → data:image/svg+xml,... 
-window._placeholderSvg = function(w, h, text) {
+window._placeholderSvg = function (w, h, text) {
   const t = encodeURIComponent(text || '');
-  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'%3E%3Crect width='${w}' height='${h}' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='sans-serif' font-size='${Math.max(12, Math.min(18, w/15))}'%3E${t}%3C/text%3E%3C/svg%3E`;
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}'%3E%3Crect width='${w}' height='${h}' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%239ca3af' font-family='sans-serif' font-size='${Math.max(12, Math.min(18, w / 15))}'%3E${t}%3C/text%3E%3C/svg%3E`;
 };
 var _placeholderSvg = window._placeholderSvg;
 
 // ── Force re-login khi khởi động lại trình duyệt / đóng tất cả tab ──
 // sessionStorage sẽ bị xóa khi tất cả tab đóng → phát hiện "new session"
-;(function forceReloginOnRestart() {
+; (function forceReloginOnRestart() {
   const SESSION_KEY = 'spark_session_alive';
   if (!sessionStorage.getItem(SESSION_KEY)) {
     // New session → xóa token cũ để buộc đăng nhập lại
@@ -34,8 +34,8 @@ var _placeholderSvg = window._placeholderSvg;
   // Inject Inter font globally if not already loaded
   if (!document.getElementById('spark-inter-font')) {
     const fLink = document.createElement('link');
-    fLink.id   = 'spark-inter-font';
-    fLink.rel  = 'stylesheet';
+    fLink.id = 'spark-inter-font';
+    fLink.rel = 'stylesheet';
     fLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Barlow+Condensed:wght@600;800;900&display=swap';
     document.head.appendChild(fLink);
     // Apply font to body
@@ -132,7 +132,6 @@ var _placeholderSvg = window._placeholderSvg;
   <a href="/page/about.html" class="nav-link">VỀ CHÚNG TÔI</a>
   <a href="/page/blog.html" class="nav-link">BLOG</a>
   <a href="/page/support.html" class="nav-link">HỖ TRỢ</a>
-  <a href="/page/Ai.html" class="nav-link" style="display:inline-flex;align-items:center;gap:4px">🤖 AI TƯ VẤN</a>
   <a href="/page/sale.html" class="nav-link nav-sale">SALE</a>
 </div>
 
@@ -248,7 +247,7 @@ var _placeholderSvg = window._placeholderSvg;
       localStorage.setItem('wishlistCount', count);
       if (count > 0) { badge.textContent = count; badge.style.display = 'inline-flex'; }
       else badge.style.display = 'none';
-    } catch {}
+    } catch { }
   })();
 
   // Footer: only inject generic footer if page explicitly has a #footer div AND it's empty
@@ -450,6 +449,9 @@ function doSearch() {
 
 (function injectWidgets() {
 
+  // ── Trang AI có chat riêng — không inject floating widget ──
+  if (window.location.pathname.toLowerCase().includes('ai.html')) return;
+
   // Inject AI.css nếu chưa có
   if (!document.getElementById('spark-ai-css')) {
     const link = document.createElement('link');
@@ -471,8 +473,8 @@ function doSearch() {
       SUGGEST_PRODUCTS = all.slice(0, 12).map(p => {
         // API dùng PropertyNamingPolicy = null => PascalCase
         // Hỗ trợ cả PascalCase và camelCase
-        const id    = p.Id    ?? p.id    ?? 0;
-        const name  = p.Name  ?? p.name  ?? '';
+        const id = p.Id ?? p.id ?? 0;
+        const name = p.Name ?? p.name ?? '';
         const brand = p.Brand ?? p.brand ?? '';
         const price = p.Price ?? p.price ?? 0;
         const imgRaw = p.ImageUrl ?? p.imageUrl ?? '';
@@ -481,7 +483,7 @@ function doSearch() {
           : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80';
         return { id, name, brand, price: Number(price).toLocaleString('vi-VN') + 'đ', img, url: `/page/product-detail.html?id=${id}` };
       }).filter(p => p.name); // bỏ qua sản phẩm không có tên
-    } catch {}
+    } catch { }
   })();
 
   // ── AI Bot keyword responses ─── (brands đặt trước keywords chung) ──
@@ -531,11 +533,11 @@ function doSearch() {
     const qPad = ' ' + q + ' ';
     if (SUGGEST_PRODUCTS.length && q.length >= 3) {
       const match = SUGGEST_PRODUCTS.find(p => {
-        const n = norm(p.name  || '');
+        const n = norm(p.name || '');
         const b = norm(p.brand || '');
         // Chỉ match khi tên/hãng không rỗng VÀ có trong query
         return (n.length > 2 && q.includes(n)) ||
-               (b.length > 2 && q.includes(b));
+          (b.length > 2 && q.includes(b));
       });
       if (match)
         return `👟 Tôi tìm thấy <b>${match.name}</b> – giá ${match.price}. Bạn muốn xem không?`;
@@ -613,14 +615,14 @@ function doSearch() {
   document.body.appendChild(wrapDiv);
 
   // ── References ─────────────────────────────────────────────
-  const panel    = document.getElementById('sparkAiPanel');
-  const aiBtn    = document.getElementById('sparkAiBtn');
+  const panel = document.getElementById('sparkAiPanel');
+  const aiBtn = document.getElementById('sparkAiBtn');
   const closeBtn = document.getElementById('sparkAiClose');
   const clearBtn = document.getElementById('aiClearBtn');
   const messages = document.getElementById('aiMessages');
-  const input    = document.getElementById('aiInput');
-  const sendBtn  = document.getElementById('aiSendBtn');
-  const badge    = document.getElementById('aiBadge');
+  const input = document.getElementById('aiInput');
+  const sendBtn = document.getElementById('aiSendBtn');
+  const badge = document.getElementById('aiBadge');
 
   let isOpen = false;
 
@@ -631,7 +633,7 @@ function doSearch() {
   const MAX_HISTORY = 40;
 
   // Xóa key cũ (tránh load lại broken cards)
-  try { localStorage.removeItem('spark_chat_history'); } catch {}
+  try { localStorage.removeItem('spark_chat_history'); } catch { }
 
   function saveHistory() {
     const items = messages.querySelectorAll('.ai-msg[data-saveable]');
@@ -641,7 +643,7 @@ function doSearch() {
     })).filter(x => !x.html.includes('undefined') && !x.html.includes('NaNđ'));
     try {
       sessionStorage.setItem(HISTORY_KEY, JSON.stringify(arr.slice(-MAX_HISTORY)));
-    } catch(e) {}
+    } catch (e) { }
   }
 
   function loadHistory() {
@@ -653,7 +655,7 @@ function doSearch() {
       arr.forEach(item => renderMsg(item.html, item.type, false));
       messages.scrollTop = messages.scrollHeight;
       return true;
-    } catch(e) { return false; }
+    } catch (e) { return false; }
   }
 
   function clearHistory() {
@@ -725,7 +727,7 @@ function doSearch() {
   }
 
   // ── Detect brand từ câu hỏi ────────────────────────────────
-  const BRANDS = ['nike','adidas','puma','converse','vans','jordan','reebok','new balance','asics','skechers','fila'];
+  const BRANDS = ['nike', 'adidas', 'puma', 'converse', 'vans', 'jordan', 'reebok', 'new balance', 'asics', 'skechers', 'fila'];
   function detectBrand(text) {
     const norm = t => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
     const q = ' ' + norm(text) + ' ';
@@ -757,10 +759,10 @@ function doSearch() {
     if (apiData && apiData.length) {
       // Data từ Ollama API — normalize PascalCase/camelCase
       items = apiData.slice(0, 3).map(p => ({
-        name:  p.Name  ?? p.name  ?? 'Sản phẩm',
+        name: p.Name ?? p.name ?? 'Sản phẩm',
         price: Number(p.Price ?? p.price ?? 0).toLocaleString('vi-VN') + 'đ',
-        img:   (() => { const r = p.ImageUrl ?? p.imageUrl ?? ''; return r.startsWith('http') ? r : r ? '/' + r.replace(/^\//, '') : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80'; })(),
-        url:   `/page/product-detail.html?id=${p.Id ?? p.id ?? ''}`
+        img: (() => { const r = p.ImageUrl ?? p.imageUrl ?? ''; return r.startsWith('http') ? r : r ? '/' + r.replace(/^\//, '') : 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80'; })(),
+        url: `/page/product-detail.html?id=${p.Id ?? p.id ?? ''}`
       }));
     } else if (SUGGEST_PRODUCTS.length) {
       // Lọc theo brand nếu có
@@ -769,7 +771,7 @@ function doSearch() {
         const nb = brand.toLowerCase();
         const filtered = pool.filter(p =>
           (p.brand || '').toLowerCase().includes(nb) ||
-          (p.name  || '').toLowerCase().includes(nb)
+          (p.name || '').toLowerCase().includes(nb)
         );
         if (filtered.length > 0) pool = filtered; // dùng filtered nếu có kết quả
       }
@@ -780,8 +782,7 @@ function doSearch() {
       return; // DB chưa load, bỏ qua
     }
 
-    const cardsHtml = `Đây là một số gợi ý dành cho bạn 👟<div class="ai-product-cards" style="margin-top:8px">${
-      items.map(p => `
+    const cardsHtml = `Đây là một số gợi ý dành cho bạn 👟<div class="ai-product-cards" style="margin-top:8px">${items.map(p => `
         <a class="ai-prod-card" href="${p.url}">
           <img src="${p.img}" alt="${p.name}" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=200&q=80'">
           <div class="ai-prod-card-body">
@@ -789,7 +790,7 @@ function doSearch() {
             <div class="ai-prod-card-price">${p.price}</div>
           </div>
         </a>`).join('')
-    }</div>`;
+      }</div>`;
     renderMsg(cardsHtml, 'bot', true);
   }
 
@@ -846,10 +847,14 @@ function doSearch() {
           if (!reply) {
             renderMsg('Bạn có thể mô tả rõ hơn không? Ví dụ: "giày Nike chạy bộ", "Adidas size 42"...', 'bot', true);
           } else {
-            // Render markdown đơn giản: **bold** → <b>, \n → <br>
+            // Render markdown: **bold** → <b>, `code` → badge chip, ▸ → styled
             const html = reply
               .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-              .replace(/`([^`]+)`/g, '<code style="background:#f0f0f0;padding:1px 5px;border-radius:3px;font-size:12px">$1</code>')
+              .replace(/`([^`]+)`/g,
+                '<span style="display:inline-block;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;' +
+                'padding:1px 8px;border-radius:20px;font-family:monospace;font-size:11px;font-weight:800">$1</span>')
+              .replace(/▸ /g, '<span style="color:#6366f1;font-weight:700">▸</span> ')
+              .replace(/\n🏷️/g, '<br>🏷️')
               .replace(/\n/g, '<br>');
             renderMsg(html, 'bot', true);
           }
