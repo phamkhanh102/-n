@@ -1,4 +1,4 @@
-﻿using D.A.sneaker.Data;
+using D.A.sneaker.Data;
 using D.A.sneaker.DTOs;
 using D.A.sneaker.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -26,38 +26,61 @@ namespace D.A.sneaker.Controllers
 
         // ================= REGISTER =================
         [HttpPost("register")]
-        public IActionResult Register(User user)
+        public IActionResult Register([FromBody] RegisterDTO dto)
         {
-            if (_context.Users.Any(x => x.Email == user.Email))
+            if (dto == null ||
+                string.IsNullOrWhiteSpace(dto.Name) ||
+                string.IsNullOrWhiteSpace(dto.Email) ||
+                string.IsNullOrWhiteSpace(dto.Password))
             {
-                return BadRequest("Email already exists");
+                return BadRequest(new { error = "Vui lòng điền đầy đủ thông tin." });
             }
-            if (!Regex.IsMatch(user.Password,
-@"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$"))
-            {
-                return BadRequest("Password yếu");
-            }
-            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-            // đảm bảo không bị null Role
-            if (string.IsNullOrEmpty(user.Role))
+            if (_context.Users.Any(x => x.Email == dto.Email))
             {
-                user.Role = "User";
+                return BadRequest(new { error = "Email này đã được sử dụng." });
             }
+
+            if (!Regex.IsMatch(dto.Password,
+                @"^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).{6,}$"))
+            {
+                return BadRequest(new { error = "Mật khẩu phải có ít nhất 6 ký tự, gồm chữ hoa, chữ thường và số." });
+            }
+
+            var user = new User
+            {
+                Name = dto.Name,
+                Username = dto.Username ?? dto.Name,
+                Email = dto.Email,
+                Password = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Role = "Customer",
+                Status = true,
+                CreatedAt = DateTime.Now
+            };
 
             _context.Users.Add(user);
+            _context.SaveChanges(); // lưu user trước để có user.Id
+
+            // ⭐ TẠO CUSTOMER RECORD NGAY KHI ĐĂNG KÝ ⭐
+            // Đây là bước bắt buộc để đặt hàng hoạt động
+            var customer = new Customer
+            {
+                UserId    = user.Id,
+                Address   = "",
+                City      = "",
+                District  = "",
+                Ward      = "",
+                CreatedAt = DateTime.Now
+            };
+            _context.Customers.Add(customer);
             _context.SaveChanges();
 
-            return Ok(new
-            {
-                message = "Register success"
-            });
-
+            return Ok(new { message = "Đăng ký thành công!" });
         }
 
         // ================= LOGIN =================
         [HttpPost("login")]
-        public IActionResult Login(LoginDTO loginUser)
+        public IActionResult Login([FromBody] LoginDTO loginUser)
         {
             var user = _context.Users
                 .FirstOrDefault(x => x.Email == loginUser.Email);
@@ -65,7 +88,7 @@ namespace D.A.sneaker.Controllers
             if (user == null ||
                 !BCrypt.Net.BCrypt.Verify(loginUser.Password, user.Password))
             {
-                return Unauthorized("Invalid credentials");
+                return Unauthorized(new { error = "Email hoặc mật khẩu không đúng." });
             }
 
 
@@ -95,11 +118,16 @@ namespace D.A.sneaker.Controllers
 
             var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
+            var customer = _context.Customers.FirstOrDefault(c => c.UserId == user.Id);
+
             return Ok(new
             {
                 token = jwt,
-                role = user.Role,
-                name = user.Name
+                id    = user.Id,
+                name  = user.Name,
+                email = user.Email,
+                role  = user.Role,
+                customerId = customer?.Id ?? 0
             });
 
         }

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK Blog – Sneaker Culture, Phong Cách & Xu Hướng</title>
+    <meta name="description" content="Khám phá blog SPARK: tin tức sneaker mới nhất, review giày, hướng dẫn phối đồ và văn hóa giày thể thao Việt Nam.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/Header.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Barlow', sans-serif; background: var(--bg); color: var(--text); padding-top: 110px; }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* ===== HERO ===== */
+        .blog-hero {
+            background: var(--text);
+            color: var(--bg);
+            padding: 64px 24px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .blog-hero::before {
+            content: 'BLOG';
+            position: absolute;
+            right: -20px;
+            top: -20px;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 220px;
+            font-weight: 900;
+            letter-spacing: -8px;
+            opacity: 0.05;
+            line-height: 1;
+            pointer-events: none;
+        }
+        .blog-hero-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .blog-hero-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            opacity: .5;
+            margin-bottom: 16px;
+        }
+        .blog-hero-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: clamp(52px, 10vw, 100px);
+            font-weight: 900;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+        .blog-hero-title span { color: #facc15; }
+        .blog-hero-desc {
+            font-size: 16px;
+            opacity: .65;
+            max-width: 440px;
+            line-height: 1.65;
+        }
+
+        /* ===== CATEGORY TABS ===== */
+        .cat-bar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 110px;
+            z-index: 90;
+        }
+        .cat-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .cat-inner::-webkit-scrollbar { display: none; }
+        .cat-btn {
+            padding: 14px 20px;
+            background: none;
+            border: none;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            white-space: nowrap;
+            position: relative;
+            transition: color .2s;
+            font-family: 'Barlow', sans-serif;
+        }
+        .cat-btn:hover { color: var(--text); }
+        .cat-btn.active { color: var(--text); }
+        .cat-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--text);
+        }
+
+        /* ===== SEARCH ===== */
+        .blog-search-wrap {
+            max-width: 1100px;
+            margin: 32px auto 0;
+            padding: 0 24px;
+        }
+        .blog-search {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .blog-search input {
+            flex: 1;
+            max-width: 360px;
+            padding: 11px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            color: var(--text);
+            font-size: 13px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .blog-search input:focus { border-color: var(--text); }
+        .blog-search input::placeholder { color: var(--muted); }
+        .blog-search-btn {
+            padding: 11px 20px;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        /* ===== FEATURED HERO POST ===== */
+        .featured-section {
+            max-width: 1100px;
+            margin: 32px auto 0;
+            padding: 0 24px;
+        }
+        .featured-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--card);
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s;
+        }
+        .featured-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 60px rgba(0,0,0,.12);
+        }
+        html.dark .featured-card:hover { box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+        .featured-img {
+            height: 400px;
+            object-fit: cover;
+            width: 100%;
+        }
+        .featured-body {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .post-badge {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+        .badge-review { background: #fef3c7; color: #92400e; }
+        .badge-news   { background: #eff6ff; color: #1e40af; }
+        .badge-style  { background: #f0fdf4; color: #166534; }
+        .badge-guide  { background: #fdf4ff; color: #7c3aed; }
+        .badge-culture{ background: #fff1f2; color: #9f1239; }
+        html.dark .badge-review  { background: #451a03; color: #fcd34d; }
+        html.dark .badge-news    { background: #1e3a5f; color: #93c5fd; }
+        html.dark .badge-style   { background: #052e16; color: #86efac; }
+        html.dark .badge-guide   { background: #2e1065; color: #d8b4fe; }
+        html.dark .badge-culture { background: #4c0519; color: #fda4af; }
+
+        .featured-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 36px;
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: -0.5px;
+            line-height: 1.1;
+            margin-bottom: 14px;
+        }
+        .featured-desc {
+            font-size: 14px;
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .post-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .post-meta-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--border); }
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 20px;
+            transition: gap .2s;
+        }
+        .featured-card:hover .read-more { gap: 10px; }
+
+        /* ===== POSTS GRID ===== */
+        .posts-section {
+            max-width: 1100px;
+            margin: 40px auto 60px;
+            padding: 0 24px;
+        }
+        .section-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+        .section-heading h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            color: var(--text);
+        }
+        .posts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .post-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s;
+        }
+        .post-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 48px rgba(0,0,0,.1);
+        }
+        html.dark .post-card:hover { box-shadow: 0 20px 48px rgba(0,0,0,.4); }
+        .post-card-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform .4s;
+        }
+        .post-card:hover .post-card-img { transform: scale(1.04); }
+        .post-card-img-wrap { overflow: hidden; }
+        .post-card-body { padding: 20px; }
+        .post-card-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            line-height: 1.2;
+            margin-bottom: 8px;
+        }
+        .post-card-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .post-card-meta {
+            font-size: 11px;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ===== NEWSLETTER ===== */
+        .newsletter-section {
+            background: var(--text);
+            color: var(--bg);
+            padding: 72px 24px;
+            text-align: center;
+        }
+        .newsletter-inner { max-width: 500px; margin: 0 auto; }
+        .newsletter-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 12px;
+        }
+        .newsletter-title span { color: #facc15; }
+        .newsletter-sub {
+            font-size: 15px;
+            opacity: .65;
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .newsletter-form {
+            display: flex;
+            gap: 10px;
+        }
+        .newsletter-form input {
+            flex: 1;
+            padding: 13px 16px;
+            border-radius: 8px;
+            border: 1.5px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.08);
+            color: inherit;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: border-color .2s;
+        }
+        .newsletter-form input::placeholder { opacity: .5; }
+        .newsletter-form input:focus { border-color: #facc15; }
+        .newsletter-form button {
+            padding: 13px 22px;
+            background: #facc15;
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity .2s;
+        }
+        .newsletter-form button:hover { opacity: .85; }
+
+        /* ===== TAGS ===== */
+        .tags-section {
+            max-width: 1100px;
+            margin: 0 auto 60px;
+            padding: 0 24px;
+        }
+        .tags-wrap {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .tag-chip {
+            padding: 8px 16px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .tag-chip:hover { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+        /* ===== NO RESULTS ===== */
+        .no-posts {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px;
+            color: var(--muted);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 900px) {
+            .featured-card { grid-template-columns: 1fr; }
+            .featured-img { height: 260px; }
+            .posts-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 580px) {
+            .posts-grid { grid-template-columns: 1fr; }
+            .featured-body { padding: 24px; }
+            .featured-title { font-size: 26px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="header"></div>
+
+<!-- HERO -->
+<section class="blog-hero">
+    <div class="blog-hero-inner">
+        <div class="blog-hero-label">✦ SPARK Blog</div>
+        <h1 class="blog-hero-title">
+            VĂN HÓA<br>GIÀY <span>THẬT</span>
+        </h1>
+        <p class="blog-hero-desc">
+            Tin tức sneaker mới nhất, review giày thật lòng,
+            cách phối đồ hay và góc nhìn về văn hóa giày thể thao Việt Nam.
+        </p>
+    </div>
+</section>
+
+<!-- CATEGORY TABS -->
+<div class="cat-bar">
+    <div class="cat-inner">
+        <button class="cat-btn active" onclick="filterCat('all', this)">Tất cả</button>
+        <button class="cat-btn" onclick="filterCat('news', this)">🔥 Tin tức</button>
+        <button class="cat-btn" onclick="filterCat('review', this)">⭐ Review</button>
+        <button class="cat-btn" onclick="filterCat('style', this)">👟 Phối đồ</button>
+        <button class="cat-btn" onclick="filterCat('guide', this)">📖 Hướng dẫn</button>
+        <button class="cat-btn" onclick="filterCat('culture', this)">🎨 Văn hóa</button>
+    </div>
+</div>
+
+<!-- SEARCH -->
+<div class="blog-search-wrap">
+    <div class="blog-search">
+        <input type="text" id="blogSearch" placeholder="Tìm bài viết..." oninput="searchPosts(this.value)">
+        <button class="blog-search-btn" onclick="searchPosts(document.getElementById('blogSearch').value)">Tìm kiếm</button>
+    </div>
+</div>
+
+<!-- FEATURED -->
+<div class="featured-section" id="featuredSection">
+    <div class="featured-card" onclick="openPost(0)">
+        <img class="featured-img"
+            src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+            alt="Air Force 1 2025">
+        <div class="featured-body">
+            <span class="post-badge badge-news">🔥 Tin tức</span>
+            <div class="featured-title">Nike Air Force 1 "Premium" 2025 — Đây Là Những Gì Bạn Cần Biết</div>
+            <p class="featured-desc">Nike vừa ra mắt phiên bản Air Force 1 cao cấp nhất trong 10 năm qua với chất liệu da Italy và đế mới được nâng cấp. Giá bán và ngày ra mắt chính thức tại Việt Nam...</p>
+            <div class="post-meta">
+                <span>SPARK Editorial</span>
+                <div class="post-meta-dot"></div>
+                <span>28 tháng 3, 2026</span>
+                <div class="post-meta-dot"></div>
+                <span>5 phút đọc</span>
+            </div>
+            <div class="read-more">Đọc bài viết →</div>
+        </div>
+    </div>
+</div>
+
+<!-- POSTS GRID -->
+<section class="posts-section">
+    <div class="section-heading">
+        <h2 id="postsHeading">Bài viết mới nhất</h2>
+    </div>
+    <div class="posts-grid" id="postsGrid">
+        <!-- Rendered by JS -->
+    </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="newsletter-section">
+    <div class="newsletter-inner">
+        <div class="newsletter-title">ĐỪNG BỎ LỠ<br><span>BÀI VIẾT MỚI</span></div>
+        <p class="newsletter-sub">Nhận thông báo khi có bài viết mới, xu hướng sneaker hot và ưu đãi độc quyền từ SPARK.</p>
+        <div class="newsletter-form">
+            <input type="email" id="nlEmail" placeholder="Email của bạn...">
+            <button onclick="subscribeNL()">Đăng ký</button>
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR TAGS -->
+<section class="tags-section" style="margin-top:48px">
+    <div class="section-heading">
+        <h2>Chủ đề hot</h2>
+    </div>
+    <div class="tags-wrap">
+        <span class="tag-chip" onclick="searchPosts('Nike')">#Nike</span>
+        <span class="tag-chip" onclick="searchPosts('Adidas')">#Adidas</span>
+        <span class="tag-chip" onclick="searchPosts('Jordan')">#AirJordan</span>
+        <span class="tag-chip" onclick="searchPosts('phối đồ')">#PhốiĐồ</span>
+        <span class="tag-chip" onclick="searchPosts('review')">#Review</span>
+        <span class="tag-chip" onclick="searchPosts('streetwear')">#Streetwear</span>
+        <span class="tag-chip" onclick="searchPosts('new balance')">#NewBalance</span>
+        <span class="tag-chip" onclick="searchPosts('size')">#HướngDẫnSize</span>
+        <span class="tag-chip" onclick="searchPosts('limited')">#LimitedEdition</span>
+        <span class="tag-chip" onclick="searchPosts('sách')">#SachGiay</span>
+        <span class="tag-chip" onclick="searchPosts('collector')">#Collector</span>
+        <span class="tag-chip" onclick="searchPosts('2025')">#Trend2025</span>
+    </div>
+</section>
+
+<div id="footer"></div>
+
+<script src="/js/layout.js"></script>
+<script>
+const POSTS = [
+    {
+        id: 1,
+        cat: 'review',
+        badge: 'badge-review',
+        badgeLabel: '⭐ Review',
+        title: 'Review Adidas Ultraboost 25 — Vẫn Là King Của Running?',
+        desc: 'Chúng tôi đã chạy 200km với Ultraboost 25 để có thể nói với bạn sự thật hoàn toàn. Có phải đây vẫn là đôi giày chạy bộ tốt nhất tầm giá 3 triệu?',
+        img: 'https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?auto=format&fit=crop&w=600&q=80',
+        author: 'Minh Tuấn',
+        date: '26 tháng 3, 2026',
+        readTime: '8 phút đọc'
+    },
+    {
+        id: 2,
+        cat: 'style',
+        badge: 'badge-style',
+        badgeLabel: '👟 Phối đồ',
+        title: '5 Cách Phối Converse Chuck 70 Cho Ngày Đến Trường',
+        desc: 'Từ đồng phục học sinh đến streetwear casual, Converse Chuck 70 có thể phối với gần như mọi thứ. Bí quyết là ở những item đi kèm...',
+        img: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=600&q=80',
+        author: 'Bảo Ngọc',
+        date: '25 tháng 3, 2026',
+        readTime: '4 phút đọc'
+    },
+    {
+        id: 3,
+        cat: 'news',
+        badge: 'badge-news',
+        badgeLabel: '🔥 Tin tức',
+        title: 'Jordan 4 "Thunder" Restock Tại Việt Nam — Cách Mua Không Bị Bot',
+        desc: 'Air Jordan 4 Thunder chính thức restock tại Việt Nam ngày 1/4. Đây là toàn bộ thông tin về cách đăng ký, shop chính hãng và tránh mua phải hàng fake...',
+        img: 'https://images.unsplash.com/photo-1608231387042-66d1773070a5?auto=format&fit=crop&w=600&q=80',
+        author: 'SPARK News',
+        date: '24 tháng 3, 2026',
+        readTime: '6 phút đọc'
+    },
+    {
+        id: 4,
+        cat: 'guide',
+        badge: 'badge-guide',
+        badgeLabel: '📖 Hướng dẫn',
+        title: 'Hướng Dẫn Chọn Size Sneaker Chuẩn — Không Bao Giờ Mua Nhầm Size Nữa',
+        desc: 'Size US, EU, UK, CM différent giữa các thương hiệu. Đây là guide đầy đủ nhất về cách đo chân và chọn đúng size cho Nike, Adidas, New Balance và Converse...',
+        img: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80',
+        author: 'SPARK Guide',
+        date: '23 tháng 3, 2026',
+        readTime: '10 phút đọc'
+    },
+    {
+        id: 5,
+        cat: 'culture',
+        badge: 'badge-culture',
+        badgeLabel: '🎨 Văn hóa',
+        title: 'Sneakerhead Việt Nam — Từ Đam Mê Đến Cộng Đồng Triệu Người',
+        desc: 'Câu chuyện về cộng đồng sneakerhead Việt Nam, từ những ngày đầu chỉ có vài chục người đến một phong trào văn hóa rộng lớn với hàng triệu thành viên...',
+        img: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=600&q=80',
+        author: 'Phú Hoà',
+        date: '22 tháng 3, 2026',
+        readTime: '7 phút đọc'
+    },
+    {
+        id: 6,
+        cat: 'review',
+        badge: 'badge-review',
+        badgeLabel: '⭐ Review',
+        title: 'New Balance 2002R — Tại Sao Đôi Giày Này Lại Hot Đến Vậy?',
+        desc: 'NB 2002R đang là đôi giày được tìm kiếm nhiều nhất tháng 3/2026. Chúng tôi đã mặc thử 2 tuần và đây là đánh giá trung thực nhất...',
+        img: 'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=600&q=80',
+        author: 'Đức Thịnh',
+        date: '21 tháng 3, 2026',
+        readTime: '6 phút đọc'
+    }
+];
+
+let currentCat = 'all';
+let currentSearch = '';
+
+function renderPosts(list) {
+    const grid = document.getElementById('postsGrid');
+    if (!list.length) {
+        grid.innerHTML = '<div class="no-posts">Không tìm thấy bài viết nào 🤷<br><small>Thử tìm với từ khóa khác</small></div>';
+        return;
+    }
+    grid.innerHTML = list.map(p => `
+<div class="post-card" onclick="openPost(${p.id})">
+    <div class="post-card-img-wrap">
+        <img class="post-card-img" src="${p.img}" alt="${p.title}" loading="lazy"
+            onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=60'">
+    </div>
+    <div class="post-card-body">
+        <span class="post-badge ${p.badge}" style="margin-bottom:10px">${p.badgeLabel}</span>
+        <div class="post-card-title">${p.title}</div>
+        <div class="post-card-desc">${p.desc}</div>
+        <div class="post-card-meta">
+            <span>${p.author}</span>
+            <div class="post-meta-dot"></div>
+            <span>${p.date}</span>
+            <div class="post-meta-dot"></div>
+            <span>${p.readTime}</span>
+        </div>
+    </div>
+</div>`).join('');
+}
+
+function applyFilters() {
+    const q = currentSearch.toLowerCase();
+    const filtered = POSTS.filter(p => {
+        const matchCat = currentCat === 'all' || p.cat === currentCat;
+        const matchQ = !q || p.title.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q) || p.author.toLowerCase().includes(q);
+        return matchCat && matchQ;
+    });
+    document.getElementById('postsHeading').textContent = currentCat === 'all' && !q
+        ? 'Bài viết mới nhất'
+        : `Kết quả tìm kiếm (${filtered.length})`;
+    renderPosts(filtered);
+}
+
+function filterCat(cat, el) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    // Toggle featured
+    document.getElementById('featuredSection').style.display = (cat === 'all' && !currentSearch) ? 'block' : 'none';
+    applyFilters();
+}
+
+function searchPosts(q) {
+    currentSearch = q;
+    document.getElementById('blogSearch').value = q;
+    document.getElementById('featuredSection').style.display = q ? 'none' : (currentCat === 'all' ? 'block' : 'none');
+    applyFilters();
+}
+
+function openPost(id) {
+    // Placeholder - in real app would navigate to post detail
+    const post = POSTS.find(p => p.id === id) || { title: 'Nike Air Force 1 "Premium" 2025' };
+    alert(`📖 Bài viết: "${post.title}"\n\nChức năng đọc bài đầy đủ đang được phát triển. Vui lòng quay lại sau!`);
+}
+
+function subscribeNL() {
+    const email = document.getElementById('nlEmail').value.trim();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        alert('Vui lòng nhập email hợp lệ!');
+        return;
+    }
+    alert(`✅ Cảm ơn bạn đã đăng ký!\nChúng tôi sẽ gửi bài viết mới đến: ${email}`);
+    document.getElementById('nlEmail').value = '';
+}
+
+// Init
+renderPosts(POSTS);
+
+// Animate on scroll
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+        }
+    });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.post-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity .5s ease, transform .5s ease';
+    observer.observe(el);
+});
+</script>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿namespace D.A.sneaker.Models
+namespace D.A.sneaker.Models
 {
     public class User
     {
@@ -14,10 +14,10 @@
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public Customer? Customer { get; set; }
-        public ICollection<CartItem> CartItems { get; set; }
+        public ICollection<CartItem>? CartItems { get; set; }
 
-        public ICollection<Wishlist> Wishlists { get; set; }
+        public ICollection<Wishlist>? Wishlists { get; set; }
 
-        public ICollection<Review> Reviews { get; set; }
+        public ICollection<Review>? Reviews { get; set; }
     }
 }

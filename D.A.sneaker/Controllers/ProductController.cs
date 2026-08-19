@@ -30,13 +30,14 @@ namespace D.A.sneaker.Controllers
         public async Task<IActionResult> GetProducts()
         {
             var products = await _context.Products
+               .Where(p => p.IsActive) // Chỉ hiện sản phẩm đang active
                .Select(p => new ProductCardDto
                {
                    Id = p.Id,
                    Name = p.Name,
                    Brand = p.Brand,
                    Price = p.Price,
-                   ImageUrl = "/images/" + p.MainImage
+                   ImageUrl = p.MainImage
                })
                 .ToListAsync();
 
@@ -88,12 +89,12 @@ namespace D.A.sneaker.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string? keyword)
         {
+            var query = _context.Products.Where(p => p.IsActive);
             if (string.IsNullOrWhiteSpace(keyword))
-                return Ok(await _context.Products.ToListAsync());
+                return Ok(await query.ToListAsync());
 
             keyword = keyword.ToLower();
-
-            var products = await _context.Products
+            var products = await query
   .Where(p =>
       p.Name.ToLower().Contains(keyword) ||
       p.Brand.ToLower().Contains(keyword))
@@ -109,7 +110,7 @@ namespace D.A.sneaker.Controllers
     decimal? min = null,
     decimal? max = null)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Where(p => p.IsActive).AsQueryable();
 
             if (!string.IsNullOrEmpty(brand))
                 query = query.Where(x => x.Brand.Contains(brand));

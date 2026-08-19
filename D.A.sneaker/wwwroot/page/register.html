@@ -722,7 +722,7 @@
 
     <!-- FOOTER -->
     <div class="auth-footer">
-        © 2026 SPARK. All rights reserved.
+        © 2026 SPARK. Tất cả quyền được bảo lưu.
         &nbsp;·&nbsp; <a href="#" style="color:#6b7280">Chính sách</a>
         &nbsp;·&nbsp; <a href="#" style="color:#6b7280">Hỗ trợ</a>
     </div>
@@ -822,7 +822,7 @@
                 const data = await res.json();
 
                 if (!res.ok) {
-                    showError(typeof data === 'string' ? data : JSON.stringify(data));
+                    showError(data.error || data.message || data.title || 'Đăng ký thất bại.');
                     return;
                 }
 

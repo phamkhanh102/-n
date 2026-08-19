@@ -22,7 +22,7 @@
             font-family: 'Barlow', sans-serif;
             background: #f5f5f5;
             color: #111;
-            padding-top: 110px;
+            padding-top: 130px;
             min-height: 100vh;
         }
 
@@ -962,18 +962,22 @@
             msg.textContent = '❌ Mã không hợp lệ hoặc đã hết hạn';
             msg.className = 'coupon-msg err';
             couponDiscount = 0; freeShip = false;
+            localStorage.removeItem('appliedCoupon');
         } else if (val === 'freeship') {
             freeShip = true; couponDiscount = 0;
             msg.textContent = '✅ Miễn phí vận chuyển!';
             msg.className = 'coupon-msg ok';
+            localStorage.setItem('appliedCoupon', JSON.stringify({ code, type: 'freeship' }));
         } else {
             couponDiscount = val; freeShip = false;
             msg.textContent = `✅ Giảm ${val * 100}% giá trị đơn hàng!`;
             msg.className = 'coupon-msg ok';
+            localStorage.setItem('appliedCoupon', JSON.stringify({ code, type: 'percent', value: val }));
         }
         const sub = cart.reduce((s, p) => s + p.price * p.qty, 0);
         updateSummary(sub);
     }
+
 
     function showToast(msg) {
         const t = document.getElementById('toast');

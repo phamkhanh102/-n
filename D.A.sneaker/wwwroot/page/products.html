@@ -829,17 +829,34 @@
 
         const filters = { brand: '', priceMin: 0, priceMax: Infinity, size: '', sort: '' };
 
-        async function loadProducts() {
+        async function loadProducts(searchQ) {
             try {
                 const res = await fetch('/api/products');
                 if (!res.ok) throw new Error();
                 const data = await res.json();
-                allProducts = data.map(p => ({
-                    id: p.Id, name: p.Name, brand: p.Brand || '',
-                    price: p.Price,
-                    image: p.ImageUrl || 'https://via.placeholder.com/300x200?text=Sneaker',
-                    rating: 4, badge: '', oldPrice: null
-                }));
+                allProducts = data.map(p => {
+                    const raw = p.ImageUrl || '';
+                    let image;
+                    if (!raw) {
+                        image = 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80';
+                    } else if (raw.startsWith('http')) {
+                        image = raw;
+                    } else if (raw.startsWith('/')) {
+                        image = raw; // already absolute path like /images/foo.jpg
+                    } else {
+                        image = '/images/' + raw; // bare filename
+                    }
+                    return {
+                        id: p.Id, name: p.Name, brand: p.Brand || '',
+                        price: p.Price, image, rating: 4, badge: '', oldPrice: null
+                    };
+                });
+
+                if (searchQ) {
+                    const q = searchQ.toLowerCase();
+                    allProducts = allProducts.filter(p =>
+                        p.name.toLowerCase().includes(q) || p.brand.toLowerCase().includes(q));
+                }
             } catch {
                 allProducts = SAMPLE;
             }
@@ -906,7 +923,7 @@
 <div class="product-card" onclick="location.href='/page/product-detail.html?id=${p.id}'">
   <div class="product-card-img">
     ${badge}
-    <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://via.placeholder.com/300x200?text=Sneaker'">
+    <img src="${p.image}" alt="${p.name}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&q=80'">
     <button class="card-wish" onclick="event.stopPropagation();toggleWish(${p.id},this)" title="Yêu thích">🤍</button>
   </div>
   <div class="product-card-body">
@@ -918,7 +935,7 @@
       ${oldPriceHtml}
     </div>
   </div>
-  <button class="card-add-btn" onclick="event.stopPropagation();quickAdd(${p.id})">🛒 Thêm vào giỏ</button>
+  <a class="card-add-btn" href="/page/product-detail.html?id=${p.id}" onclick="event.stopPropagation()">👁 Xem chi tiết</a>
 </div>`;
         }
 
@@ -979,9 +996,35 @@
             showToast('✅ Đã thêm vào giỏ!');
         }
 
-        function toggleWish(id, btn) {
-            btn.textContent = btn.textContent === '🤍' ? '❤️' : '🤍';
+        async function toggleWish(id, btn) {
+            const token = localStorage.getItem('token');
+            if (!token) { location.href = '/page/login.html'; return; }
+            const isWished = btn.textContent === '❤️';
+            try {
+                if (isWished) {
+                    const res = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${token}` } });
+                    const list = await res.json();
+                    const item = list.find(w => (w.ProductId || w.productId) === id);
+                    if (item) await fetch(`/api/wishlist/${item.Id || item.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                    btn.textContent = '🤍';
+                    showToast('❌ Đã bỏ yêu thích');
+                } else {
+                    await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ productId: id }) });
+                    btn.textContent = '❤️';
+                    showToast('❤️ Đã thêm yêu thích!');
+                }
+                // Cập nhật badge header
+                const res2 = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${token}` } });
+                if (res2.ok) {
+                    const list2 = await res2.json();
+                    const count = Array.isArray(list2) ? list2.length : 0;
+                    localStorage.setItem('wishlistCount', count);
+                    const badge = document.getElementById('wishlistCount');
+                    if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+                }
+            } catch { showToast('❌ Lỗi kết nối'); }
         }
+
 
         function showToast(msg) {
             let t = document.getElementById('toast');
@@ -1000,18 +1043,7 @@
 
         // Check for search query in URL
         const urlQ = new URLSearchParams(location.search).get('q');
-        if (urlQ) {
-            // Filter by name/brand on load
-            window.addEventListener('DOMContentLoaded', () => {
-                allProducts = SAMPLE.filter(p =>
-                    p.name.toLowerCase().includes(urlQ.toLowerCase()) ||
-                    p.brand.toLowerCase().includes(urlQ.toLowerCase())
-                );
-                applyFilters();
-            });
-        } else {
-            loadProducts();
-        }
+        loadProducts(urlQ || null);
     </script>
 </body>
 

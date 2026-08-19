@@ -1,4 +1,4 @@
-﻿namespace D.A.sneaker.DTOs
+namespace D.A.sneaker.DTOs
 {
     public class CreateOrderDTO
     {
@@ -10,7 +10,10 @@
         public string Ward { get; set; }
         public string District { get; set; }
         public string Province { get; set; }
+        public string? Phone { get; set; }
+        public string? CustomerName { get; set; }
     }
+
 
     public class CreateOrderItemDTO
     {

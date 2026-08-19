@@ -110,21 +110,21 @@
         /* THUMBNAILS */
         .thumbs {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 10px;
+            margin-top: 14px;
             flex-wrap: wrap;
         }
         .thumb {
-            width: 70px; height: 70px;
-            border-radius: 8px;
+            width: 76px; height: 76px;
+            border-radius: 10px;
             overflow: hidden;
-            border: 2px solid var(--border);
+            border: 2.5px solid var(--border);
             cursor: pointer;
-            transition: border-color .2s;
+            transition: border-color .2s, transform .2s;
             background: var(--card);
         }
-        .thumb img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
-        .thumb:hover  { border-color: var(--muted); }
+        .thumb img { width: 100%; height: 100%; object-fit: contain; padding: 6px; }
+        .thumb:hover  { border-color: var(--muted); transform: scale(1.05); }
         .thumb.active { border-color: var(--text); }
 
         /* INFO PANEL */
@@ -244,6 +244,21 @@
         .size-btn:hover { border-color: #9ca3af; background: #fff; }
         .size-btn.active { border-color: #111; background: #111; color: #fff; }
         .size-btn.disabled { opacity: .35; pointer-events: none; }
+        .size-btn.low-stock { border-color: #f97316; }
+        .size-btn.low-stock::after {
+            content: attr(data-stock);
+            position: absolute;
+            top: -8px; right: -6px;
+            background: #f97316;
+            color: #fff;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 6px;
+            line-height: 1.4;
+            pointer-events: none;
+        }
+        .size-btn { position: relative; }
 
         /* SIZE GUIDE */
         .size-guide-link {
@@ -416,18 +431,48 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
+        /* DESC CONTENT - IMPROVED */
         .desc-content {
             background: var(--card);
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid var(--border);
-            padding: 28px;
-            font-size: 14px;
+            padding: 32px 36px;
+            font-size: 15px;
             color: var(--text);
-            line-height: 1.8;
+            line-height: 1.85;
         }
-        .desc-content h4 { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
-        .desc-content ul { padding-left: 20px; margin: 8px 0; }
-        .desc-content li { margin-bottom: 6px; }
+        .desc-content h4 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+            letter-spacing: -0.3px;
+            margin-bottom: 12px;
+            margin-top: 20px;
+        }
+        .desc-content h4:first-child { margin-top: 0; }
+        .desc-content p { color: var(--text); opacity: .85; margin-bottom: 12px; }
+        .desc-content ul { padding-left: 20px; margin: 10px 0 16px; }
+        .desc-content li { margin-bottom: 8px; color: var(--text); opacity: .85; }
+        .desc-highlight {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .desc-highlight-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .desc-highlight-item span { font-size: 20px; }
 
         /* REVIEWS */
         .review-summary {
@@ -587,8 +632,8 @@
 <!-- BREADCRUMB -->
 <div class="bc-bar">
     <div class="bc-inner">
-        <a href="/page/shop.html">Home</a> ›
-        <a href="/page/products.html">Products</a> ›
+        <a href="/page/shop.html">Trang chủ</a> ›
+        <a href="/page/products.html">Sản phẩm</a> ›
         <span id="bcName">Chi tiết sản phẩm</span>
     </div>
 </div>
@@ -596,7 +641,7 @@
 <!-- PRODUCT MAIN -->
 <div class="product-main">
 
-    <!-- GALLERY -->
+        <!-- GALLERY -->
     <div class="gallery">
         <div class="main-img-wrap">
             <div class="img-badges">
@@ -710,9 +755,8 @@
     <!-- DESC -->
     <div class="tab-content active" id="tab-desc">
         <div class="desc-content">
-            <h4>Giới thiệu sản phẩm</h4>
-            <p id="pDescription">Đây là mô tả chi tiết sản phẩm. Thông tin sẽ được cập nhật sau khi API trả về dữ liệu.</p>
-            <br>
+            <h4>Mô tả sản phẩm</h4>
+            <p id="pDescription">Thông tin sản phẩm đang được tải...</p>
             <h4>Đặc điểm nổi bật</h4>
             <ul>
                 <li>Chất liệu cao cấp, thoáng khí và bền bỉ</li>
@@ -721,6 +765,12 @@
                 <li>Trọng lượng nhẹ, không gây mỏi chân khi đi lâu</li>
                 <li>Thiết kế thời trang, dễ phối đồ</li>
             </ul>
+            <div class="desc-highlight">
+                <div class="desc-highlight-item"><span>📦</span> Đóng gói cẩn thận</div>
+                <div class="desc-highlight-item"><span>✅</span> Hàng chính hãng</div>
+                <div class="desc-highlight-item"><span>🔄</span> Đổi trả 30 ngày</div>
+                <div class="desc-highlight-item"><span>🚚</span> Giao hàng nhanh</div>
+            </div>
         </div>
     </div>
 
@@ -802,27 +852,27 @@
             <p>Nơi bạn tìm thấy đôi giày phù hợp nhất. Chất lượng – Phong cách – Giá tốt.</p>
         </div>
         <div class="dark-footer-col">
-            <h4>Shop</h4>
-            <a href="/page/shop.html">Home</a>
-            <a href="/page/products.html">Products</a>
-            <a href="/page/cart.html">Cart</a>
+            <h4>Cửa hàng</h4>
+            <a href="/page/shop.html">Trang chủ</a>
+            <a href="/page/products.html">Sản phẩm</a>
+            <a href="/page/cart.html">Giỏ hàng</a>
         </div>
         <div class="dark-footer-col">
-            <h4>Support</h4>
-            <a href="#">FAQ</a>
-            <a href="#">Contact</a>
-            <a href="/page/login.html">Login</a>
+            <h4>Hỗ trợ</h4>
+            <a href="#">Hỏi đáp</a>
+            <a href="#">Liên hệ</a>
+            <a href="/page/login.html">Đăng nhập</a>
         </div>
         <div class="dark-footer-col">
-            <h4>Subscribe</h4>
-            <p style="font-size:12px;color:#888;margin-bottom:10px">Nhận tin tức & ưu đãi mới nhất</p>
+            <h4>Đăng ký nhận tin</h4>
+            <p style="font-size:12px;color:#888;margin-bottom:10px">Nhận tin tức &amp; ưu đãi mới nhất</p>
             <div style="display:flex;gap:8px">
                 <input type="email" placeholder="Email của bạn" style="flex:1;padding:9px;background:#222;border:1px solid #333;border-radius:6px;color:#fff;font-size:12px;outline:none">
-                <button style="padding:9px 12px;background:#facc15;color:#111;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">GỬI</button>
+                <button style="padding:9px 12px;background:#facc15;color:#111;border:none;border-radius:6px;font-weight:700;font-size:12px;cursor:pointer">ĐK</button>
             </div>
         </div>
     </div>
-    <div class="dark-footer-bot">© 2026 SPARK. All rights reserved.</div>
+    <div class="dark-footer-bot">© 2026 SPARK. Tất cả quyền được bảo lưu.</div>
 </div>
 
 <!-- TOAST -->
@@ -914,15 +964,23 @@
 
         // Thumbnails
         const thumbsEl = document.getElementById('thumbs');
+        let defaultSrc = image || 'https://via.placeholder.com/500?text=Sneaker';
         const allImgs  = images.length ? images : [image];
+        // First thumb = main (default)
         thumbsEl.innerHTML = allImgs.map((img, i) => {
             const src = typeof img === 'string'
                 ? (img.startsWith('http') || img.startsWith('/') ? img : '/images/' + img)
-                : (img.url || image);
-            return `<div class="thumb${i===0?' active':''}" onclick="setMainImg(this,'${src}')">
+                : (img.Url || img.url || image);
+            return `<div class="thumb${i===0?' active':''}" data-src="${src.replace(/"/g,'&quot;')}" title="Ảnh ${i+1}">
                         <img src="${src}" alt="" onerror="this.src='https://via.placeholder.com/70?text=+'" loading="lazy">
                     </div>`;
         }).join('');
+        // Attach click using data-src (avoids quotes breaking onclick)
+        thumbsEl.querySelectorAll('.thumb').forEach(t => {
+            t.addEventListener('click', () => setMainImg(t, t.dataset.src));
+        });
+        // Store default image for reset
+        window._defaultImg = defaultSrc;
 
         // Variants → Color + Size
         if (variants.length) {
@@ -951,18 +1009,43 @@
         if (id) loadReviews(id);
     }
 
+    // Color name translation EN→VI
+    const COLOR_VI = {
+        'white':'Trắng','black':'Đen','red':'Đỏ','blue':'Xanh dương','navy':'Xanh navy',
+        'green':'Xanh lá','yellow':'Vàng','orange':'Cam','purple':'Tím','pink':'Hồng',
+        'grey':'Xám','gray':'Xám','brown':'Nâu','beige':'Kem','gold':'Vàng gold',
+        'silver':'Bạc','cream':'Kem','khaki':'Kháki','olive':'Olive','cyan':'Xanh cyan',
+        'maroon':'Nâu đỏ','teal':'Xanh lá cộng','tan':'Tan','charcoal':'Xám than',
+        'multi':'Nhiều màu','multicolor':'Nhiều màu'
+    };
+    function toViColor(c) {
+        if (!c) return c;
+        return COLOR_VI[c.toLowerCase().trim()] || c;
+    }
+
     function renderColors(colors) {
         document.getElementById('colorsGrid').innerHTML = colors.map(c =>
-            `<div class="color-btn" onclick="chooseColor('${c}',this)">${c}</div>`
+            `<div class="color-btn" data-color="${c}" onclick="chooseColor('${c}',this)">${toViColor(c)}</div>`
         ).join('');
     }
 
     function renderSizes(sizes, variants) {
         document.getElementById('sizesGrid').innerHTML = sizes.map(s => {
-            const unavailable = variants.length && !variants.find(v =>
-                (v.Size === s || v.size === s) && (v.Stock > 0 || !('Stock' in v))
-            );
-            return `<div class="size-btn${unavailable?' disabled':''}" onclick="chooseSize(${s},this)">${s}</div>`;
+            // Find all variants for this size (across all colors)
+            const sizeVariants = variants.filter(v => String(v.Size||v.size) === String(s));
+            const totalStock   = sizeVariants.reduce((sum, v) => sum + (v.Stock ?? v.stock ?? 10), 0);
+            const hasVariants  = variants.length > 0;
+            const stock        = hasVariants ? totalStock : 10; // fallback = always available
+            const outOfStock   = hasVariants && stock === 0;
+            const lowStock     = hasVariants && stock > 0 && stock < 5;
+
+            let cls = 'size-btn';
+            if (outOfStock) cls += ' disabled';
+            if (lowStock)   cls += ' low-stock';
+
+            const stockAttr = lowStock ? ` data-stock="Con ${stock}"` : '';
+            const title     = outOfStock ? 'Het hang' : (lowStock ? `Chi con ${stock} doi` : `Con hang (${stock} doi)`);
+            return `<div class="${cls}" onclick="chooseSize(${s},this)" title="${title}"${stockAttr}>${s}</div>`;
         }).join('');
     }
 
@@ -995,7 +1078,7 @@
         selectedColor = color;
         document.querySelectorAll('.color-btn').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
-        document.getElementById('selectedColorLabel').textContent = color;
+        document.getElementById('selectedColorLabel').textContent = toViColor(color);
         findVariant();
     }
 
@@ -1004,7 +1087,23 @@
         document.querySelectorAll('.size-btn').forEach(x => x.classList.remove('active'));
         el.classList.add('active');
         document.getElementById('selectedSizeLabel').textContent = 'EU ' + size;
+        // Update stock immediately by size (before color if needed)
+        updateStockBySize(size);
         findVariant();
+    }
+
+    function updateStockBySize(size) {
+        const variants = window._variants || [];
+        const dot = document.getElementById('stockDot');
+        const txt = document.getElementById('stockText');
+        if (!variants.length) { dot.className='stock-dot'; txt.textContent='Con hang'; return; }
+
+        // Find stock for this size (sum across all colors)
+        const sizeVars = variants.filter(v => String(v.Size||v.size) === String(size));
+        const total    = sizeVars.reduce((s,v) => s + (v.Stock ?? v.stock ?? 10), 0);
+        if (total === 0)    { dot.className='stock-dot out'; txt.textContent='Het hang size nay'; }
+        else if (total < 5) { dot.className='stock-dot low'; txt.textContent=`Chi con ${total} doi`; }
+        else                { dot.className='stock-dot';     txt.textContent=`Con hang (${total} doi)`; }
     }
 
     function findVariant() {
@@ -1054,11 +1153,39 @@
         setTimeout(() => location.href = '/page/checkout.html', 400);
     }
 
-    function toggleWish() {
-        wished = !wished;
-        document.getElementById('wishBtn').textContent = wished ? '❤️' : '🤍';
-        showToast(wished ? '❤️ Đã thêm vào yêu thích' : 'Đã bỏ yêu thích');
+    async function toggleWish() {
+        const token = localStorage.getItem('token');
+        if (!token) { showToast('⚠️ Vui lòng đăng nhập để yêu thích'); return; }
+        const btn = document.getElementById('wishBtn');
+        const isWished = btn.textContent === '❤️';
+        const pid = product?.Id || product?.id;
+        if (!pid) return;
+        try {
+            if (isWished) {
+                const res = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${token}` } });
+                const list = await res.json();
+                const item = list.find(w => (w.ProductId || w.productId) === pid);
+                if (item) await fetch(`/api/wishlist/${item.Id || item.id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                btn.textContent = '🤍';
+                showToast('Đã bỏ yêu thích');
+            } else {
+                await fetch('/api/wishlist', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify({ productId: pid }) });
+                btn.textContent = '❤️';
+                showToast('❤️ Đã thêm vào yêu thích!');
+            }
+            wished = !isWished;
+            // Cập nhật badge header
+            const res2 = await fetch('/api/wishlist', { headers: { 'Authorization': `Bearer ${token}` } });
+            if (res2.ok) {
+                const list2 = await res2.json();
+                const count = Array.isArray(list2) ? list2.length : 0;
+                localStorage.setItem('wishlistCount', count);
+                const badge = document.getElementById('wishlistCount');
+                if (badge) { badge.textContent = count; badge.style.display = count > 0 ? 'inline-flex' : 'none'; }
+            }
+        } catch { showToast('❌ Lỗi kết nối'); }
     }
+
 
     function showSizeGuide() {
         alert(`📏 Bảng Size SPARK:\n\nEU 36 = UK 3.5 = US 4\nEU 37 = UK 4 = US 4.5\nEU 38 = UK 5 = US 5.5\nEU 39 = UK 5.5 = US 6.5\nEU 40 = UK 6.5 = US 7\nEU 41 = UK 7 = US 7.5\nEU 42 = UK 7.5 = US 8.5\nEU 43 = UK 8.5 = US 9.5\n\n💡 Gợi ý: Nếu bàn chân rộng, chọn 1 size lớn hơn.`);

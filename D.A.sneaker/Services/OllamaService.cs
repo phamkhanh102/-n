@@ -1,4 +1,4 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.Json;
 using D.A.sneaker.Models;
 
@@ -98,38 +98,54 @@ Trả lời tự nhiên như nhân viên thật.
             //------------------------------------------------
             // 5. CALL OLLAMA
             //------------------------------------------------
-            var requestBody = new
+            try
             {
-                model = "llama3",
-                prompt = prompt,
-                stream = false,
-                options = new
+                _http.Timeout = TimeSpan.FromSeconds(20);
+
+                var requestBody = new
                 {
-                    temperature = 0.2,
-                    top_p = 0.9,
-                    repeat_penalty = 1.2
-                }
-            };
+                    model = "llama3.1",
+                    prompt = prompt,
+                    stream = false,
+                    options = new { temperature = 0.3, top_p = 0.9, repeat_penalty = 1.2 }
+                };
 
-            var json = JsonSerializer.Serialize(requestBody);
+                var json = JsonSerializer.Serialize(requestBody);
+                var response = await _http.PostAsync(
+                    "http://localhost:11434/api/generate",
+                    new StringContent(json, Encoding.UTF8, "application/json")
+                );
 
-            var response = await _http.PostAsync(
-                "http://localhost:11434/api/generate",
-                new StringContent(json, Encoding.UTF8, "application/json")
-            );
+                if (!response.IsSuccessStatusCode)
+                    return $"Ollama lỗi {(int)response.StatusCode}. Bạn đang tìm mẫu giày nào ạ?";
 
-            var result = await response.Content.ReadAsStringAsync();
-            using var doc = JsonDocument.Parse(result);
+                var result = await response.Content.ReadAsStringAsync();
+                using var doc = JsonDocument.Parse(result);
+                var reply = doc.RootElement.GetProperty("response").GetString() ?? "";
 
-            var reply = doc.RootElement.GetProperty("response").GetString();
+                //------------------------------------------------
+                // 6. OUTPUT GUARD
+                //------------------------------------------------
+                if (string.IsNullOrWhiteSpace(reply))
+                    return "Bạn đang tìm mẫu giày nào ạ?";
 
-            //------------------------------------------------
-            // 6. OUTPUT GUARD (chặn nói linh tinh)
-            //------------------------------------------------
-            if (reply.Contains("AI") || reply.Contains("script") || reply.Contains("Note"))
-                reply = "Bạn đang tìm mẫu giày nào ạ?";
+                if (reply.Contains("[HỆ THỐNG") || reply.Contains("Note:") || reply.Contains("<script"))
+                    return "Bạn đang tìm mẫu giày nào ạ?";
 
-            return reply.Trim();
+                return reply.Trim();
+            }
+            catch (TaskCanceledException)
+            {
+                return "AI đang xử lý hơi lâu, bạn thử hỏi lại nhé! 😊";
+            }
+            catch (HttpRequestException)
+            {
+                return "Không kết nối được Ollama. Hãy đảm bảo đang chạy: ollama run llama3.1";
+            }
+            catch (Exception)
+            {
+                return "Bạn đang tìm mẫu giày nào ạ?";
+            }
         }
     }
-}
+}

@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="/css/footer.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Barlow', sans-serif; background: #f5f5f5; color: #111; padding-top: 110px; min-height: 100vh; }
+        body { font-family: 'Barlow', sans-serif; background: #f5f5f5; color: #111; padding-top: 130px; min-height: 100vh; }
         a { text-decoration: none; color: inherit; }
 
         /* PAGE HERO */
@@ -677,18 +677,37 @@
     let payMethod  = 'cod';
     let cart       = JSON.parse(localStorage.getItem('cart') || '[]');
 
-    // Pre-fill if logged in
-    const savedName  = localStorage.getItem('name')  || '';
-    const savedEmail = localStorage.getItem('email') || '';
-    if (savedName)  document.getElementById('cName').value  = savedName;
-    if (savedEmail) document.getElementById('cEmail').value = savedEmail;
+    // ── Auto-fill from saved profile ─────────────────────────
+    (function autoFill() {
+        const nm   = localStorage.getItem('name')        || '';
+        const em   = localStorage.getItem('email')       || '';
+        const ph   = localStorage.getItem('userPhone')   || '';
+        const addr = localStorage.getItem('userAddress') || '';
+
+        if (nm)   document.getElementById('cName').value    = nm;
+        if (em)   document.getElementById('cEmail').value   = em;
+        if (ph)   document.getElementById('cPhone').value   = ph;
+        if (addr) document.getElementById('cAddress').value = addr;
+
+        // Show auto-fill notice if any data was found
+        if (nm || ph || addr) {
+            const tip = document.createElement('div');
+            tip.style.cssText = 'background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:10px 16px;font-size:12px;color:#1d4ed8;margin-bottom:16px;display:flex;align-items:center;gap:8px;';
+            tip.innerHTML = '<span>&#128204;</span> Da tu dong dien thong tin tu ho so cua ban. <a href="/page/account.html" style="color:#1d4ed8;font-weight:700;text-decoration:underline">Chinh sua</a>';
+            const firstCard = document.querySelector('.section-card-body');
+            if (firstCard) firstCard.prepend(tip);
+        }
+    })();
 
     function loadOrder() {
         const items = document.getElementById('orderItems');
         const subtotalEl = document.getElementById('calcSubtotal');
         const totalEl    = document.getElementById('calcTotal');
         const shipEl     = document.getElementById('calcShip');
+        const shipRow    = document.getElementById('calcShipRow');
         const countEl    = document.getElementById('orderCount');
+        const discRow    = document.getElementById('calcDiscRow');
+        const discEl     = document.getElementById('calcDisc');
 
         if (!cart.length) {
             items.innerHTML = '<p style="padding:20px;color:#9ca3af;font-size:13px">Giỏ hàng trống</p>';
@@ -715,11 +734,41 @@
 </div>`;
         }).join('');
 
-        const total = subtotal + SHIPPING;
+        // ── Đọc coupon từ localStorage (được lưu từ cart.html) ──
+        const couponData = JSON.parse(localStorage.getItem('appliedCoupon') || 'null');
+        let discountAmt = 0;
+        let freeShip    = false;
+
+        if (couponData) {
+            if (couponData.type === 'freeship') {
+                freeShip = true;
+            } else if (couponData.type === 'percent') {
+                discountAmt = Math.round(subtotal * couponData.value);
+            }
+        }
+
+        const shipping = freeShip ? 0 : SHIPPING;
+        const total    = subtotal - discountAmt + shipping;
+
         countEl.textContent    = cart.length;
         subtotalEl.textContent = subtotal.toLocaleString('vi-VN') + 'đ';
-        shipEl.textContent     = SHIPPING.toLocaleString('vi-VN') + 'đ';
-        totalEl.textContent    = total.toLocaleString('vi-VN') + 'đ';
+
+        if (freeShip) {
+            shipEl.textContent = 'Miễn phí';
+            if (shipRow) shipRow.style.color = '#22c55e';
+        } else {
+            shipEl.textContent = shipping.toLocaleString('vi-VN') + 'đ';
+            if (shipRow) shipRow.style.color = '';
+        }
+
+        if (discountAmt > 0 && discRow && discEl) {
+            discRow.style.display = 'flex';
+            discEl.textContent = `-${discountAmt.toLocaleString('vi-VN')}đ (${couponData.code})`;
+        } else if (discRow) {
+            discRow.style.display = 'none';
+        }
+
+        totalEl.textContent = total.toLocaleString('vi-VN') + 'đ';
 
         // Generate QR
         document.getElementById('qrImg').src =
@@ -762,7 +811,7 @@
         if (err) err.classList.add('show');
     }
 
-    function placeOrder() {
+    async function placeOrder() {
         clearErrors();
         const name     = document.getElementById('cName').value.trim();
         const phone    = document.getElementById('cPhone').value.trim();
@@ -772,55 +821,96 @@
         const district = document.getElementById('cDistrict').value.trim();
 
         let hasErr = false;
-        if (!name)                               { fieldError('cName',     'errName');    hasErr = true; }
+        if (!name)     { fieldError('cName',     'errName');    hasErr = true; }
         if (!phone || !/^0\d{9}$/.test(phone.replace(/\s/g,'')))
-                                                 { fieldError('cPhone',    'errPhone');   hasErr = true; }
+                       { fieldError('cPhone',    'errPhone');   hasErr = true; }
         if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-                                                 { fieldError('cEmail',    'errEmail');   hasErr = true; }
-        if (!address)                            { fieldError('cAddress',  'errAddress'); hasErr = true; }
-        if (!city)                               { fieldError('cCity',     'errCity');    hasErr = true; }
-        if (!district)                           { fieldError('cDistrict', 'errDistrict'); hasErr = true; }
-        if (hasErr) { document.querySelector('.section-card').scrollIntoView({behavior:'smooth'}); return; }
-
+                       { fieldError('cEmail',    'errEmail');   hasErr = true; }
+        if (!address)  { fieldError('cAddress',  'errAddress'); hasErr = true; }
+        if (!city)     { fieldError('cCity',     'errCity');    hasErr = true; }
+        if (!district) { fieldError('cDistrict', 'errDistrict'); hasErr = true; }
+        if (hasErr)    { document.querySelector('.section-card').scrollIntoView({behavior:'smooth'}); return; }
         if (!cart.length) { alert('Giỏ hàng đang trống!'); return; }
 
         const btn = document.getElementById('placeBtn');
         btn.classList.add('loading');
         document.getElementById('placeBtnText').textContent = 'Đang xử lý...';
 
-        setTimeout(() => {
-            // Save order
-            const sub  = cart.reduce((s, p) => s + p.price * p.qty, 0);
-            const order = {
-                id:       'SPARK-' + Date.now().toString().slice(-6),
-                date:     new Date().toISOString(),
-                customer: { name, phone, email, address, city, district },
-                items:    cart,
-                payment:  payMethod,
-                subtotal: sub,
-                shipping: SHIPPING,
-                total:    sub + SHIPPING,
-                status:   'processing',
-                note:     document.getElementById('cNote').value.trim()
-            };
+        const token = localStorage.getItem('token');
 
-            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
-            orders.unshift(order);
-            localStorage.setItem('orders', JSON.stringify(orders));
+        // ── Hàm hiển thị thành công ──
+        function onSuccess(orderId) {
             localStorage.removeItem('cart');
-
-            // Update header cart count
-            const cartEl = document.getElementById('cartCount');
-            if (cartEl) cartEl.textContent = '0';
-
-            // Show success
-            document.getElementById('successOrderId').textContent = '#' + order.id;
+            localStorage.removeItem('appliedCoupon');
+            const cc = document.getElementById('cartCount');
+            if (cc) { cc.textContent = '0'; cc.style.display = 'none'; }
+            document.getElementById('successOrderId').textContent = '#SPARK-' + orderId;
             document.getElementById('successOverlay').classList.add('show');
+        }
 
+        try {
+            // ── Thử gọi POST /api/orders (backend tự lấy customerId từ JWT) ──
+            const cartItems = cart.filter(i => i.variantId);
+
+            if (token && cartItems.length > 0) {
+                const res = await fetch('/api/orders', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        customerId: 0,   // server tự resolve từ JWT
+                        customerName: name,
+                        phone,
+                        address,
+                        ward: '',
+                        district,
+                        province: city,
+                        items: cartItems.map(i => ({ variantId: i.variantId, quantity: i.qty || 1 }))
+                    })
+                });
+
+                if (res.ok) {
+                    const data = await res.json();
+                    onSuccess(data.id || data.Id || Date.now().toString().slice(-6));
+                    return;
+                }
+
+                // Ghi lỗi để debug
+                let errDetail = '';
+                try { const eb = await res.json(); errDetail = eb.error || ''; } catch {}
+                console.warn(`[Checkout] POST /api/orders → ${res.status}`, errDetail);
+            } else if (token && cartItems.length === 0) {
+                console.warn('[Checkout] Cart items thiếu variantId → fallback localStorage');
+            }
+
+            // ── Fallback: lưu localStorage khi không dùng được API ──
+            await new Promise(r => setTimeout(r, 500));
+            const sub = cart.reduce((s, p) => s + p.price * p.qty, 0);
+            const localOrder = {
+                id: Date.now().toString().slice(-6),
+                date: new Date().toISOString(),
+                customer: { name, phone, email, address, city, district },
+                items: cart, payment: payMethod,
+                subtotal: sub, shipping: SHIPPING, total: sub + SHIPPING,
+                status: 'Pending', note: document.getElementById('cNote')?.value.trim() || ''
+            };
+            const orders = JSON.parse(localStorage.getItem('orders') || '[]');
+            orders.unshift(localOrder);
+            localStorage.setItem('orders', JSON.stringify(orders));
+            onSuccess(localOrder.id);
+
+        } catch (err) {
+            console.error('[Checkout] Error:', err);
+            alert('Lỗi đặt hàng: ' + err.message);
+        } finally {
             btn.classList.remove('loading');
             document.getElementById('placeBtnText').textContent = 'Đặt hàng ngay';
-        }, 1800);
+        }
     }
+
+
 
     loadOrder();
 
